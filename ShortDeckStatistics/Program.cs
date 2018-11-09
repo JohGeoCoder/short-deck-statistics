@@ -436,9 +436,6 @@ namespace ShortDeckStatistics
             //If a pair doesn't exist, then the poker hand cannot be a two pair.
             if (biggestPairCardValue == -1) return 0;
 
-            //Find the value of the biggest set
-
-
             //Find the value of the smallest pair
             short smallestPairCardValue = -1;
             for (int i = 0; i < _sevenCardHand.Length - 1; i++)
@@ -471,7 +468,38 @@ namespace ShortDeckStatistics
 
         public long ScorePair()
         {
+            //Find the value of the smallest pair
+            short pairCardValue = -1;
+            for (int i = 0; i < _sevenCardHand.Length - 1; i++)
+            {
+                var currentCard = _sevenCardHand[i];
+                Card nextCard = _sevenCardHand[i + 1];
 
+                //Detect consecutive identical card values.
+                if (currentCard.Value == nextCard.Value)
+                {
+                    //Keep the highest pair value.
+                    if (currentCard.Value > pairCardValue)
+                    {
+                        pairCardValue = currentCard.Value;
+                    }
+
+                    //Once a second pair is found, we can break out of the loop.
+                    break;
+                }
+            }
+
+            //If a second pair doesn't exist, then the hand cannot be a two pair.
+            if (pairCardValue == -1) return 0;
+
+            return pairCardValue;
+        }
+
+        public long ScoreHighCard()
+        {
+            var highestValueCard = _sevenCardHand[0];
+
+            return highestValueCard.Value;
         }
     }
 }
