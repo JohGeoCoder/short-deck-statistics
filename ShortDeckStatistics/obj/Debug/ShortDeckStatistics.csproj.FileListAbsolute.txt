@@ -1,0 +1,6 @@
+C:\U\OtherClients\ShortDeckStatistics\ShortDeckStatistics\bin\Debug\ShortDeckStatistics.exe
+C:\U\OtherClients\ShortDeckStatistics\ShortDeckStatistics\bin\Debug\ShortDeckStatistics.pdb
+C:\U\OtherClients\ShortDeckStatistics\ShortDeckStatistics\obj\Debug\ShortDeckStatistics.csprojAssemblyReference.cache
+C:\U\OtherClients\ShortDeckStatistics\ShortDeckStatistics\obj\Debug\ShortDeckStatistics.csproj.CoreCompileInputs.cache
+C:\U\OtherClients\ShortDeckStatistics\ShortDeckStatistics\obj\Debug\ShortDeckStatistics.exe
+C:\U\OtherClients\ShortDeckStatistics\ShortDeckStatistics\obj\Debug\ShortDeckStatistics.pdb
