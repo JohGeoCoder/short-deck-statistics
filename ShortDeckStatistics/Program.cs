@@ -11,8 +11,8 @@ namespace ShortDeckStatistics
         {
             Console.WindowHeight = 100;
 
-            var table = new Table(9);
-            table.PlayHands(100_000_000);
+            var table = new Table(6);
+            table.PlayHands(1_000_000);
 
             Console.WriteLine(table);
 
@@ -49,6 +49,8 @@ namespace ShortDeckStatistics
 
     public class PokerHand
     {
+        public static readonly string[] HandRanks = new string[] { "Error", "High Card", "Pair", "Two Pair", "Straight", "Three of a Kind", "Full House", "Flush", "Four of a Kind", "Straight Flush" };
+
         private Card[] _sevenCardHand;
 
         public Card[] HoleCards { get; private set; }
@@ -74,10 +76,38 @@ namespace ShortDeckStatistics
             CommunityCards = communityCards;
 
             _sevenCardHand = new Card[7];
-            Array.Copy(HoleCards, _sevenCardHand, HoleCards.Length);
-            Array.Copy(CommunityCards, 0, _sevenCardHand, HoleCards.Length, CommunityCards.Length);
-            Array.Sort(_sevenCardHand);
-            Array.Reverse(_sevenCardHand);
+
+            var holeCardPos = 0;
+            var communityCardPos = 0;
+
+            while(holeCardPos < 2 && communityCardPos < 5)
+            {
+
+                if(holeCards[holeCardPos].Value > communityCards[communityCardPos].Value)
+                {
+                    _sevenCardHand[holeCardPos + communityCardPos] = holeCards[holeCardPos];
+                    holeCardPos++;
+                }
+                else
+                {
+                    _sevenCardHand[holeCardPos + communityCardPos] = communityCards[communityCardPos];
+                    communityCardPos++;
+                }
+            }
+
+            while(holeCardPos < 2)
+            {
+                _sevenCardHand[holeCardPos + communityCardPos] = holeCards[holeCardPos];
+                holeCardPos++;
+            }
+
+            while(communityCardPos < 5)
+            {
+                _sevenCardHand[holeCardPos + communityCardPos] = communityCards[communityCardPos];
+                communityCardPos++;
+            }
+
+            var i = 1;
         }
 
         public override string ToString()
@@ -632,7 +662,8 @@ namespace ShortDeckStatistics
         private long[][] HoleCardsWinCounter;
         private long[][] HoleCardsDealtCounter;
 
-
+        private Dictionary<string, int[]> HandsMadeCount = new Dictionary<string, int[]>();
+        private Dictionary<string, int[]> HandsWonCount = new Dictionary<string, int[]>();
 
         private Card[] Deck;
 
@@ -688,20 +719,34 @@ namespace ShortDeckStatistics
                 players[player][holeCard] = shuffledDeck[i];
             }
 
-            //Populate community cards
+            //Populate community cards.
             var cardsDealt = players.Length * players[0].Length;
             Array.Copy(shuffledDeck, cardsDealt, communityCards, 0, 5);
-
+            Array.Sort(communityCards);
+            Array.Reverse(communityCards);
 
             //Generate the 7-card poker hands.
             var handResults = new PokerHand[players.Length];
             for (int i = 0; i < players.Length; i++)
             {
+                var playerHoleCards = players[i];
+
+                var firstHoleCard = playerHoleCards[0];
+                var secondHoleCard = playerHoleCards[1];
+
+                if(firstHoleCard.Value < secondHoleCard.Value)
+                {
+                    playerHoleCards[0] = secondHoleCard;
+                    playerHoleCards[1] = firstHoleCard;
+                }
+
                 handResults[i] = new PokerHand(players[i], communityCards);
             }
 
+
             Card biggestHoleCard;
             Card smallestHoleCard;
+            string handString;
 
             //Log each hand's play.
             foreach(var hand in handResults)
@@ -715,14 +760,25 @@ namespace ShortDeckStatistics
                     smallestHoleCard = temp;
                 }
 
+                handString = Card.CardValues[biggestHoleCard.Value] + Card.CardValues[smallestHoleCard.Value];
                 if (biggestHoleCard.Suit == smallestHoleCard.Suit)
                 {
                     HoleCardsDealtCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
+                    handString += "s";
                 }
                 else
                 {
                     HoleCardsDealtCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
+                    handString += "o";
                 }
+
+                if (!HandsMadeCount.ContainsKey(handString))
+                {
+                    HandsMadeCount.Add(handString, new int[10]);
+                    HandsWonCount.Add(handString, new int[10]);
+                }
+
+                HandsMadeCount[handString][hand.HandRank / 100_000_000_000L]++;
             }
 
             PokerHand strongestHand = null;
@@ -743,14 +799,19 @@ namespace ShortDeckStatistics
                 smallestHoleCard = temp;
             }
 
-            if(biggestHoleCard.Suit == smallestHoleCard.Suit)
+            handString = Card.CardValues[biggestHoleCard.Value] + Card.CardValues[smallestHoleCard.Value];
+            if (biggestHoleCard.Suit == smallestHoleCard.Suit)
             {
                 HoleCardsWinCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
+                handString += "s";
             }
             else
             {
                 HoleCardsWinCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
+                handString += "o";
             }
+
+            HandsWonCount[handString][strongestHand.HandRank / 100_000_000_000L]++;
         }
 
         public void PlayHands(long iterations)
@@ -798,6 +859,25 @@ namespace ShortDeckStatistics
             for(int i = 0; i < cardArray.Length; i++)
             {
                 sb.AppendLine($"{cardArray[i].PadRight(5)} - {winRateArray[i]}");
+            }
+
+            sb.AppendLine();
+            sb.AppendLine();
+
+            foreach(var kvp in HandsMadeCount)
+            {
+                var handsWonArray = HandsWonCount[kvp.Key];
+
+                sb.AppendLine(kvp.Key);
+                for(int i = 0; i < kvp.Value.Length; i++)
+                {
+                    var handRank = PokerHand.HandRanks[i].PadRight(20);
+                    var handRankCount = $"{kvp.Value[i]}".PadRight(8);
+                    var handWinCount = $"Won {handsWonArray[i]}".PadRight(15);
+                    var handWinRate = $"Win Rate: {(kvp.Value[i] == 0 ? 0 : (double)handsWonArray[i] / kvp.Value[i]) * 100}%";
+                    sb.AppendLine($"   {handRank}: {handRankCount} - {handWinCount} - {handWinRate}" );
+                }
+                sb.AppendLine();
             }
 
             return sb.ToString();
