@@ -629,8 +629,11 @@ namespace ShortDeckStatistics
     public class Table
     {
         private Random numberGenerator;
-        private long[][] HandWinTracker;
-        private long[][] HandPlayTracker;
+        private long[][] HoleCardsWinCounter;
+        private long[][] HoleCardsDealtCounter;
+
+
+
         private Card[] Deck;
 
         public int PlayerCount { get; private set; }
@@ -640,16 +643,16 @@ namespace ShortDeckStatistics
             PlayerCount = numPlayers;
             numberGenerator = new Random((int)DateTime.Now.Ticks);
 
-            HandWinTracker = new long[9][];
-            for(int i = 0; i < HandWinTracker.Length; i++)
+            HoleCardsWinCounter = new long[9][];
+            for(int i = 0; i < HoleCardsWinCounter.Length; i++)
             {
-                HandWinTracker[i] = new long[9];
+                HoleCardsWinCounter[i] = new long[9];
             }
 
-            HandPlayTracker = new long[9][];
-            for (int i = 0; i < HandPlayTracker.Length; i++)
+            HoleCardsDealtCounter = new long[9][];
+            for (int i = 0; i < HoleCardsDealtCounter.Length; i++)
             {
-                HandPlayTracker[i] = new long[9];
+                HoleCardsDealtCounter[i] = new long[9];
             }
 
             //Populate the deck
@@ -714,11 +717,11 @@ namespace ShortDeckStatistics
 
                 if (biggestHoleCard.Suit == smallestHoleCard.Suit)
                 {
-                    HandPlayTracker[biggestHoleCard.Value][smallestHoleCard.Value]++;
+                    HoleCardsDealtCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
                 }
                 else
                 {
-                    HandPlayTracker[smallestHoleCard.Value][biggestHoleCard.Value]++;
+                    HoleCardsDealtCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
                 }
             }
 
@@ -742,11 +745,11 @@ namespace ShortDeckStatistics
 
             if(biggestHoleCard.Suit == smallestHoleCard.Suit)
             {
-                HandWinTracker[biggestHoleCard.Value][smallestHoleCard.Value]++;
+                HoleCardsWinCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
             }
             else
             {
-                HandWinTracker[smallestHoleCard.Value][biggestHoleCard.Value]++;
+                HoleCardsWinCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
             }
         }
 
@@ -767,20 +770,20 @@ namespace ShortDeckStatistics
         {
             var dictionary = new Dictionary<string, double>();
 
-            for(int i = 0; i < HandWinTracker.Length; i++)
+            for(int i = 0; i < HoleCardsWinCounter.Length; i++)
             {
-                for(int j = i; j < HandWinTracker[0].Length; j++)
+                for(int j = i; j < HoleCardsWinCounter[0].Length; j++)
                 {
-                    var winRate = HandPlayTracker[i][j] == 0 ? 0 : (double)HandWinTracker[i][j] / HandPlayTracker[i][j];
+                    var winRate = HoleCardsDealtCounter[i][j] == 0 ? 0 : (double)HoleCardsWinCounter[i][j] / HoleCardsDealtCounter[i][j];
                     dictionary.Add($"{Card.CardValues[j]}{Card.CardValues[i]}o", winRate);
                 }
             }
 
-            for (int i = 0; i < HandWinTracker.Length; i++)
+            for (int i = 0; i < HoleCardsWinCounter.Length; i++)
             {
                 for (int j = 0; j < i; j++)
                 {
-                    var winRate = HandPlayTracker[i][j] == 0 ? 0 : (double)HandWinTracker[i][j] / HandPlayTracker[i][j];
+                    var winRate = HoleCardsDealtCounter[i][j] == 0 ? 0 : (double)HoleCardsWinCounter[i][j] / HoleCardsDealtCounter[i][j];
                     dictionary.Add($"{Card.CardValues[i]}{Card.CardValues[j]}s", winRate);
                 }
             }
