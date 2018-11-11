@@ -25,8 +25,8 @@ namespace ShortDeckStatistics
         public short Value { get; private set; }
         public short Suit { get; private set; }
 
-        private static readonly string[] CardValues = new string[] {"6", "7", "8", "9", "T", "J", "Q", "K", "A" };
-        private static readonly string[] CardSuits = new string[] { "s", "c", "h", "d" };
+        public static readonly string[] CardValues = new string[] {"6", "7", "8", "9", "T", "J", "Q", "K", "A" };
+        public static readonly string[] CardSuits = new string[] { "s", "c", "h", "d" };
 
         public Card(short suit, short value)
         {
@@ -765,8 +765,6 @@ namespace ShortDeckStatistics
 
         public override string ToString()
         {
-            string[] CardValues = new string[] { "6", "7", "8", "9", "T", "J", "Q", "K", "A" };
-
             var dictionary = new Dictionary<string, double>();
 
             for(int i = 0; i < HandWinTracker.Length; i++)
@@ -774,7 +772,7 @@ namespace ShortDeckStatistics
                 for(int j = i; j < HandWinTracker[0].Length; j++)
                 {
                     var winRate = HandPlayTracker[i][j] == 0 ? 0 : (double)HandWinTracker[i][j] / HandPlayTracker[i][j];
-                    dictionary.Add($"{CardValues[j]}{CardValues[i]}o", winRate);
+                    dictionary.Add($"{Card.CardValues[j]}{Card.CardValues[i]}o", winRate);
                 }
             }
 
@@ -783,7 +781,7 @@ namespace ShortDeckStatistics
                 for (int j = 0; j < i; j++)
                 {
                     var winRate = HandPlayTracker[i][j] == 0 ? 0 : (double)HandWinTracker[i][j] / HandPlayTracker[i][j];
-                    dictionary.Add($"{CardValues[i]}{CardValues[j]}s", winRate);
+                    dictionary.Add($"{Card.CardValues[i]}{Card.CardValues[j]}s", winRate);
                 }
             }
 
