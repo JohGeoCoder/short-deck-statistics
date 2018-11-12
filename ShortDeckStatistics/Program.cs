@@ -70,20 +70,25 @@ namespace ShortDeckStatistics
             }
         }
 
-        public PokerHand(Card[] holeCards, Card[] communityCards)
+        public PokerHand()
         {
+            _sevenCardHand = new Card[7];
+        }
+
+        public void GeneratePokerHand(Card[] holeCards, Card[] communityCards)
+        {
+            _handRank = -1;
+
             HoleCards = holeCards;
             CommunityCards = communityCards;
-
-            _sevenCardHand = new Card[7];
 
             var holeCardPos = 0;
             var communityCardPos = 0;
 
-            while(holeCardPos < 2 && communityCardPos < 5)
+            while (holeCardPos < 2 && communityCardPos < 5)
             {
 
-                if(holeCards[holeCardPos].Value > communityCards[communityCardPos].Value)
+                if (holeCards[holeCardPos].Value > communityCards[communityCardPos].Value)
                 {
                     _sevenCardHand[holeCardPos + communityCardPos] = holeCards[holeCardPos];
                     holeCardPos++;
@@ -95,19 +100,17 @@ namespace ShortDeckStatistics
                 }
             }
 
-            while(holeCardPos < 2)
+            while (holeCardPos < 2)
             {
                 _sevenCardHand[holeCardPos + communityCardPos] = holeCards[holeCardPos];
                 holeCardPos++;
             }
 
-            while(communityCardPos < 5)
+            while (communityCardPos < 5)
             {
                 _sevenCardHand[holeCardPos + communityCardPos] = communityCards[communityCardPos];
                 communityCardPos++;
             }
-
-            var i = 1;
         }
 
         public override string ToString()
@@ -140,25 +143,37 @@ namespace ShortDeckStatistics
             //Check for sequentiality
             var consecutiveSequenceLength = 0;
             var highestSequentialCardPosition = -1;
+            Card currentCard = null;
+            Card nextCard = null;
             for (int i = 0; i < _sevenCardHand.Length; i++)
             {
-                var currentCard = _sevenCardHand[i];
-                Card nextCard = null;
+                currentCard = _sevenCardHand[i];
+                nextCard = null;
 
                 //Populate the next card, taking into consideration that it may be an Ace in the first position.
-                if(i < _sevenCardHand.Length - 1)
+                if (i < _sevenCardHand.Length - 1)
                 {
                     nextCard = _sevenCardHand[i + 1];
                 }
                 else
                 {
-                    nextCard = _sevenCardHand[0];
+                    var firstCard = _sevenCardHand[0];
+                    var secondCard = _sevenCardHand[1];
+                    var thirdCard = _sevenCardHand[2];
+
+                    if (firstCard.Value == 8 && firstCard.Suit == currentCard.Suit) nextCard = firstCard;
+                    else if (secondCard.Value == 8 && secondCard.Suit == currentCard.Suit) nextCard = secondCard;
+                    else if (thirdCard.Value == 8 && thirdCard.Suit == currentCard.Suit) nextCard = thirdCard;
+                    else
+                    {
+                        break;
+                    }
                 }
 
                 //If the current card and next card are in sequence, update the sequence count.
                 //Otherwise, reset the sequence count.
                 //Take into consideration that the next sequential card may be an Ace in the first position.
-                if (nextCard.Value == currentCard.Value - 1 || currentCard.Value == 0 && nextCard.Value == 8)
+                if (nextCard.Suit == currentCard.Suit && (nextCard.Value == currentCard.Value - 1 || currentCard.Value == 0 && nextCard.Value == 8))
                 {
                     if (consecutiveSequenceLength == 0)
                     {
@@ -178,42 +193,6 @@ namespace ShortDeckStatistics
 
             //If there is not a 5-card sequence, then the poker hand cannot be a straight flush.
             if (consecutiveSequenceLength < 5) return new int[] { 0, 0, 0 };
-
-            //Check for suitedness.
-            var allSuited = true;
-            for (int i = highestSequentialCardPosition; i < highestSequentialCardPosition + 4; i++)
-            {
-                var currentCard = _sevenCardHand[i];
-                Card nextCard = null; 
-
-                //Populate the next card, taking into consideration that it may be an Ace.
-                if (i == _sevenCardHand.Length - 1)
-                {
-                    var firstCard = _sevenCardHand[0];
-                    var secondCard = _sevenCardHand[1];
-                    var thirdCard = _sevenCardHand[2];
-
-                    if (firstCard.Value == 8 && firstCard.Suit == currentCard.Suit) nextCard = firstCard;
-                    else if (secondCard.Value == 8 && secondCard.Suit == currentCard.Suit) nextCard = secondCard;
-                    else if (thirdCard.Value == 8 && thirdCard.Suit == currentCard.Suit) nextCard = thirdCard;
-                    else
-                    {
-                        allSuited = false;
-                        break;
-                    }
-                }
-                else
-                {
-                    nextCard = _sevenCardHand[i + 1];
-                }
-
-                allSuited = currentCard.Suit == nextCard.Suit;
-
-                if (!allSuited) break;
-            }
-
-            //If the 5 consecutive cards are not suited, then the poker hand cannot be a straight flush.
-            if (!allSuited) return new int[] { 0, 0, 0 };
 
             //The value of this straight flush equals the face value of the highest card in the sequence.
             return new int[] { 9, _sevenCardHand[highestSequentialCardPosition].Value + 1, 0 };
@@ -278,10 +257,15 @@ namespace ShortDeckStatistics
         private int[] ScoreFlush()
         {
             var suitCounter = new int[4];
+            var cardsBySuit = new Card[4][];
+            for (int i = 0; i < cardsBySuit.Length; i++) cardsBySuit[i] = new Card[5];
+
             for(int pos = 0; pos < _sevenCardHand.Length; pos++)
             {
                 var card = _sevenCardHand[pos];
+                cardsBySuit[card.Suit][suitCounter[card.Suit]] = card;
                 suitCounter[card.Suit]++;
+
             }
 
             var flushedSuit = -1;
@@ -666,6 +650,9 @@ namespace ShortDeckStatistics
         private Dictionary<string, int[]> HandsWonCount = new Dictionary<string, int[]>();
 
         private Card[] Deck;
+        private Card[] CommunityCards;
+        private Card[][] PlayerHoleCards;
+        private PokerHand[] PlayerFullHands;
 
         public int PlayerCount { get; private set; }
 
@@ -696,122 +683,36 @@ namespace ShortDeckStatistics
                     Deck[slot] = new Card(suit, value);
                 }
             }
+
+            PlayerHoleCards = new Card[numPlayers][];
+            for (int i = 0; i < PlayerHoleCards.Length; i++)
+            {
+                PlayerHoleCards[i] = new Card[2];
+            }
+
+            CommunityCards = new Card[5];
+
+            PlayerFullHands = new PokerHand[numPlayers];
+            for(int i = 0; i < numPlayers; i++)
+            {
+                PlayerFullHands[i] = new PokerHand();
+            }
         }
 
         public void PlayHand()
         {
-            var players = new Card[PlayerCount][];
-            for (int i = 0; i < players.Length; i++)
-            {
-                players[i] = new Card[2];
-            }
+            ShuffleDeck();
 
-            var communityCards = new Card[5];
-
-            var shuffledDeck = ShuffleDeck();
-
-            //Deal cards
-            for (int i = 0; i < players.Length * players[0].Length; i++)
-            {
-                var player = i % players.Length;
-                var holeCard = i / players.Length;
-
-                players[player][holeCard] = shuffledDeck[i];
-            }
+            DealCardsToPlayers();
 
             //Populate community cards.
-            var cardsDealt = players.Length * players[0].Length;
-            Array.Copy(shuffledDeck, cardsDealt, communityCards, 0, 5);
-            Array.Sort(communityCards);
-            Array.Reverse(communityCards);
+            GetCommunityCards();
 
             //Generate the 7-card poker hands.
-            var handResults = new PokerHand[players.Length];
-            for (int i = 0; i < players.Length; i++)
-            {
-                var playerHoleCards = players[i];
-
-                var firstHoleCard = playerHoleCards[0];
-                var secondHoleCard = playerHoleCards[1];
-
-                if(firstHoleCard.Value < secondHoleCard.Value)
-                {
-                    playerHoleCards[0] = secondHoleCard;
-                    playerHoleCards[1] = firstHoleCard;
-                }
-
-                handResults[i] = new PokerHand(players[i], communityCards);
-            }
-
-
-            Card biggestHoleCard;
-            Card smallestHoleCard;
-            string handString;
+            GeneratePokerHands();
 
             //Log each hand's play.
-            foreach(var hand in handResults)
-            {
-                biggestHoleCard = hand.HoleCards[0];
-                smallestHoleCard = hand.HoleCards[1];
-                if (biggestHoleCard.Value < smallestHoleCard.Value)
-                {
-                    Card temp = biggestHoleCard;
-                    biggestHoleCard = smallestHoleCard;
-                    smallestHoleCard = temp;
-                }
-
-                handString = Card.CardValues[biggestHoleCard.Value] + Card.CardValues[smallestHoleCard.Value];
-                if (biggestHoleCard.Suit == smallestHoleCard.Suit)
-                {
-                    HoleCardsDealtCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
-                    handString += "s";
-                }
-                else
-                {
-                    HoleCardsDealtCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
-                    handString += "o";
-                }
-
-                if (!HandsMadeCount.ContainsKey(handString))
-                {
-                    HandsMadeCount.Add(handString, new int[10]);
-                    HandsWonCount.Add(handString, new int[10]);
-                }
-
-                HandsMadeCount[handString][hand.HandRank / 100_000_000_000L]++;
-            }
-
-            PokerHand strongestHand = null;
-            foreach(var result in handResults)
-            {
-                if(strongestHand == null || result.HandRank > strongestHand.HandRank)
-                {
-                    strongestHand = result;
-                }
-            }
-
-            biggestHoleCard = strongestHand.HoleCards[0];
-            smallestHoleCard = strongestHand.HoleCards[1];
-            if(biggestHoleCard.Value < smallestHoleCard.Value)
-            {
-                Card temp = biggestHoleCard;
-                biggestHoleCard = smallestHoleCard;
-                smallestHoleCard = temp;
-            }
-
-            handString = Card.CardValues[biggestHoleCard.Value] + Card.CardValues[smallestHoleCard.Value];
-            if (biggestHoleCard.Suit == smallestHoleCard.Suit)
-            {
-                HoleCardsWinCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
-                handString += "s";
-            }
-            else
-            {
-                HoleCardsWinCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
-                handString += "o";
-            }
-
-            HandsWonCount[handString][strongestHand.HandRank / 100_000_000_000L]++;
+            LogHandResults();
         }
 
         public void PlayHands(long iterations)
@@ -883,7 +784,120 @@ namespace ShortDeckStatistics
             return sb.ToString();
         }
 
-        private Card[] ShuffleDeck()
+        private void DealCardsToPlayers()
+        {
+            //Deal cards
+            for (int i = 0; i < PlayerHoleCards.Length * PlayerHoleCards[0].Length; i++)
+            {
+                var player = i % PlayerHoleCards.Length;
+                var holeCard = i / PlayerHoleCards.Length;
+
+                PlayerHoleCards[player][holeCard] = Deck[i];
+            }
+        }
+
+        private void GetCommunityCards()
+        {
+            int numCardsDealtToPlayers = PlayerHoleCards.Length * PlayerHoleCards[0].Length;
+            
+            Array.Copy(Deck, numCardsDealtToPlayers, CommunityCards, 0, 5);
+
+            //Sort community cards in descending order
+            Array.Sort(CommunityCards);
+            Array.Reverse(CommunityCards);
+        }
+
+        private void GeneratePokerHands()
+        {
+            for (int i = 0; i < PlayerHoleCards.Length; i++)
+            {
+                var playerHoleCards = PlayerHoleCards[i];
+
+                var firstHoleCard = playerHoleCards[0];
+                var secondHoleCard = playerHoleCards[1];
+
+                if (firstHoleCard.Value < secondHoleCard.Value)
+                {
+                    playerHoleCards[0] = secondHoleCard;
+                    playerHoleCards[1] = firstHoleCard;
+                }
+
+                PlayerFullHands[i].GeneratePokerHand(PlayerHoleCards[i], CommunityCards);
+            }
+        }
+
+        private void LogHandResults()
+        {
+            Card biggestHoleCard;
+            Card smallestHoleCard;
+            string handString;
+
+            foreach (var hand in PlayerFullHands)
+            {
+                biggestHoleCard = hand.HoleCards[0];
+                smallestHoleCard = hand.HoleCards[1];
+                if (biggestHoleCard.Value < smallestHoleCard.Value)
+                {
+                    Card temp = biggestHoleCard;
+                    biggestHoleCard = smallestHoleCard;
+                    smallestHoleCard = temp;
+                }
+
+                handString = Card.CardValues[biggestHoleCard.Value] + Card.CardValues[smallestHoleCard.Value];
+                if (biggestHoleCard.Suit == smallestHoleCard.Suit)
+                {
+                    HoleCardsDealtCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
+                    handString += "s";
+                }
+                else
+                {
+                    HoleCardsDealtCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
+                    handString += "o";
+                }
+
+                if (!HandsMadeCount.ContainsKey(handString))
+                {
+                    HandsMadeCount.Add(handString, new int[10]);
+                    HandsWonCount.Add(handString, new int[10]);
+                }
+
+                HandsMadeCount[handString][hand.HandRank / 100_000_000_000L]++;
+            }
+
+            PokerHand strongestHand = null;
+            foreach (var result in PlayerFullHands)
+            {
+                if (strongestHand == null || result.HandRank > strongestHand.HandRank)
+                {
+                    strongestHand = result;
+                }
+            }
+
+            biggestHoleCard = strongestHand.HoleCards[0];
+            smallestHoleCard = strongestHand.HoleCards[1];
+            if (biggestHoleCard.Value < smallestHoleCard.Value)
+            {
+                Card temp = biggestHoleCard;
+                biggestHoleCard = smallestHoleCard;
+                smallestHoleCard = temp;
+            }
+
+            handString = Card.CardValues[biggestHoleCard.Value] + Card.CardValues[smallestHoleCard.Value];
+            if (biggestHoleCard.Suit == smallestHoleCard.Suit)
+            {
+                HoleCardsWinCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
+                handString += "s";
+            }
+            else
+            {
+                HoleCardsWinCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
+                handString += "o";
+            }
+
+            HandsWonCount[handString][strongestHand.HandRank / 100_000_000_000L]++;
+        }
+
+        private void ShuffleDeck()
         {
             //Shuffle the deck.
             var cardIndexPosition = Deck.Length;
@@ -895,8 +909,6 @@ namespace ShortDeckStatistics
                 Deck[cardPositionToSwap] = Deck[cardIndexPosition];
                 Deck[cardIndexPosition] = swapCard;
             }
-
-            return Deck;
         }
     }
 }
