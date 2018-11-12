@@ -637,7 +637,8 @@ namespace ShortDeckStatistics
 
     public class Table
     {
-        private Random numberGenerator;
+        private readonly Random NumberGenerator = new Random((int)DateTime.Now.Ticks);
+        private readonly StringBuilder StrBuilder = new StringBuilder();
         private long[][] HoleCardsWinCounter;
         private long[][] HoleCardsDealtCounter;
 
@@ -645,7 +646,7 @@ namespace ShortDeckStatistics
         private Dictionary<string, int[]> HandsWonCount = new Dictionary<string, int[]>();
 
         private Card[] Deck;
-        private Card[] CommunityCards;
+        private Card[] CommunityCards = new Card[5];
         private Card[][] PlayerHoleCards;
         private PokerHand[] PlayerFullHands;
 
@@ -654,7 +655,6 @@ namespace ShortDeckStatistics
         public Table(int numPlayers)
         {
             PlayerCount = numPlayers;
-            numberGenerator = new Random((int)DateTime.Now.Ticks);
 
             HoleCardsWinCounter = new long[9][];
             for(int i = 0; i < HoleCardsWinCounter.Length; i++)
@@ -684,8 +684,6 @@ namespace ShortDeckStatistics
             {
                 PlayerHoleCards[i] = new Card[2];
             }
-
-            CommunityCards = new Card[5];
 
             PlayerFullHands = new PokerHand[numPlayers];
             for(int i = 0; i < numPlayers; i++)
@@ -827,6 +825,7 @@ namespace ShortDeckStatistics
             Card smallestHoleCard;
             string handString;
 
+            var handStringArray = new string[3];
             foreach (var hand in PlayerFullHands)
             {
                 biggestHoleCard = hand.HoleCards[0];
@@ -838,17 +837,20 @@ namespace ShortDeckStatistics
                     smallestHoleCard = temp;
                 }
 
-                handString = Card.CardValues[biggestHoleCard.Value] + Card.CardValues[smallestHoleCard.Value];
+                handStringArray[0] = Card.CardValues[biggestHoleCard.Value];
+                handStringArray[1] = Card.CardValues[smallestHoleCard.Value];
                 if (biggestHoleCard.Suit == smallestHoleCard.Suit)
                 {
                     HoleCardsDealtCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
-                    handString += "s";
+                    handStringArray[2] = "s";
                 }
                 else
                 {
                     HoleCardsDealtCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
-                    handString += "o";
+                    handStringArray[2] = "o";
                 }
+
+                handString = string.Join("", handStringArray);
 
                 if (!HandsMadeCount.ContainsKey(handString))
                 {
@@ -877,17 +879,20 @@ namespace ShortDeckStatistics
                 smallestHoleCard = temp;
             }
 
-            handString = Card.CardValues[biggestHoleCard.Value] + Card.CardValues[smallestHoleCard.Value];
+            handStringArray[0] = Card.CardValues[biggestHoleCard.Value];
+            handStringArray[1] = Card.CardValues[smallestHoleCard.Value];
             if (biggestHoleCard.Suit == smallestHoleCard.Suit)
             {
                 HoleCardsWinCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
-                handString += "s";
+                handStringArray[2] = "s";
             }
             else
             {
                 HoleCardsWinCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
-                handString += "o";
+                handStringArray[2] = "o";
             }
+
+            handString = string.Join("", handStringArray);
 
             HandsWonCount[handString][strongestHand.HandRank / 100_000_000_000L]++;
         }
@@ -899,7 +904,7 @@ namespace ShortDeckStatistics
             while (cardIndexPosition > 1)
             {
                 cardIndexPosition--;
-                int cardPositionToSwap = numberGenerator.Next(Deck.Length);
+                int cardPositionToSwap = NumberGenerator.Next(Deck.Length);
                 var swapCard = Deck[cardPositionToSwap];
                 Deck[cardPositionToSwap] = Deck[cardIndexPosition];
                 Deck[cardIndexPosition] = swapCard;
