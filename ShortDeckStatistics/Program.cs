@@ -257,15 +257,10 @@ namespace ShortDeckStatistics
         private int[] ScoreFlush()
         {
             var suitCounter = new int[4];
-            var cardsBySuit = new Card[4][];
-            for (int i = 0; i < cardsBySuit.Length; i++) cardsBySuit[i] = new Card[5];
-
             for(int pos = 0; pos < _sevenCardHand.Length; pos++)
             {
                 var card = _sevenCardHand[pos];
-                cardsBySuit[card.Suit][suitCounter[card.Suit]] = card;
                 suitCounter[card.Suit]++;
-
             }
 
             var flushedSuit = -1;
