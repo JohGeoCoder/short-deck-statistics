@@ -9,13 +9,19 @@ namespace ShortDeckStatistics
     {
         public static void Main(string[] args)
         {
-            Console.WindowHeight = 100;
-            Console.WindowWidth = 100;
+            Console.WindowHeight = 50;
 
-            var table = new Table(3);
-            table.PlayHands(3_000_000);
+            var tableArray = new Table[10];
+            for(int i = 2; i <= 9; i++)
+            {
+                tableArray[i] = new Table(i);
+                tableArray[i].PlayHands(100_000_000);
+            }
 
-            Console.WriteLine(table);
+            for(int i = 2; i <= 9; i++)
+            {
+                tableArray[i].PrintHoleCardsRankedByBestForArray();
+            }
 
             Console.ReadKey();
         }
@@ -51,6 +57,21 @@ namespace ShortDeckStatistics
     public class PokerHand
     {
         public static readonly string[] HandRanks = new string[] { "Error", "High Card", "Pair", "Two Pair", "Straight", "Three of a Kind", "Full House", "Flush", "Four of a Kind", "Straight Flush" };
+
+        public static readonly string[][] BestHoleCardsByPlayerCount = new string[][]
+        {
+            new string[] { }, //Zero players
+            new string[] { }, //One player
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "AQs", "AKo", "AJs", "AQo", "ATs", "KQs", "AJo", "99o", "ATo", "KJs", "A9s", "KQo", "KTs", "KJo", "A8s", "A9o", "QJs", "KTo", "QTs", "K9s", "A7s", "A8o", "QJo", "JTs", "QTo", "K9o", "88o", "Q9s", "A6s", "A7o", "K8s", "JTo", "K7s", "Q9o", "J9s", "A6o", "Q8s", "K8o", "T9s", "K6s", "J9o", "K7o", "J8s", "Q8o", "Q7s", "77o", "T9o", "T8s", "K6o", "Q6s", "J7s", "J8o", "98s", "Q7o", "T8o", "T7s", "Q6o", "J7o", "J6s", "97s", "98o", "66o", "T6s", "T7o", "96s", "J6o", "97o", "87s", "T6o", "96o", "86s", "87o", "76s", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "AKs", "TTo", "AQs", "AKo", "AJs", "AQo", "ATs", "KQs", "AJo", "99o", "KJs", "A9s", "KQo", "ATo", "KTs", "QJs", "A8s", "KJo", "QTs", "A9o", "KTo", "K9s", "A7s", "JTs", "QJo", "A8o", "88o", "QTo", "A6s", "Q9s", "K8s", "K9o", "A7o", "JTo", "J9s", "K7s", "Q8s", "T9s", "A6o", "Q9o", "K6s", "77o", "K8o", "J8s", "J9o", "Q7s", "T8s", "K7o", "T9o", "Q8o", "Q6s", "J7s", "98s", "66o", "K6o", "T7s", "J8o", "T8o", "Q7o", "J6s", "97s", "T6s", "Q6o", "J7o", "98o", "96s", "T7o", "87s", "97o", "J6o", "86s", "T6o", "96o", "76s", "87o", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "AKs", "TTo", "AQs", "AKo", "AJs", "ATs", "KQs", "AQo", "99o", "KJs", "AJo", "A9s", "KTs", "ATo", "KQo", "QJs", "A8s", "QTs", "KJo", "88o", "K9s", "A7s", "KTo", "A9o", "JTs", "A6s", "QJo", "Q9s", "A8o", "77o", "QTo", "K8s", "J9s", "K7s", "K9o", "JTo", "T9s", "A7o", "Q8s", "66o", "K6s", "J8s", "A6o", "Q9o", "T8s", "Q7s", "K8o", "J9o", "J7s", "Q6s", "T7s", "T9o", "98s", "K7o", "Q8o", "97s", "J6s", "T6s", "J8o", "K6o", "T8o", "Q7o", "96s", "87s", "J7o", "Q6o", "T7o", "98o", "86s", "97o", "J6o", "T6o", "76s", "96o", "87o", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "AQs", "AKo", "99o", "AJs", "ATs", "KQs", "AQo", "KJs", "KTs", "A9s", "88o", "AJo", "QJs", "ATo", "KQo", "A8s", "QTs", "77o", "JTs", "K9s", "A7s", "KJo", "66o", "KTo", "A9o", "A6s", "Q9s", "K8s", "QJo", "J9s", "QTo", "T9s", "A8o", "K7s", "Q8s", "JTo", "J8s", "K9o", "K6s", "T8s", "A7o", "Q7s", "J7s", "Q9o", "T7s", "Q6s", "A6o", "98s", "K8o", "J9o", "T9o", "T6s", "J6s", "97s", "K7o", "Q8o", "96s", "J8o", "T8o", "K6o", "87s", "Q7o", "86s", "J7o", "T7o", "Q6o", "98o", "76s", "T6o", "97o", "J6o", "96o", "87o", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "99o", "AQs", "AJs", "AKo", "88o", "ATs", "KQs", "77o", "KJs", "AQo", "KTs", "A9s", "66o", "QJs", "QTs", "AJo", "A8s", "ATo", "JTs", "KQo", "K9s", "A7s", "KJo", "Q9s", "A6s", "KTo", "K8s", "J9s", "T9s", "A9o", "QJo", "Q8s", "K7s", "QTo", "J8s", "T8s", "K6s", "JTo", "A8o", "Q7s", "J7s", "T7s", "K9o", "Q6s", "A7o", "98s", "T6s", "Q9o", "J6s", "97s", "A6o", "J9o", "T9o", "K8o", "96s", "Q8o", "87s", "K7o", "J8o", "T8o", "86s", "K6o", "Q7o", "76s", "T7o", "J7o", "98o", "Q6o", "T6o", "97o", "J6o", "96o", "87o", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "AKs", "88o", "AQs", "77o", "AJs", "ATs", "KQs", "66o", "AKo", "KJs", "KTs", "A9s", "AQo", "QJs", "QTs", "JTs", "A8s", "AJo", "K9s", "ATo", "A7s", "KQo", "Q9s", "A6s", "J9s", "T9s", "K8s", "KJo", "KTo", "Q8s", "K7s", "T8s", "J8s", "A9o", "QJo", "QTo", "K6s", "Q7s", "JTo", "T7s", "J7s", "Q6s", "A8o", "98s", "T6s", "K9o", "J6s", "97s", "A7o", "Q9o", "96s", "T9o", "J9o", "A6o", "87s", "K8o", "86s", "Q8o", "T8o", "K7o", "J8o", "76s", "K6o", "Q7o", "T7o", "J7o", "98o", "Q6o", "T6o", "J6o", "97o", "96o", "87o", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "88o", "AKs", "77o", "AQs", "66o", "AJs", "ATs", "KQs", "KJs", "KTs", "AKo", "A9s", "QTs", "QJs", "JTs", "AQo", "A8s", "K9s", "A7s", "Q9s", "AJo", "T9s", "ATo", "J9s", "KQo", "A6s", "K8s", "Q8s", "K7s", "T8s", "J8s", "KJo", "KTo", "K6s", "Q7s", "T7s", "J7s", "QJo", "QTo", "A9o", "JTo", "Q6s", "98s", "T6s", "J6s", "97s", "A8o", "K9o", "96s", "87s", "A7o", "Q9o", "T9o", "J9o", "86s", "K8o", "A6o", "Q8o", "T8o", "76s", "J8o", "K7o", "K6o", "T7o", "Q7o", "J7o", "98o", "Q6o", "T6o", "J6o", "97o", "96o", "87o", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "88o", "77o", "66o", "AKs", "AQs", "ATs", "AJs", "KQs", "KJs", "KTs", "QTs", "QJs", "A9s", "JTs", "AKo", "A8s", "K9s", "AQo", "A7s", "Q9s", "T9s", "J9s", "K8s", "A6s", "AJo", "ATo", "Q8s", "KQo", "T8s", "J8s", "K7s", "K6s", "KJo", "Q7s", "T7s", "J7s", "KTo", "Q6s", "QJo", "QTo", "T6s", "98s", "JTo", "J6s", "A9o", "97s", "96s", "A8o", "87s", "K9o", "86s", "T9o", "Q9o", "A7o", "J9o", "76s", "K8o", "A6o", "Q8o", "T8o", "J8o", "K7o", "K6o", "T7o", "Q7o", "J7o", "Q6o", "98o", "T6o", "J6o", "97o", "96o", "87o", "86o", "76o" },
+
+        };
 
         private Card[] _sevenCardHand;
 
@@ -643,8 +664,8 @@ namespace ShortDeckStatistics
         private long[][] HoleCardsWinCounter;
         private long[][] HoleCardsDealtCounter;
 
-        private Dictionary<string, int[]> HandsMadeCount = new Dictionary<string, int[]>();
-        private Dictionary<string, int[]> HandsWonCount = new Dictionary<string, int[]>();
+        //private Dictionary<string, int[]> HandsMadeCount = new Dictionary<string, int[]>();
+        //private Dictionary<string, int[]> HandsWonCount = new Dictionary<string, int[]>();
 
         private Card[] Deck;
         private Card[] CommunityCards = new Card[5];
@@ -722,16 +743,110 @@ namespace ShortDeckStatistics
             }
         }
 
-        public override string ToString()
+        public void PrintHoleCardWinRatesRankedByBest()
         {
-            var dictionary = new Dictionary<string, double>();
+            var holeCardsAndWinRates = GetHoleCardsAndWinRates();
 
-            for(int i = 0; i < HoleCardsWinCounter.Length; i++)
+            StringBuilder sb = new StringBuilder();
+
+            var cardArray = new string[holeCardsAndWinRates.Count];
+            var winRateArray = new double[holeCardsAndWinRates.Count];
+            holeCardsAndWinRates.Keys.CopyTo(cardArray, 0);
+            holeCardsAndWinRates.Values.CopyTo(winRateArray, 0);
+            Array.Sort(winRateArray, cardArray);
+
+            for (int i = 0; i < cardArray.Length; i++)
             {
-                for(int j = i; j < HoleCardsWinCounter[0].Length; j++)
+                sb.AppendLine($"{cardArray[i].PadRight(5)} - {winRateArray[i]}");
+            }
+
+            Console.WriteLine(sb.ToString());
+        }
+
+        //public void PrintWinRatesForPokerHandsMade()
+        //{
+        //    var holeCardsAndWinRates = GetHoleCardsAndWinRates();
+
+        //    var cardArray = new string[holeCardsAndWinRates.Count];
+        //    var winRateArray = new double[holeCardsAndWinRates.Count];
+        //    holeCardsAndWinRates.Keys.CopyTo(cardArray, 0);
+        //    holeCardsAndWinRates.Values.CopyTo(winRateArray, 0);
+        //    Array.Sort(winRateArray, cardArray);
+
+        //    StringBuilder sb = new StringBuilder();
+
+        //    sb.AppendLine();
+        //    sb.AppendLine();
+
+        //    for (int j = 0; j < cardArray.Length; j++)
+        //    {
+        //        var targetCard = cardArray[j];
+        //        var handsMadeArray = HandsMadeCount[targetCard];
+        //        var handsWonArray = HandsWonCount[targetCard];
+
+        //        var totalCardAppearances = 0;
+        //        for (int i = 0; i < handsMadeArray.Length; i++)
+        //        {
+        //            totalCardAppearances += handsMadeArray[i];
+        //        }
+
+        //        sb.AppendLine(targetCard.PadRight(8) + "Rank".PadRight(20) + "Rank Chance".PadRight(25) + "Rank Count".PadRight(15) + "Rank Win Count".PadRight(18) + "Rank Win Rate".PadRight(25));
+        //        for (int i = 1; i < handsMadeArray.Length; i++)
+        //        {
+        //            var handRank = PokerHand.HandRanks[i].PadRight(20);
+
+        //            var handRankPossibility = (totalCardAppearances == 0 ? 0 : (double)handsMadeArray[i] / totalCardAppearances);
+        //            var handRankPossibilityString = $"{handRankPossibility}".PadRight(25);
+        //            var handRankCount = $"{handsMadeArray[i]}".PadRight(15);
+        //            var handWinCount = $"{handsWonArray[i]}".PadRight(18);
+
+        //            var handWinRate = (handsMadeArray[i] == 0 ? 0 : (double)handsWonArray[i] / handsMadeArray[i]);
+        //            var handWinRateString = $"{handWinRate}".PadRight(25);
+
+        //            var winIndex = handRankPossibility * handWinRate;
+        //            var winIndexString = $"{winIndex}";
+        //            sb.AppendLine($"        {handRank}{handRankPossibilityString}{handRankCount}{handWinCount}{handWinRateString}{winIndexString}");
+        //        }
+        //        sb.AppendLine();
+        //    }
+
+        //    Console.WriteLine(sb.ToString());
+        //}
+
+        public void PrintHoleCardsRankedByBestForArray()
+        {
+            var holeCardsAndWinRates = GetHoleCardsAndWinRates();
+
+            StringBuilder sb = new StringBuilder();
+
+            var cardArray = new string[holeCardsAndWinRates.Count];
+            var winRateArray = new double[holeCardsAndWinRates.Count];
+            holeCardsAndWinRates.Keys.CopyTo(cardArray, 0);
+            holeCardsAndWinRates.Values.CopyTo(winRateArray, 0);
+            Array.Sort(winRateArray, cardArray);
+            Array.Reverse(cardArray);
+
+            for (var i = 0; i < cardArray.Length; i++){
+                cardArray[i] = "\"" + cardArray[i] + "\"";
+            }
+
+            sb.Append("new string[] { ");
+            sb.Append(string.Join(", ", cardArray));
+            sb.Append(" },");
+
+            Console.WriteLine(sb.ToString());
+        }
+
+        private Dictionary<string, double> GetHoleCardsAndWinRates()
+        {
+            var holeCardsAndWinRates = new Dictionary<string, double>();
+
+            for (int i = 0; i < HoleCardsWinCounter.Length; i++)
+            {
+                for (int j = i; j < HoleCardsWinCounter[0].Length; j++)
                 {
                     var winRate = HoleCardsDealtCounter[i][j] == 0 ? 0 : (double)HoleCardsWinCounter[i][j] / HoleCardsDealtCounter[i][j];
-                    dictionary.Add($"{Card.CardValues[j]}{Card.CardValues[i]}o", winRate);
+                    holeCardsAndWinRates.Add($"{Card.CardValues[j]}{Card.CardValues[i]}o", winRate);
                 }
             }
 
@@ -740,58 +855,11 @@ namespace ShortDeckStatistics
                 for (int j = 0; j < i; j++)
                 {
                     var winRate = HoleCardsDealtCounter[i][j] == 0 ? 0 : (double)HoleCardsWinCounter[i][j] / HoleCardsDealtCounter[i][j];
-                    dictionary.Add($"{Card.CardValues[i]}{Card.CardValues[j]}s", winRate);
+                    holeCardsAndWinRates.Add($"{Card.CardValues[i]}{Card.CardValues[j]}s", winRate);
                 }
             }
 
-            StringBuilder sb = new StringBuilder();
-
-            var cardArray = new string[dictionary.Count];
-            var winRateArray = new double[dictionary.Count];
-            dictionary.Keys.CopyTo(cardArray, 0);
-            dictionary.Values.CopyTo(winRateArray, 0);
-            Array.Sort(winRateArray, cardArray);
-            for(int i = 0; i < cardArray.Length; i++)
-            {
-                sb.AppendLine($"{cardArray[i].PadRight(5)} - {winRateArray[i]}");
-            }
-
-            sb.AppendLine();
-            sb.AppendLine();
-
-            for(int j = 0; j < cardArray.Length; j++)
-            {
-                var targetCard = cardArray[j];
-                var handsMadeArray = HandsMadeCount[targetCard];
-                var handsWonArray = HandsWonCount[targetCard];
-
-                var totalCardAppearances = 0;
-                for(int i = 0; i < handsMadeArray.Length; i++)
-                {
-                    totalCardAppearances += handsMadeArray[i];
-                }
-
-                sb.AppendLine(targetCard.PadRight(8) + "Rank".PadRight(20) + "Rank Chance".PadRight(25) + "Rank Count".PadRight(15) + "Rank Win Count".PadRight(18) + "Rank Win Rate".PadRight(25));
-                for(int i = 1; i < handsMadeArray.Length; i++)
-                {
-                    var handRank = PokerHand.HandRanks[i].PadRight(20);
-
-                    var handRankPossibility = (totalCardAppearances == 0 ? 0 : (double)handsMadeArray[i] / totalCardAppearances);
-                    var handRankPossibilityString = $"{handRankPossibility}".PadRight(25);
-                    var handRankCount = $"{handsMadeArray[i]}".PadRight(15);
-                    var handWinCount = $"{handsWonArray[i]}".PadRight(18);
-
-                    var handWinRate = (handsMadeArray[i] == 0 ? 0 : (double)handsWonArray[i] / handsMadeArray[i]);
-                    var handWinRateString = $"{handWinRate}".PadRight(25);
-
-                    var winIndex = handRankPossibility * handWinRate;
-                    var winIndexString = $"{winIndex}";
-                    sb.AppendLine($"        {handRank}{handRankPossibilityString}{handRankCount}{handWinCount}{handWinRateString}{winIndexString}" );
-                }
-                sb.AppendLine();
-            }
-
-            return sb.ToString();
+            return holeCardsAndWinRates;
         }
 
         private void DealCardsToPlayers()
@@ -840,9 +908,9 @@ namespace ShortDeckStatistics
         {
             Card biggestHoleCard;
             Card smallestHoleCard;
-            string handString;
+            //string handString;
 
-            var handStringArray = new string[3];
+            //var handStringArray = new string[3];
             foreach (var hand in PlayerFullHands)
             {
                 biggestHoleCard = hand.HoleCards[0];
@@ -854,28 +922,28 @@ namespace ShortDeckStatistics
                     smallestHoleCard = temp;
                 }
 
-                handStringArray[0] = Card.CardValues[biggestHoleCard.Value];
-                handStringArray[1] = Card.CardValues[smallestHoleCard.Value];
+                //handStringArray[0] = Card.CardValues[biggestHoleCard.Value];
+                //handStringArray[1] = Card.CardValues[smallestHoleCard.Value];
                 if (biggestHoleCard.Suit == smallestHoleCard.Suit)
                 {
                     HoleCardsDealtCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
-                    handStringArray[2] = "s";
+                    //handStringArray[2] = "s";
                 }
                 else
                 {
                     HoleCardsDealtCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
-                    handStringArray[2] = "o";
+                    //handStringArray[2] = "o";
                 }
 
-                handString = string.Join("", handStringArray);
+                //handString = string.Join("", handStringArray);
 
-                if (!HandsMadeCount.ContainsKey(handString))
-                {
-                    HandsMadeCount.Add(handString, new int[10]);
-                    HandsWonCount.Add(handString, new int[10]);
-                }
+                //if (!HandsMadeCount.ContainsKey(handString))
+                //{
+                //    HandsMadeCount.Add(handString, new int[10]);
+                //    HandsWonCount.Add(handString, new int[10]);
+                //}
 
-                HandsMadeCount[handString][hand.HandRank / 100_000_000_000L]++;
+                //HandsMadeCount[handString][hand.HandRank / 100_000_000_000L]++;
             }
 
             PokerHand strongestHand = null;
@@ -896,22 +964,22 @@ namespace ShortDeckStatistics
                 smallestHoleCard = temp;
             }
 
-            handStringArray[0] = Card.CardValues[biggestHoleCard.Value];
-            handStringArray[1] = Card.CardValues[smallestHoleCard.Value];
+            //handStringArray[0] = Card.CardValues[biggestHoleCard.Value];
+            //handStringArray[1] = Card.CardValues[smallestHoleCard.Value];
             if (biggestHoleCard.Suit == smallestHoleCard.Suit)
             {
                 HoleCardsWinCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
-                handStringArray[2] = "s";
+                //handStringArray[2] = "s";
             }
             else
             {
                 HoleCardsWinCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
-                handStringArray[2] = "o";
+                //handStringArray[2] = "o";
             }
 
-            handString = string.Join("", handStringArray);
+            //handString = string.Join("", handStringArray);
 
-            HandsWonCount[handString][strongestHand.HandRank / 100_000_000_000L]++;
+            //HandsWonCount[handString][strongestHand.HandRank / 100_000_000_000L]++;
         }
 
         private void ShuffleDeck()
