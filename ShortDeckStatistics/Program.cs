@@ -1160,7 +1160,8 @@ namespace ShortDeckStatistics
             }
 
             //Determine the strongest hand among the live hands as villains.
-            PokerHand strongestHand = null; 
+            PokerHand strongestHand = null;
+            PokerHand strongestHandForHero = null;
             HandRankCount.Clear();
             foreach (var result in AllPlayerFullHands)
             {
@@ -1179,6 +1180,14 @@ namespace ShortDeckStatistics
                 HandsWithRank[handRank][HandRankCount[handRank]] = result;
                 HandRankCount[handRank]++;
 
+                if (result.IsLiveAsHero)
+                {
+                    if(strongestHandForHero == null || handRank > strongestHandForHero.HandRank)
+                    {
+                        strongestHandForHero = result;
+                    }
+                }
+
                 if (strongestHand == null || handRank > strongestHand.HandRank)
                 {
                     strongestHand = result;
@@ -1191,8 +1200,14 @@ namespace ShortDeckStatistics
                 return;
             }
 
-            //If the hero would not have played this hand, do not log it.
-            if (!strongestHand.IsLiveAsHero)
+            //If there is no hand that the hero would play, then do not log a win or tie.
+            if(strongestHandForHero == null)
+            {
+                return;
+            }
+
+            //If the hero loses, do not log the hand as a win or tie.
+            if (strongestHand.HandRank != strongestHandForHero.HandRank)
             {
                 return;
             }
