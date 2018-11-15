@@ -1112,6 +1112,18 @@ namespace ShortDeckStatistics
             string handString;
             int handNumericalRepresentation;
 
+            //Log the hand only if there exists a hand the hero would play.
+            var hasHeroHand = false;
+            foreach(var hand in AllPlayerFullHands)
+            {
+                if (hand.IsLiveAsHero)
+                {
+                    hasHeroHand = true;
+                    break;
+                }
+            }
+            if (!hasHeroHand) return;
+
             //Log all hands made. Even the folded ones.
             foreach (var hand in AllPlayerFullHands)
             {
