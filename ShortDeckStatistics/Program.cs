@@ -10,23 +10,23 @@ namespace ShortDeckStatistics
         public static void Main(string[] args)
         {
             Console.WindowHeight = 50;
+            Console.WindowWidth = 400;
 
             var tableArray = new Table[3];
             for(int i = 2; i < tableArray.Length; i++)
             {
                 tableArray[i] = new Table(6, true);
-                tableArray[i].PlayHands(1_000_000, true, 20, 30);
-                //tableArray[i].PlayHands(100_000);
+                tableArray[i].PlayHands(200_000, true, 20, 30);
             }
 
             for(int i = 2; i < tableArray.Length; i++)
             {
-                tableArray[i].PrintHoleCardWinRatesRankedByBest();
-                tableArray[i].PrintWinRatesForPokerHandsMade();
+                //tableArray[i].PrintHoleCardWinRatesRankedByBest();
+                //tableArray[i].PrintWinRatesForPokerHandsMade();
                 //tableArray[i].PrintHoleCardsRankedByBestForArray();
             }
 
-            Console.ReadKey();
+            //Console.ReadKey();
         }
     }
 
@@ -885,7 +885,7 @@ namespace ShortDeckStatistics
             {
                 PlayHand(isVillainEmotional, keepTopPercentHero, keepTopPercentVillain);
 
-                if(i % 100_000 == 0)
+                if(i % 10_000 == 0)
                 {
                     Console.Clear();
                     Console.WriteLine($"Player Count: { PlayerCount } - Hands Remaining: {iterations - i}");
@@ -915,6 +915,8 @@ namespace ShortDeckStatistics
             }
 
             Array.Sort(winRateArray, cardArray);
+            Array.Reverse(winRateArray);
+            Array.Reverse(cardArray);
 
             sb.AppendLine("Hole Cards".PadRight(12) + "Win Rate".PadRight(25) + "Loss Rate".PadRight(25) + "Tie Rate");
             for (int i = 0; i < cardArray.Length; i++)
@@ -923,6 +925,8 @@ namespace ShortDeckStatistics
                 var winRate = holeCardsAndWinRates[holeCards][0];
                 var lossRate = holeCardsAndWinRates[holeCards][1];
                 var tieRate = holeCardsAndWinRates[holeCards][2];
+
+                if (winRate == 0.0) continue;
 
                 sb.AppendLine($"{holeCards.PadRight(12)}{winRate.ToString().PadRight(25)}{lossRate.ToString().PadRight(25)}{tieRate.ToString()}");
             }
@@ -939,25 +943,30 @@ namespace ShortDeckStatistics
             var winRateArray = new double[holeCardsAndWinRates.Count];
             holeCardsAndWinRates.Keys.CopyTo(cardArray, 0);
 
-            var pos = 0;
+            var holeCardsCount = 0;
             foreach (var holeCards in holeCardsAndWinRates)
             {
-                var winRate = holeCardsAndWinRates[holeCards.Key];
+                // [win rate, loss rate, tie rate]
+                var holeCardsResultStats = holeCardsAndWinRates[holeCards.Key];
 
-                cardArray[pos] = holeCards.Key;
-                winRateArray[pos] = winRate[0];
+                if (holeCardsResultStats[0] == 0.0) continue;
 
-                pos++;
+                cardArray[holeCardsCount] = holeCards.Key;
+                winRateArray[holeCardsCount] = holeCardsResultStats[0];
+
+                holeCardsCount++;
             }
 
             Array.Sort(winRateArray, cardArray);
+            Array.Reverse(winRateArray);
+            Array.Reverse(cardArray);
 
             StringBuilder sb = new StringBuilder();
 
             sb.AppendLine();
             sb.AppendLine();
 
-            for (int j = 0; j < cardArray.Length; j++)
+            for (int j = 0; j < holeCardsCount; j++)
             {
                 var targetCard = cardArray[j];
                 var handsMadeArray = HandsMadeCount[targetCard];
