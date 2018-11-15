@@ -14,7 +14,7 @@ namespace ShortDeckStatistics
             var tableArray = new Table[3];
             for(int i = 2; i < tableArray.Length; i++)
             {
-                tableArray[i] = new Table(6);
+                tableArray[i] = new Table(6, true);
                 tableArray[i].PlayHands(1_000_000, true, 20, 30);
                 //tableArray[i].PlayHands(100_000);
             }
@@ -23,6 +23,7 @@ namespace ShortDeckStatistics
             {
                 tableArray[i].PrintHoleCardWinRatesRankedByBest();
                 tableArray[i].PrintWinRatesForPokerHandsMade();
+                //tableArray[i].PrintHoleCardsRankedByBestForArray();
             }
 
             Console.ReadKey();
@@ -74,14 +75,14 @@ namespace ShortDeckStatistics
         {
             new string[] { }, //Zero players
             new string[] { }, //One player
-            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "AQs", "AKo", "AJs", "AQo", "ATs", "KQs", "AJo", "99o", "ATo", "KJs", "A9s", "KQo", "KTs", "KJo", "A8s", "A9o", "QJs", "KTo", "QTs", "K9s", "A7s", "A8o", "QJo", "JTs", "QTo", "K9o", "88o", "Q9s", "A6s", "A7o", "K8s", "JTo", "K7s", "Q9o", "J9s", "A6o", "Q8s", "K8o", "T9s", "K6s", "J9o", "K7o", "J8s", "Q8o", "Q7s", "77o", "T9o", "T8s", "K6o", "Q6s", "J7s", "J8o", "98s", "Q7o", "T8o", "T7s", "Q6o", "J7o", "J6s", "97s", "98o", "66o", "T6s", "T7o", "96s", "J6o", "97o", "87s", "T6o", "96o", "86s", "87o", "76s", "86o", "76o" },
-            new string[] { "AAo", "KKo", "QQo", "JJo", "AKs", "TTo", "AQs", "AKo", "AJs", "AQo", "ATs", "KQs", "AJo", "99o", "KJs", "A9s", "KQo", "ATo", "KTs", "QJs", "A8s", "KJo", "QTs", "A9o", "KTo", "K9s", "A7s", "JTs", "QJo", "A8o", "88o", "QTo", "A6s", "Q9s", "K8s", "K9o", "A7o", "JTo", "J9s", "K7s", "Q8s", "T9s", "A6o", "Q9o", "K6s", "77o", "K8o", "J8s", "J9o", "Q7s", "T8s", "K7o", "T9o", "Q8o", "Q6s", "J7s", "98s", "66o", "K6o", "T7s", "J8o", "T8o", "Q7o", "J6s", "97s", "T6s", "Q6o", "J7o", "98o", "96s", "T7o", "87s", "97o", "J6o", "86s", "T6o", "96o", "76s", "87o", "86o", "76o" },
-            new string[] { "AAo", "KKo", "QQo", "JJo", "AKs", "TTo", "AQs", "AKo", "AJs", "ATs", "KQs", "AQo", "99o", "KJs", "AJo", "A9s", "KTs", "ATo", "KQo", "QJs", "A8s", "QTs", "KJo", "88o", "K9s", "A7s", "KTo", "A9o", "JTs", "A6s", "QJo", "Q9s", "A8o", "77o", "QTo", "K8s", "J9s", "K7s", "K9o", "JTo", "T9s", "A7o", "Q8s", "66o", "K6s", "J8s", "A6o", "Q9o", "T8s", "Q7s", "K8o", "J9o", "J7s", "Q6s", "T7s", "T9o", "98s", "K7o", "Q8o", "97s", "J6s", "T6s", "J8o", "K6o", "T8o", "Q7o", "96s", "87s", "J7o", "Q6o", "T7o", "98o", "86s", "97o", "J6o", "T6o", "76s", "96o", "87o", "86o", "76o" },
-            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "AQs", "AKo", "99o", "AJs", "ATs", "KQs", "AQo", "KJs", "KTs", "A9s", "88o", "AJo", "QJs", "ATo", "KQo", "A8s", "QTs", "77o", "JTs", "K9s", "A7s", "KJo", "66o", "KTo", "A9o", "A6s", "Q9s", "K8s", "QJo", "J9s", "QTo", "T9s", "A8o", "K7s", "Q8s", "JTo", "J8s", "K9o", "K6s", "T8s", "A7o", "Q7s", "J7s", "Q9o", "T7s", "Q6s", "A6o", "98s", "K8o", "J9o", "T9o", "T6s", "J6s", "97s", "K7o", "Q8o", "96s", "J8o", "T8o", "K6o", "87s", "Q7o", "86s", "J7o", "T7o", "Q6o", "98o", "76s", "T6o", "97o", "J6o", "96o", "87o", "86o", "76o" },
-            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "99o", "AQs", "AJs", "AKo", "88o", "ATs", "KQs", "77o", "KJs", "AQo", "KTs", "A9s", "66o", "QJs", "QTs", "AJo", "A8s", "ATo", "JTs", "KQo", "K9s", "A7s", "KJo", "Q9s", "A6s", "KTo", "K8s", "J9s", "T9s", "A9o", "QJo", "Q8s", "K7s", "QTo", "J8s", "T8s", "K6s", "JTo", "A8o", "Q7s", "J7s", "T7s", "K9o", "Q6s", "A7o", "98s", "T6s", "Q9o", "J6s", "97s", "A6o", "J9o", "T9o", "K8o", "96s", "Q8o", "87s", "K7o", "J8o", "T8o", "86s", "K6o", "Q7o", "76s", "T7o", "J7o", "98o", "Q6o", "T6o", "97o", "J6o", "96o", "87o", "86o", "76o" },
-            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "AKs", "88o", "AQs", "77o", "AJs", "ATs", "KQs", "66o", "AKo", "KJs", "KTs", "A9s", "AQo", "QJs", "QTs", "JTs", "A8s", "AJo", "K9s", "ATo", "A7s", "KQo", "Q9s", "A6s", "J9s", "T9s", "K8s", "KJo", "KTo", "Q8s", "K7s", "T8s", "J8s", "A9o", "QJo", "QTo", "K6s", "Q7s", "JTo", "T7s", "J7s", "Q6s", "A8o", "98s", "T6s", "K9o", "J6s", "97s", "A7o", "Q9o", "96s", "T9o", "J9o", "A6o", "87s", "K8o", "86s", "Q8o", "T8o", "K7o", "J8o", "76s", "K6o", "Q7o", "T7o", "J7o", "98o", "Q6o", "T6o", "J6o", "97o", "96o", "87o", "86o", "76o" },
-            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "88o", "AKs", "77o", "AQs", "66o", "AJs", "ATs", "KQs", "KJs", "KTs", "AKo", "A9s", "QTs", "QJs", "JTs", "AQo", "A8s", "K9s", "A7s", "Q9s", "AJo", "T9s", "ATo", "J9s", "KQo", "A6s", "K8s", "Q8s", "K7s", "T8s", "J8s", "KJo", "KTo", "K6s", "Q7s", "T7s", "J7s", "QJo", "QTo", "A9o", "JTo", "Q6s", "98s", "T6s", "J6s", "97s", "A8o", "K9o", "96s", "87s", "A7o", "Q9o", "T9o", "J9o", "86s", "K8o", "A6o", "Q8o", "T8o", "76s", "J8o", "K7o", "K6o", "T7o", "Q7o", "J7o", "98o", "Q6o", "T6o", "J6o", "97o", "96o", "87o", "86o", "76o" },
-            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "88o", "77o", "66o", "AKs", "AQs", "ATs", "AJs", "KQs", "KJs", "KTs", "QTs", "QJs", "A9s", "JTs", "AKo", "A8s", "K9s", "AQo", "A7s", "Q9s", "T9s", "J9s", "K8s", "A6s", "AJo", "ATo", "Q8s", "KQo", "T8s", "J8s", "K7s", "K6s", "KJo", "Q7s", "T7s", "J7s", "KTo", "Q6s", "QJo", "QTo", "T6s", "98s", "JTo", "J6s", "A9o", "97s", "96s", "A8o", "87s", "K9o", "86s", "T9o", "Q9o", "A7o", "J9o", "76s", "K8o", "A6o", "Q8o", "T8o", "J8o", "K7o", "K6o", "T7o", "Q7o", "J7o", "Q6o", "98o", "T6o", "J6o", "97o", "96o", "87o", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "AKo", "AQs", "AJs", "AQo", "99o", "ATs", "KQs", "AJo", "ATo", "KTs", "KQo", "KJs", "A9s", "KJo", "A8s", "QJs", "A9o", "KTo", "QTs", "QJo", "K9s", "88o", "A8o", "A7s", "QTo", "JTs", "Q9s", "K9o", "K8s", "A6s", "A7o", "JTo", "K7s", "Q9o", "Q8s", "J9s", "A6o", "K8o", "T9s", "77o", "K6s", "K7o", "J9o", "Q8o", "Q7s", "J8s", "T8s", "T9o", "Q6s", "K6o", "J8o", "J7s", "98s", "Q7o", "66o", "T8o", "J6s", "T7s", "Q6o", "97s", "J7o", "98o", "T7o", "T6s", "87s", "J6o", "97o", "96s", "T6o", "86s", "96o", "87o", "76s", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "AQs", "AKo", "AJs", "AQo", "KQs", "99o", "ATs", "KJs", "AJo", "KQo", "A9s", "KTs", "ATo", "QJs", "A8s", "KJo", "QTs", "88o", "JTs", "KTo", "A9o", "QJo", "K9s", "A7s", "QTo", "A6s", "A8o", "Q9s", "JTo", "K8s", "77o", "K9o", "A7o", "K7s", "J9s", "Q8s", "T9s", "Q9o", "A6o", "K6s", "J8s", "K8o", "J9o", "Q7s", "T8s", "66o", "K7o", "Q8o", "T9o", "J7s", "Q6s", "98s", "T7s", "K6o", "J8o", "T8o", "97s", "J6s", "Q7o", "T6s", "87s", "Q6o", "J7o", "98o", "96s", "T7o", "86s", "97o", "J6o", "T6o", "76s", "96o", "87o", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "AKo", "AQs", "99o", "AJs", "KQs", "AQo", "ATs", "KJs", "KTs", "AJo", "KQo", "QJs", "A9s", "88o", "QTs", "ATo", "A8s", "KJo", "JTs", "77o", "KTo", "K9s", "A7s", "A9o", "QJo", "Q9s", "QTo", "66o", "A6s", "K8s", "J9s", "A8o", "T9s", "JTo", "K7s", "K9o", "Q8s", "A7o", "J8s", "T8s", "K6s", "Q9o", "Q7s", "A6o", "K8o", "J7s", "Q6s", "98s", "J9o", "T7s", "T9o", "K7o", "Q8o", "97s", "J6s", "J8o", "T6s", "K6o", "96s", "T8o", "87s", "Q7o", "J7o", "98o", "T7o", "86s", "Q6o", "97o", "76s", "J6o", "T6o", "87o", "96o", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "99o", "AQs", "AKo", "KQs", "AJs", "88o", "ATs", "AQo", "KJs", "77o", "KTs", "QJs", "QTs", "KQo", "AJo", "A9s", "66o", "JTs", "ATo", "A8s", "KJo", "A7s", "K9s", "KTo", "Q9s", "QJo", "A6s", "J9s", "T9s", "A9o", "K8s", "QTo", "K7s", "Q8s", "JTo", "T8s", "K6s", "A8o", "J8s", "K9o", "Q7s", "A7o", "J7s", "98s", "T7s", "Q6s", "Q9o", "97s", "T9o", "A6o", "J9o", "J6s", "K8o", "T6s", "87s", "K7o", "Q8o", "96s", "J8o", "86s", "T8o", "K6o", "Q7o", "76s", "T7o", "J7o", "98o", "Q6o", "97o", "T6o", "J6o", "96o", "87o", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "AKs", "88o", "AQs", "77o", "AKo", "KQs", "AJs", "66o", "KJs", "ATs", "AQo", "KTs", "QJs", "JTs", "A9s", "QTs", "KQo", "A8s", "AJo", "K9s", "ATo", "A7s", "KJo", "A6s", "J9s", "KTo", "Q9s", "T9s", "QJo", "K8s", "K7s", "T8s", "Q8s", "QTo", "J8s", "A9o", "K6s", "JTo", "98s", "T7s", "Q7s", "A8o", "J7s", "Q6s", "K9o", "97s", "J6s", "A7o", "T6s", "T9o", "96s", "J9o", "Q9o", "87s", "A6o", "86s", "K8o", "Q8o", "K7o", "T8o", "J8o", "76s", "K6o", "Q7o", "T7o", "J7o", "98o", "Q6o", "97o", "T6o", "J6o", "87o", "96o", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "88o", "AKs", "77o", "66o", "AQs", "KQs", "AJs", "AKo", "KJs", "ATs", "QJs", "KTs", "AQo", "QTs", "JTs", "A9s", "KQo", "AJo", "A8s", "K9s", "A7s", "T9s", "Q9s", "J9s", "ATo", "K8s", "A6s", "KJo", "QJo", "Q8s", "J8s", "K7s", "KTo", "T8s", "QTo", "JTo", "T7s", "98s", "K6s", "Q7s", "J7s", "A9o", "97s", "Q6s", "J6s", "T6s", "96s", "87s", "A8o", "K9o", "86s", "T9o", "A7o", "Q9o", "J9o", "K8o", "A6o", "76s", "Q8o", "T8o", "K7o", "J8o", "K6o", "T7o", "Q7o", "98o", "J7o", "Q6o", "97o", "T6o", "J6o", "87o", "96o", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "88o", "77o", "66o", "AKs", "AQs", "KQs", "AJs", "ATs", "KJs", "AKo", "QJs", "KTs", "JTs", "QTs", "A9s", "AQo", "A8s", "K9s", "KQo", "A7s", "T9s", "J9s", "A6s", "K8s", "Q9s", "Q8s", "AJo", "KJo", "T8s", "J8s", "ATo", "K7s", "QJo", "K6s", "Q7s", "T7s", "KTo", "QTo", "J7s", "98s", "JTo", "Q6s", "97s", "T6s", "J6s", "96s", "87s", "A9o", "86s", "A8o", "T9o", "K9o", "76s", "Q9o", "A7o", "J9o", "K8o", "A6o", "T8o", "Q8o", "J8o", "K7o", "K6o", "T7o", "Q7o", "J7o", "98o", "Q6o", "97o", "T6o", "J6o", "96o", "87o", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "88o", "77o", "66o", "AKs", "AQs", "AJs", "KQs", "ATs", "KJs", "QJs", "KTs", "QTs", "JTs", "AKo", "A9s", "A7s", "A8s", "T9s", "K9s", "AQo", "Q9s", "J9s", "KQo", "A6s", "K7s", "Q8s", "AJo", "K8s", "T8s", "J8s", "K6s", "Q7s", "KJo", "J7s", "ATo", "QJo", "98s", "Q6s", "T7s", "KTo", "JTo", "97s", "QTo", "T6s", "J6s", "87s", "96s", "86s", "A9o", "76s", "A8o", "J9o", "T9o", "K9o", "Q9o", "A7o", "A6o", "K8o", "T8o", "Q8o", "J8o", "K7o", "K6o", "T7o", "Q7o", "J7o", "98o", "Q6o", "97o", "J6o", "T6o", "87o", "96o", "86o", "76o" },
         };
 
         public static readonly string[] EmotionalCards = new string[]
@@ -112,18 +113,20 @@ namespace ShortDeckStatistics
 
         public bool IsLiveAsHero;
         public bool IsLiveAsVillain;
+        public bool ManiacPlay;
 
         public PokerHand()
         {
             _sevenCardHand = new Card[7];
         }
 
-        public void GeneratePokerHand(Card[] holeCards, Card[] communityCards, int playerCount, bool isVillainEmotional, int keepTopPercentHero, int keepTopPercentVillain)
+        public void GeneratePokerHand(Card[] holeCards, Card[] communityCards, int playerCount, bool isVillainEmotional, int keepTopPercentHero, int keepTopPercentVillain, bool maniacPlay)
         {
             _handRank = -1;
 
             CommunityCards = communityCards;
             HoleCards = holeCards;
+            ManiacPlay = maniacPlay;
 
             var biggestHoleCard = holeCards[0];
             var smallestHoleCard = holeCards[1];
@@ -186,8 +189,11 @@ namespace ShortDeckStatistics
                 communityCardPos++;
             }
 
-            IsLiveAsHero = CheckHeroStartingHandCriteria(playerCount, keepTopPercentHero);
-            IsLiveAsVillain = CheckVillainStartingHandCriteria(playerCount, keepTopPercentVillain, isVillainEmotional);
+            if (!maniacPlay)
+            {
+                IsLiveAsHero = CheckHeroStartingHandCriteria(playerCount, keepTopPercentHero);
+                IsLiveAsVillain = CheckVillainStartingHandCriteria(playerCount, keepTopPercentVillain, isVillainEmotional);
+            }
         }
 
         public override string ToString()
@@ -807,11 +813,13 @@ namespace ShortDeckStatistics
         private Card[][] PlayerHoleCards;
         private PokerHand[] AllPlayerFullHands;
 
-        public int PlayerCount { get; private set; }
+        private readonly int PlayerCount;
+        private readonly bool ManiacPlay;
 
-        public Table(int numPlayers)
+        public Table(int numPlayers, bool maniacPlay)
         {
             PlayerCount = numPlayers;
+            ManiacPlay = maniacPlay;
 
             HoleCardsWinCounter = new long[9][];
             for(int i = 0; i < HoleCardsWinCounter.Length; i++)
@@ -1101,7 +1109,7 @@ namespace ShortDeckStatistics
                     playerHoleCards[1] = firstHoleCard;
                 }
 
-                AllPlayerFullHands[i].GeneratePokerHand(PlayerHoleCards[i], CommunityCards, PlayerCount, isVillainEmotional, keepTopPercentHero, keepTopPercentVillain);
+                AllPlayerFullHands[i].GeneratePokerHand(PlayerHoleCards[i], CommunityCards, PlayerCount, isVillainEmotional, keepTopPercentHero, keepTopPercentVillain, ManiacPlay);
             }
         }
 
@@ -1112,17 +1120,20 @@ namespace ShortDeckStatistics
             string handString;
             int handNumericalRepresentation;
 
-            //Log the hand only if there exists a hand the hero would play.
-            var hasHeroHand = false;
-            foreach(var hand in AllPlayerFullHands)
+            if (!ManiacPlay)
             {
-                if (hand.IsLiveAsHero)
+                //Log the hand only if there exists a hand the hero would play.
+                var hasHeroHand = false;
+                foreach (var hand in AllPlayerFullHands)
                 {
-                    hasHeroHand = true;
-                    break;
+                    if (hand.IsLiveAsHero)
+                    {
+                        hasHeroHand = true;
+                        break;
+                    }
                 }
+                if (!hasHeroHand) return;
             }
-            if (!hasHeroHand) return;
 
             //Log all hands made. Even the folded ones.
             foreach (var hand in AllPlayerFullHands)
@@ -1165,7 +1176,7 @@ namespace ShortDeckStatistics
             HandRankCount.Clear();
             foreach (var result in AllPlayerFullHands)
             {
-                if (!result.IsLiveAsVillain) continue;
+                if (!ManiacPlay && !result.IsLiveAsVillain) continue;
 
                 var handRank = result.HandRank;
                 if (!HandRankCount.ContainsKey(handRank))
@@ -1180,7 +1191,7 @@ namespace ShortDeckStatistics
                 HandsWithRank[handRank][HandRankCount[handRank]] = result;
                 HandRankCount[handRank]++;
 
-                if (result.IsLiveAsHero)
+                if (!ManiacPlay && result.IsLiveAsHero)
                 {
                     if(strongestHandForHero == null || handRank > strongestHandForHero.HandRank)
                     {
@@ -1201,13 +1212,13 @@ namespace ShortDeckStatistics
             }
 
             //If there is no hand that the hero would play, then do not log a win or tie.
-            if(strongestHandForHero == null)
+            if(!ManiacPlay && strongestHandForHero == null)
             {
                 return;
             }
 
             //If the hero loses, do not log the hand as a win or tie.
-            if (strongestHand.HandRank != strongestHandForHero.HandRank)
+            if (!ManiacPlay && strongestHand.HandRank != strongestHandForHero.HandRank)
             {
                 return;
             }
