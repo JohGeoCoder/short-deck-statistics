@@ -1105,9 +1105,9 @@ namespace ShortDeckStatistics
             Card biggestHoleCard;
             Card smallestHoleCard;
             string handString;
+            int handNumericalRepresentation;
 
             //Log all hands made. Even the folded ones.
-            var handStringArray = new string[3];
             foreach (var hand in AllPlayerFullHands)
             {
                 //Biggest card first
@@ -1120,20 +1120,17 @@ namespace ShortDeckStatistics
                     smallestHoleCard = temp;
                 }
 
-                handStringArray[0] = Card.CardValues[biggestHoleCard.Value];
-                handStringArray[1] = Card.CardValues[smallestHoleCard.Value];
+                handNumericalRepresentation = (biggestHoleCard.Value * 9 + smallestHoleCard.Value) * 2 + (biggestHoleCard.Suit == smallestHoleCard.Suit ? 1 : 0);
+                handString = PokerHand.HoleCardRepresentations[handNumericalRepresentation];
+                
                 if (biggestHoleCard.Suit == smallestHoleCard.Suit)
                 {
                     HoleCardsDealtCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
-                    handStringArray[2] = "s";
                 }
                 else
                 {
                     HoleCardsDealtCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
-                    handStringArray[2] = "o";
                 }
-
-                handString = string.Join("", handStringArray);
 
                 if (!HandsMadeCount.ContainsKey(handString))
                 {
@@ -1190,8 +1187,9 @@ namespace ShortDeckStatistics
                 smallestHoleCard = temp;
             }
 
-            handStringArray[0] = Card.CardValues[biggestHoleCard.Value];
-            handStringArray[1] = Card.CardValues[smallestHoleCard.Value];
+            handNumericalRepresentation = (biggestHoleCard.Value * 9 + smallestHoleCard.Value) * 2 + (biggestHoleCard.Suit == smallestHoleCard.Suit ? 1 : 0);
+            handString = PokerHand.HoleCardRepresentations[handNumericalRepresentation];
+
             if (biggestHoleCard.Suit == smallestHoleCard.Suit)
             {
                 if (isTie)
@@ -1202,8 +1200,6 @@ namespace ShortDeckStatistics
                 {
                     HoleCardsWinCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
                 }
-                
-                handStringArray[2] = "s";
             }
             else
             {
@@ -1215,11 +1211,7 @@ namespace ShortDeckStatistics
                 {
                     HoleCardsWinCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
                 }
-                
-                handStringArray[2] = "o";
             }
-
-            handString = string.Join("", handStringArray);
 
             HandsWonCount[handString][strongestHand.HandRank / 100_000_000_000L]++;
         }
