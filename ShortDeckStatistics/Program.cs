@@ -15,12 +15,14 @@ namespace ShortDeckStatistics
             for(int i = 2; i < tableArray.Length; i++)
             {
                 tableArray[i] = new Table(6);
-                tableArray[i].PlayHands(1_000_000);
+                tableArray[i].PlayHands(100_000_000);
+                //tableArray[i].PlayHands(100_000);
             }
 
-            for(int i = 2; i <= 9; i++)
+            for(int i = 2; i < tableArray.Length; i++)
             {
                 tableArray[i].PrintHoleCardWinRatesRankedByBest();
+                tableArray[i].PrintWinRatesForPokerHandsMade();
             }
 
             Console.ReadKey();
@@ -29,8 +31,10 @@ namespace ShortDeckStatistics
 
     public class Card : IComparable<Card>
     {
-        public short Value { get; private set; }
-        public short Suit { get; private set; }
+        public readonly short Value;
+        public readonly short Suit;
+
+        private string _cardString;
 
         public static readonly string[] CardValues = new string[] {"6", "7", "8", "9", "T", "J", "Q", "K", "A" };
         public static readonly string[] CardSuits = new string[] { "s", "c", "h", "d" };
@@ -39,23 +43,30 @@ namespace ShortDeckStatistics
         {
             Suit = suit;
             Value = value;
+
+            _cardString = $"{CardValues[Value]}{CardSuits[Suit]}";
         }
 
         public override string ToString()
         {
-            return $"{CardValues[Value]}{CardSuits[Suit]}";
+            return _cardString;
         }
 
         public int CompareTo(Card other)
         {
             if (other == null) return 1;
 
-            return this.Value.CompareTo(other.Value);
+            if (this.Value < other.Value) return -1;
+            else if (this.Value > other.Value) return 1;
+            else return 0;
         }
     }
 
     public class PokerHand
     {
+        public static readonly int[] ZeroScore = new int[] { 0, 0, 0 };
+        public static readonly int[] ScoreContainer = new int[3];
+
         public static readonly string[] HandRanks = new string[] { "Error", "High Card", "Pair", "Two Pair", "Straight", "Three of a Kind", "Full House", "Flush", "Four of a Kind", "Straight Flush" };
 
         public static readonly string[][] BestHoleCardsByPlayerCount = new string[][]
@@ -214,10 +225,13 @@ namespace ShortDeckStatistics
             }
 
             //If there is not a 5-card sequence, then the poker hand cannot be a straight flush.
-            if (consecutiveSequenceLength < 5) return new int[] { 0, 0, 0 };
+            if (consecutiveSequenceLength < 5) return ZeroScore;
 
             //The value of this straight flush equals the face value of the highest card in the sequence.
-            return new int[] { 9, _sevenCardHand[highestSequentialCardPosition].Value + 1, 0 };
+            ScoreContainer[0] = 9;
+            ScoreContainer[1] = _sevenCardHand[highestSequentialCardPosition].Value + 1;
+            ScoreContainer[2] = 0;
+            return ScoreContainer;
         }
 
         private int[] ScoreFourOfAKind()
@@ -251,7 +265,7 @@ namespace ShortDeckStatistics
             }
 
             //If there are no four consecutive cards with the same value, then this is not a 4-of-a-kind hand.
-            if (consecutiveValueLength < 4) return new int[] { 0, 0, 0 };
+            if (consecutiveValueLength < 4) return ZeroScore;
 
             //Calculate the kicker score
             var kickerValues = new short[1];
@@ -272,8 +286,10 @@ namespace ShortDeckStatistics
 
             var kickerVal = kickerValues[0];
 
-
-            return new int[] { 8, fourOfAKindCardValue + 1, kickerVal };
+            ScoreContainer[0] = 8;
+            ScoreContainer[1] = fourOfAKindCardValue + 1;
+            ScoreContainer[2] = kickerVal;
+            return ScoreContainer;
         }
 
         private int[] ScoreFlush()
@@ -295,7 +311,7 @@ namespace ShortDeckStatistics
                 }
             }
 
-            if (flushedSuit == -1) return new int[] { 0, 0, 0 };
+            if (flushedSuit == -1) return ZeroScore;
 
             var highestFlushValue = -1;
             var flushKickers = new Card[4];
@@ -325,7 +341,10 @@ namespace ShortDeckStatistics
                 + 100 * flushKickers[2].Value
                 + 1 * flushKickers[3].Value;
 
-            return new int[] { 7, highestFlushValue, kickerVal };
+            ScoreContainer[0] = 7;
+            ScoreContainer[1] = highestFlushValue;
+            ScoreContainer[2] = kickerVal;
+            return ScoreContainer;
         }
 
         private int[] ScoreFullHouse()
@@ -372,7 +391,7 @@ namespace ShortDeckStatistics
             }
 
             //If a set doesn't exist, then the poker hand cannot be a full house.
-            if (biggestSetCardValue == -1) return new int[] { 0, 0, 0 };
+            if (biggestSetCardValue == -1) return ZeroScore;
 
             //Find the value of the biggest pair that has a different card value than the set.
             short biggestPairCardValue = -1;
@@ -399,9 +418,12 @@ namespace ShortDeckStatistics
             }
 
             //If a pair doesn't exist, then the poker hand cannot be a full house.
-            if (biggestPairCardValue == -1) return new int[] { 0, 0, 0 };
+            if (biggestPairCardValue == -1) return ZeroScore;
 
-            return new int[] { 6, biggestSetCardValue * 9 + biggestPairCardValue, 0 };
+            ScoreContainer[0] = 6;
+            ScoreContainer[1] = biggestSetCardValue * 9 + biggestPairCardValue;
+            ScoreContainer[2] = 0;
+            return ScoreContainer;
         }
 
         private int[] ScoreThreeOfAKind()
@@ -446,7 +468,7 @@ namespace ShortDeckStatistics
                 }
             }
 
-            if (biggestSetCardValue == -1) return new int[] { 0, 0, 0 };
+            if (biggestSetCardValue == -1) return ZeroScore;
 
             var kickerValues = new short[2];
             var pos = 0;
@@ -468,7 +490,10 @@ namespace ShortDeckStatistics
                 100 * kickerValues[0]
                 + 1 * kickerValues[1];
 
-            return new int[] { 5, biggestSetCardValue + 1, kickerVal };
+            ScoreContainer[0] = 5;
+            ScoreContainer[1] = biggestSetCardValue + 1;
+            ScoreContainer[2] = kickerVal;
+            return ScoreContainer;
         }
 
         private int[] ScoreStraight()
@@ -513,10 +538,13 @@ namespace ShortDeckStatistics
             }
 
             //If there is not a 5-card sequence, then the poker hand cannot be a straight flush.
-            if (consecutiveSequenceLength < 5) return new int[] { 0, 0, 0 };
+            if (consecutiveSequenceLength < 5) return ZeroScore;
 
             //The value of this straight equals the face value of the highest card in the sequence.
-            return new int[] { 4, _sevenCardHand[highestSequentialCardPosition].Value, 0 };
+            ScoreContainer[0] = 4;
+            ScoreContainer[1] = _sevenCardHand[highestSequentialCardPosition].Value;
+            ScoreContainer[2] = 0;
+            return ScoreContainer;
         }
 
         private int[] ScoreTwoPair()
@@ -543,7 +571,7 @@ namespace ShortDeckStatistics
             }
 
             //If a pair doesn't exist, then the poker hand cannot be a two pair.
-            if (biggestPairCardValue == -1) return new int[] { 0, 0, 0 };
+            if (biggestPairCardValue == -1) return ZeroScore;
 
             //Find the value of the smallest pair
             short smallestPairCardValue = -1;
@@ -570,7 +598,7 @@ namespace ShortDeckStatistics
             }
 
             //If a second pair doesn't exist, then the hand cannot be a two pair.
-            if (smallestPairCardValue == -1) return new int[] { 0, 0, 0 };
+            if (smallestPairCardValue == -1) return ZeroScore;
 
             //Calculate the kicker score
             var kickerValues = new short[1];
@@ -591,7 +619,10 @@ namespace ShortDeckStatistics
 
             var kickerVal = kickerValues[0];
 
-            return new int[] { 3, biggestPairCardValue * 9 + smallestPairCardValue, kickerVal };
+            ScoreContainer[0] = 3;
+            ScoreContainer[1] = biggestPairCardValue * 9 + smallestPairCardValue;
+            ScoreContainer[2] = kickerVal;
+            return ScoreContainer;
         }
 
         private int[] ScorePair()
@@ -617,7 +648,7 @@ namespace ShortDeckStatistics
                 }
             }
 
-            if (pairCardValue == -1) return new int[] { 0, 0, 0 };
+            if (pairCardValue == -1) return ZeroScore;
 
             var kickerValues = new short[3];
             var pos = 0;
@@ -640,7 +671,10 @@ namespace ShortDeckStatistics
                 + 100 * kickerValues[1]
                 + 1 * kickerValues[2];
 
-            return new int[] { 2, pairCardValue, kickerVal };
+            ScoreContainer[0] = 2;
+            ScoreContainer[1] = pairCardValue + 1;
+            ScoreContainer[2] = kickerVal;
+            return ScoreContainer;
         }
 
         private int[] ScoreHighCard()
@@ -653,7 +687,10 @@ namespace ShortDeckStatistics
                 + 100 * _sevenCardHand[3].Value
                 + 1 * _sevenCardHand[4].Value;
 
-            return new int[] { 1, highestValueCard.Value, kickerVal };
+            ScoreContainer[0] = 1;
+            ScoreContainer[1] = highestValueCard.Value;
+            ScoreContainer[2] = kickerVal;
+            return ScoreContainer;
         }
     }
 
@@ -667,6 +704,9 @@ namespace ShortDeckStatistics
         private readonly Dictionary<string, int[]> HandsMadeCount = new Dictionary<string, int[]>();
         private readonly Dictionary<string, int[]> HandsWonCount = new Dictionary<string, int[]>();
         private readonly Dictionary<string, int[]> HandsTiedCount = new Dictionary<string, int[]>();
+
+        private readonly Dictionary<long, int> HandRankCount = new Dictionary<long, int>();
+        private readonly Dictionary<string, double> HoleCardWinRate = new Dictionary<string, double>();
 
         private Card[] Deck;
         private Card[] CommunityCards = new Card[5];
@@ -745,7 +785,7 @@ namespace ShortDeckStatistics
 
                 if(i % 100_000 == 0)
                 {
-                    Console.WriteLine($"{i} hands evaluated");
+                    Console.WriteLine($"Player Count: { PlayerCount } - Hands Remaining: {iterations - i}");
                 }
             }
         }
@@ -1008,19 +1048,26 @@ namespace ShortDeckStatistics
                 HandsMadeCount[handString][hand.HandRank / 100_000_000_000L]++;
             }
 
-            PokerHand strongestHand = null;
-            var handRankCount = new int[int.MaxValue - 1];
+            PokerHand strongestHand = null; 
+            HandRankCount.Clear();
             foreach (var result in PlayerFullHands)
             {
-                handRankCount[result.HandRank]++;
-                if (strongestHand == null || result.HandRank > strongestHand.HandRank)
+                var handRank = result.HandRank;
+                if (!HandRankCount.ContainsKey(handRank))
+                {
+                    HandRankCount.Add(handRank, 0);
+                }
+
+                HandRankCount[handRank]++;
+
+                if (strongestHand == null || handRank > strongestHand.HandRank)
                 {
                     strongestHand = result;
                 }
             }
 
             //Check for tie
-            var isTie = handRankCount[strongestHand.HandRank] > 1;
+            var isTie = HandRankCount[strongestHand.HandRank] > 1;
 
             //Biggest card first
             biggestHoleCard = strongestHand.HoleCards[0];
