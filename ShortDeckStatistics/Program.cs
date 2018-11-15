@@ -15,7 +15,7 @@ namespace ShortDeckStatistics
             for(int i = 2; i < tableArray.Length; i++)
             {
                 tableArray[i] = new Table(6);
-                tableArray[i].PlayHands(100_000_000);
+                tableArray[i].PlayHands(1_000_000, true, 20, 30);
                 //tableArray[i].PlayHands(100_000);
             }
 
@@ -68,6 +68,7 @@ namespace ShortDeckStatistics
         public static readonly int[] ScoreContainer = new int[3];
 
         public static readonly string[] HandRanks = new string[] { "Error", "High Card", "Pair", "Two Pair", "Straight", "Three of a Kind", "Full House", "Flush", "Four of a Kind", "Straight Flush" };
+        public static readonly Dictionary<int, string> HoleCardRepresentations = new Dictionary<int, string>();
 
         public static readonly string[][] BestHoleCardsByPlayerCount = new string[][]
         {
@@ -81,12 +82,18 @@ namespace ShortDeckStatistics
             new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "AKs", "88o", "AQs", "77o", "AJs", "ATs", "KQs", "66o", "AKo", "KJs", "KTs", "A9s", "AQo", "QJs", "QTs", "JTs", "A8s", "AJo", "K9s", "ATo", "A7s", "KQo", "Q9s", "A6s", "J9s", "T9s", "K8s", "KJo", "KTo", "Q8s", "K7s", "T8s", "J8s", "A9o", "QJo", "QTo", "K6s", "Q7s", "JTo", "T7s", "J7s", "Q6s", "A8o", "98s", "T6s", "K9o", "J6s", "97s", "A7o", "Q9o", "96s", "T9o", "J9o", "A6o", "87s", "K8o", "86s", "Q8o", "T8o", "K7o", "J8o", "76s", "K6o", "Q7o", "T7o", "J7o", "98o", "Q6o", "T6o", "J6o", "97o", "96o", "87o", "86o", "76o" },
             new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "88o", "AKs", "77o", "AQs", "66o", "AJs", "ATs", "KQs", "KJs", "KTs", "AKo", "A9s", "QTs", "QJs", "JTs", "AQo", "A8s", "K9s", "A7s", "Q9s", "AJo", "T9s", "ATo", "J9s", "KQo", "A6s", "K8s", "Q8s", "K7s", "T8s", "J8s", "KJo", "KTo", "K6s", "Q7s", "T7s", "J7s", "QJo", "QTo", "A9o", "JTo", "Q6s", "98s", "T6s", "J6s", "97s", "A8o", "K9o", "96s", "87s", "A7o", "Q9o", "T9o", "J9o", "86s", "K8o", "A6o", "Q8o", "T8o", "76s", "J8o", "K7o", "K6o", "T7o", "Q7o", "J7o", "98o", "Q6o", "T6o", "J6o", "97o", "96o", "87o", "86o", "76o" },
             new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "88o", "77o", "66o", "AKs", "AQs", "ATs", "AJs", "KQs", "KJs", "KTs", "QTs", "QJs", "A9s", "JTs", "AKo", "A8s", "K9s", "AQo", "A7s", "Q9s", "T9s", "J9s", "K8s", "A6s", "AJo", "ATo", "Q8s", "KQo", "T8s", "J8s", "K7s", "K6s", "KJo", "Q7s", "T7s", "J7s", "KTo", "Q6s", "QJo", "QTo", "T6s", "98s", "JTo", "J6s", "A9o", "97s", "96s", "A8o", "87s", "K9o", "86s", "T9o", "Q9o", "A7o", "J9o", "76s", "K8o", "A6o", "Q8o", "T8o", "J8o", "K7o", "K6o", "T7o", "Q7o", "J7o", "Q6o", "98o", "T6o", "J6o", "97o", "96o", "87o", "86o", "76o" },
+        };
 
+        public static readonly string[] EmotionalCards = new string[]
+        {
+            "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "AQs", "AKo", "99o", "AJs", "ATs", "KQs", "AQo", "KJs", "KTs", "A9s", "88o", "AJo", "QJs", "ATo", "KQo", "A8s", "QTs", "77o", "JTs", "K9s", "A7s", "KJo", "66o", "KTo", "A6s", "K8s", "QJo", "J9s", "QTo", "T9s", "JTo", "98s", "87s", "76s"
         };
 
         private Card[] _sevenCardHand;
 
         public Card[] HoleCards { get; private set; }
+        public string HoleCardsRepresentation { get; private set; }
+
         public Card[] CommunityCards { get; private set; }
 
         private long _handRank = -1L;
@@ -103,17 +110,51 @@ namespace ShortDeckStatistics
             }
         }
 
+        public bool IsLiveAsHero;
+        public bool IsLiveAsVillain;
+
         public PokerHand()
         {
             _sevenCardHand = new Card[7];
         }
 
-        public void GeneratePokerHand(Card[] holeCards, Card[] communityCards)
+        public void GeneratePokerHand(Card[] holeCards, Card[] communityCards, int playerCount, bool isVillainEmotional, int keepTopPercentHero, int keepTopPercentVillain)
         {
             _handRank = -1;
 
-            HoleCards = holeCards;
             CommunityCards = communityCards;
+            HoleCards = holeCards;
+
+            var biggestHoleCard = holeCards[0];
+            var smallestHoleCard = holeCards[1];
+            string handString;
+            
+            if (biggestHoleCard.Value < smallestHoleCard.Value)
+            {
+                Card temp = biggestHoleCard;
+                biggestHoleCard = smallestHoleCard;
+                smallestHoleCard = temp;
+            }
+
+            var handNumericalRepresentation = (biggestHoleCard.Value * 9 + smallestHoleCard.Value) * 2 + (biggestHoleCard.Suit == smallestHoleCard.Suit ? 1 : 0);
+            if (!PokerHand.HoleCardRepresentations.ContainsKey(handNumericalRepresentation))
+            {
+                var handStringArray = new string[3];
+                handStringArray[0] = Card.CardValues[biggestHoleCard.Value];
+                handStringArray[1] = Card.CardValues[smallestHoleCard.Value];
+                if (biggestHoleCard.Suit == smallestHoleCard.Suit)
+                {
+                    handStringArray[2] = "s";
+                }
+                else
+                {
+                    handStringArray[2] = "o";
+                }
+
+                handString = string.Join("", handStringArray);
+                PokerHand.HoleCardRepresentations.Add(handNumericalRepresentation, handString);
+            }
+            HoleCardsRepresentation = PokerHand.HoleCardRepresentations[handNumericalRepresentation];
 
             var holeCardPos = 0;
             var communityCardPos = 0;
@@ -144,6 +185,9 @@ namespace ShortDeckStatistics
                 _sevenCardHand[holeCardPos + communityCardPos] = communityCards[communityCardPos];
                 communityCardPos++;
             }
+
+            IsLiveAsHero = CheckHeroStartingHandCriteria(playerCount, keepTopPercentHero);
+            IsLiveAsVillain = CheckVillainStartingHandCriteria(playerCount, keepTopPercentVillain, isVillainEmotional);
         }
 
         public override string ToString()
@@ -692,6 +736,55 @@ namespace ShortDeckStatistics
             ScoreContainer[2] = kickerVal;
             return ScoreContainer;
         }
+
+        private bool CheckHeroStartingHandCriteria(int playerCount, int keepTopPercent)
+        {
+            var isStartingHand = false;
+
+            var bestStartingHands = BestHoleCardsByPlayerCount[playerCount];
+            var highestHandIndexToKeep = (int)(bestStartingHands.Length * ((double)keepTopPercent / 100));
+
+            for (int i = 0; i < highestHandIndexToKeep; i++)
+            {
+                if (HoleCardsRepresentation == bestStartingHands[i])
+                {
+                    isStartingHand = true;
+                }
+            }
+
+            return isStartingHand;
+        }
+
+        private bool CheckVillainStartingHandCriteria(int playerCount, int keepTopPercent, bool isVillainEmotional)
+        {
+            var isStartingHand = false;
+
+            if (isVillainEmotional)
+            {
+                for (int i = 0; i < EmotionalCards.Length; i++)
+                {
+                    if (HoleCardsRepresentation == EmotionalCards[i])
+                    {
+                        isStartingHand = true;
+                    }
+                }
+            }
+            else
+            {
+                var bestStartingHands = BestHoleCardsByPlayerCount[playerCount];
+                var highestHandIndexToKeep = (int)(bestStartingHands.Length * ((double)keepTopPercent / 100));
+
+                for (int i = 0; i < highestHandIndexToKeep; i++)
+                {
+                    if (HoleCardsRepresentation == bestStartingHands[i])
+                    {
+                        isStartingHand = true;
+                    }
+                }
+            }
+
+            return isStartingHand;
+        }
     }
 
     public class Table
@@ -711,7 +804,8 @@ namespace ShortDeckStatistics
         private Card[] Deck;
         private Card[] CommunityCards = new Card[5];
         private Card[][] PlayerHoleCards;
-        private PokerHand[] PlayerFullHands;
+        private PokerHand[] AllPlayerFullHands;
+        private PokerHand[] LivePlayerFullHands;
 
         public int PlayerCount { get; private set; }
 
@@ -754,14 +848,14 @@ namespace ShortDeckStatistics
                 PlayerHoleCards[i] = new Card[2];
             }
 
-            PlayerFullHands = new PokerHand[numPlayers];
+            AllPlayerFullHands = new PokerHand[numPlayers];
             for(int i = 0; i < numPlayers; i++)
             {
-                PlayerFullHands[i] = new PokerHand();
+                AllPlayerFullHands[i] = new PokerHand();
             }
         }
 
-        public void PlayHand()
+        public void PlayHand(bool isVillainEmotional, int keepTopPercentHero, int keepTopPercentVillain)
         {
             ShuffleDeck();
 
@@ -771,20 +865,21 @@ namespace ShortDeckStatistics
             GetCommunityCards();
 
             //Generate the 7-card poker hands.
-            GeneratePokerHands();
+            GeneratePokerHands(isVillainEmotional, keepTopPercentHero, keepTopPercentVillain);
 
             //Log each hand's play.
             LogHandResults();
         }
 
-        public void PlayHands(long iterations)
+        public void PlayHands(long iterations, bool isVillainEmotional, int keepTopPercentHero, int keepTopPercentVillain)
         {
             for(int i = 0; i < iterations; i++)
             {
-                PlayHand();
+                PlayHand(isVillainEmotional, keepTopPercentHero, keepTopPercentVillain);
 
                 if(i % 100_000 == 0)
                 {
+                    Console.Clear();
                     Console.WriteLine($"Player Count: { PlayerCount } - Hands Remaining: {iterations - i}");
                 }
             }
@@ -986,7 +1081,7 @@ namespace ShortDeckStatistics
             Array.Reverse(CommunityCards);
         }
 
-        private void GeneratePokerHands()
+        private void GeneratePokerHands(bool isVillainEmotional, int keepTopPercentHero, int keepTopPercentVillain)
         {
             for (int i = 0; i < PlayerHoleCards.Length; i++)
             {
@@ -1001,7 +1096,7 @@ namespace ShortDeckStatistics
                     playerHoleCards[1] = firstHoleCard;
                 }
 
-                PlayerFullHands[i].GeneratePokerHand(PlayerHoleCards[i], CommunityCards);
+                AllPlayerFullHands[i].GeneratePokerHand(PlayerHoleCards[i], CommunityCards, PlayerCount, isVillainEmotional, keepTopPercentHero, keepTopPercentVillain);
             }
         }
 
@@ -1011,8 +1106,9 @@ namespace ShortDeckStatistics
             Card smallestHoleCard;
             string handString;
 
+            //Log all hands made. Even the folded ones.
             var handStringArray = new string[3];
-            foreach (var hand in PlayerFullHands)
+            foreach (var hand in AllPlayerFullHands)
             {
                 //Biggest card first
                 biggestHoleCard = hand.HoleCards[0];
@@ -1048,10 +1144,13 @@ namespace ShortDeckStatistics
                 HandsMadeCount[handString][hand.HandRank / 100_000_000_000L]++;
             }
 
+            //Determine the strongest hand among the live hands as villains.
             PokerHand strongestHand = null; 
             HandRankCount.Clear();
-            foreach (var result in PlayerFullHands)
+            foreach (var result in AllPlayerFullHands)
             {
+                if (!result.IsLiveAsVillain) continue;
+
                 var handRank = result.HandRank;
                 if (!HandRankCount.ContainsKey(handRank))
                 {
@@ -1064,6 +1163,18 @@ namespace ShortDeckStatistics
                 {
                     strongestHand = result;
                 }
+            }
+
+            //If none of the hands meet the Villain Starting Hands criteria, do not log this hand.
+            if(strongestHand == null)
+            {
+                return;
+            }
+
+            //If the hero would not have played this hand, do not log it.
+            if (!strongestHand.IsLiveAsHero)
+            {
+                return;
             }
 
             //Check for tie
