@@ -13,20 +13,65 @@ namespace ShortDeckStatistics
             Console.WindowWidth = 400;
 
             var tableArray = new Table[3];
-            for(int i = 2; i < tableArray.Length; i++)
+            for (int i = 2; i < tableArray.Length; i++)
             {
                 tableArray[i] = new Table(6, true);
-                tableArray[i].PlayHands(1_000_000, true, 20, 30);
+                tableArray[i].PlayHands(100_000, true, 20, 30);
             }
 
-            for(int i = 2; i < tableArray.Length; i++)
+            for (int i = 2; i < tableArray.Length; i++)
             {
                 //tableArray[i].PrintHoleCardWinRatesRankedByBest();
                 //tableArray[i].PrintWinRatesForPokerHandsMade();
-                tableArray[i].PrintHoleCardsNumericRankedByBestForArray();
+                //tableArray[i].PrintHoleCardsNumericRankedByBestForArray();
             }
 
-            Console.ReadKey();
+
+            //var emotionalCards = PokerHand.EmotionalCards;
+
+            //foreach(var emotionalCardString in emotionalCards)
+            //{
+            //    Console.Write(emotionalCardString + " ");
+            //}
+            //Console.WriteLine();
+
+            //var emotionalCardsNumeric = new int[emotionalCards.Length];
+            //for(var i = 0; i < emotionalCards.Length; i++)
+            //{
+            //    var cardString = emotionalCards[i];
+            //    //emotionalCardsNumeric[i] = $"{PokerHand.ConvertCardStringToNumericValue(cardString)}";
+            //    emotionalCardsNumeric[i] = PokerHand.ConvertCardStringToNumericValue(cardString);
+            //}
+
+            //foreach(var numericCardString in emotionalCardsNumeric)
+            //{
+            //    Console.Write(numericCardString + " ");
+
+            //}
+            //Console.WriteLine();
+
+            //var convertedBackCards = new string[emotionalCards.Length];
+            //for(int i = 0; i < emotionalCardsNumeric.Length; i++)
+            //{
+            //    var numericValue = emotionalCardsNumeric[i];
+            //    convertedBackCards[i] = PokerHand.ConvertHoleCardsNumericValueToString(numericValue);
+            //}
+
+            //foreach(var convertedBack in convertedBackCards)
+            //{
+            //    Console.Write(convertedBack + " ");
+            //}
+
+            //var sb = new StringBuilder();
+
+
+            //sb.Append("new int[] { ");
+            //sb.Append(string.Join(", ", emotionalCardsNumeric));
+            //sb.Append(" },");
+
+            //Console.WriteLine(sb.ToString());
+
+            //Console.ReadKey();
         }
     }
 
@@ -69,7 +114,6 @@ namespace ShortDeckStatistics
         public static readonly int[] ScoreContainer = new int[3];
 
         public static readonly string[] HandRanks = new string[] { "Error", "High Card", "Pair", "Two Pair", "Straight", "Three of a Kind", "Full House", "Flush", "Four of a Kind", "Straight Flush" };
-        public static readonly Dictionary<int, string> HoleCardRepresentations = new Dictionary<int, string>();
 
         public static readonly string[][] BestHoleCardsByPlayerCount = new string[][]
         {
@@ -85,7 +129,7 @@ namespace ShortDeckStatistics
             new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "88o", "77o", "66o", "AKs", "AQs", "AJs", "KQs", "ATs", "KJs", "QJs", "KTs", "QTs", "JTs", "AKo", "A9s", "A7s", "A8s", "T9s", "K9s", "AQo", "Q9s", "J9s", "KQo", "A6s", "K7s", "Q8s", "AJo", "K8s", "T8s", "J8s", "K6s", "Q7s", "KJo", "J7s", "ATo", "QJo", "98s", "Q6s", "T7s", "KTo", "JTo", "97s", "QTo", "T6s", "J6s", "87s", "96s", "86s", "A9o", "76s", "A8o", "J9o", "T9o", "K9o", "Q9o", "A7o", "A6o", "K8o", "T8o", "Q8o", "J8o", "K7o", "K6o", "T7o", "Q7o", "J7o", "98o", "Q6o", "97o", "J6o", "T6o", "87o", "96o", "86o", "76o" },
         };
 
-        public static readonly int[][] BestHoleCardsNumeric = new int[][]
+        public static readonly int[][] BestHoleCardsNumericByPlayerCount = new int[][]
         {
             new int[0],
             new int[0],
@@ -104,13 +148,12 @@ namespace ShortDeckStatistics
             "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "AQs", "AKo", "99o", "AJs", "ATs", "KQs", "AQo", "KJs", "KTs", "A9s", "88o", "AJo", "QJs", "ATo", "KQo", "A8s", "QTs", "77o", "JTs", "K9s", "A7s", "KJo", "66o", "KTo", "A6s", "K8s", "QJo", "J9s", "QTo", "T9s", "JTo", "98s", "87s", "76s"
         };
 
-        public static readonly int[] EmotionalCardsNumeric = new int[EmotionalCards.Length];
+        public static readonly int[] EmotionalCardsNumeric = new int[] { 160, 140, 120, 100, 80, 159, 157, 158, 60, 155, 153, 139, 156, 137, 135, 151, 40, 154, 119, 152, 138, 149, 117, 20, 99, 133, 147, 136, 0, 134, 145, 131, 118, 97, 116, 79, 98, 59, 39, 19 };
 
         private Card[] _sevenCardHand;
 
         public Card[] HoleCards { get; private set; }
         public int HoleCardsNumericRepresentation { get; private set; }
-        public string HoleCardsRepresentation { get; private set; }
 
         public Card[] CommunityCards { get; private set; }
 
@@ -147,7 +190,6 @@ namespace ShortDeckStatistics
 
             var biggestHoleCard = holeCards[0];
             var smallestHoleCard = holeCards[1];
-            string handString;
             
             if (biggestHoleCard.Value < smallestHoleCard.Value)
             {
@@ -155,27 +197,8 @@ namespace ShortDeckStatistics
                 biggestHoleCard = smallestHoleCard;
                 smallestHoleCard = temp;
             }
-
-            var handNumericalRepresentation = (biggestHoleCard.Value * 9 + smallestHoleCard.Value) * 2 + (biggestHoleCard.Suit == smallestHoleCard.Suit ? 1 : 0);
-            if (!PokerHand.HoleCardRepresentations.ContainsKey(handNumericalRepresentation))
-            {
-                var handStringArray = new string[3];
-                handStringArray[0] = Card.CardValues[biggestHoleCard.Value];
-                handStringArray[1] = Card.CardValues[smallestHoleCard.Value];
-                if (biggestHoleCard.Suit == smallestHoleCard.Suit)
-                {
-                    handStringArray[2] = "s";
-                }
-                else
-                {
-                    handStringArray[2] = "o";
-                }
-
-                handString = string.Join("", handStringArray);
-                PokerHand.HoleCardRepresentations.Add(handNumericalRepresentation, handString);
-            }
-            HoleCardsRepresentation = PokerHand.HoleCardRepresentations[handNumericalRepresentation];
-            HoleCardsNumericRepresentation = (biggestHoleCard.Value * 9 + smallestHoleCard.Value) * 2 + (biggestHoleCard.Suit == smallestHoleCard.Suit ? 1 : 0);
+            
+            HoleCardsNumericRepresentation = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, biggestHoleCard.Suit == smallestHoleCard.Suit);
 
             var holeCardPos = 0;
             var communityCardPos = 0;
@@ -765,15 +788,15 @@ namespace ShortDeckStatistics
         {
             var isStartingHand = false;
 
-            var bestStartingHands = BestHoleCardsByPlayerCount[playerCount];
+            var bestStartingHands = BestHoleCardsNumericByPlayerCount[playerCount];
             var highestHandIndexToKeep = (int)(bestStartingHands.Length * ((double)keepTopPercent / 100));
 
             for (int i = 0; i < highestHandIndexToKeep; i++)
             {
-                //if (HoleCardsRepresentation == bestStartingHands[i])
-                //{
-                //    isStartingHand = true;
-                //}
+                if (HoleCardsNumericRepresentation == bestStartingHands[i])
+                {
+                    isStartingHand = true;
+                }
             }
 
             return isStartingHand;
@@ -787,27 +810,53 @@ namespace ShortDeckStatistics
             {
                 for (int i = 0; i < EmotionalCards.Length; i++)
                 {
-                    //if (HoleCardsRepresentation == EmotionalCards[i])
-                    //{
-                    //    isStartingHand = true;
-                    //}
+                    if (HoleCardsNumericRepresentation == EmotionalCardsNumeric[i])
+                    {
+                        isStartingHand = true;
+                    }
                 }
             }
             else
             {
-                var bestStartingHands = BestHoleCardsByPlayerCount[playerCount];
+                var bestStartingHands = BestHoleCardsNumericByPlayerCount[playerCount];
                 var highestHandIndexToKeep = (int)(bestStartingHands.Length * ((double)keepTopPercent / 100));
 
                 for (int i = 0; i < highestHandIndexToKeep; i++)
                 {
-                    //if (HoleCardsRepresentation == bestStartingHands[i])
-                    //{
-                    //    isStartingHand = true;
-                    //}
+                    if (HoleCardsNumericRepresentation == bestStartingHands[i])
+                    {
+                        isStartingHand = true;
+                    }
                 }
             }
 
             return isStartingHand;
+        }
+
+        public static int ConvertHoleCardsToNumericValue(int biggestCardValue, int smallestCardValue, bool areSuited)
+        {
+            return (biggestCardValue * 9 + smallestCardValue) * 2 + (areSuited ? 1 : 0);
+        }
+
+        public static string ConvertHoleCardsNumericValueToString(int holeCardsNumericValue)
+        {
+            bool suited = holeCardsNumericValue % 2 == 1;
+
+            int biggestCardValue = (holeCardsNumericValue / 2) / 9;
+            int smallestCardValue = (holeCardsNumericValue / 2) % 9;
+
+            return $"{Card.CardValues[biggestCardValue]}{Card.CardValues[smallestCardValue]}{(suited ? "s" : "o")}";
+        }
+
+        public static int ConvertCardStringToNumericValue(string cardString)
+        {
+            var holeCardProperties = cardString.ToCharArray();
+            var biggestCardValue = Array.IndexOf(Card.CardValues, holeCardProperties[0].ToString());
+            var smallestCardValue = Array.IndexOf(Card.CardValues, holeCardProperties[1].ToString());
+            var areSuited = holeCardProperties[2] == 's';
+
+            var holeCardsNumericRepresentation = ConvertHoleCardsToNumericValue(biggestCardValue, smallestCardValue, areSuited);
+            return holeCardsNumericRepresentation;
         }
     }
 
@@ -818,13 +867,13 @@ namespace ShortDeckStatistics
         private long[][] HoleCardsDealtCounter;
         private long[][] HoleCardsTieCounter;
 
-        private readonly Dictionary<string, int[]> HandsMadeCount = new Dictionary<string, int[]>();
-        private readonly Dictionary<string, int[]> HandsWonCount = new Dictionary<string, int[]>();
-        private readonly Dictionary<string, int[]> HandsTiedCount = new Dictionary<string, int[]>();
+        private readonly Dictionary<int, int[]> HandsMadeCount = new Dictionary<int, int[]>();
+        private readonly Dictionary<int, int[]> HandsWonCount = new Dictionary<int, int[]>();
+        private readonly Dictionary<int, int[]> HandsTiedCount = new Dictionary<int, int[]>();
 
         private readonly Dictionary<long, int> HandRankCount = new Dictionary<long, int>();
         private readonly Dictionary<long, PokerHand[]> HandsWithRank = new Dictionary<long, PokerHand[]>();
-        private readonly Dictionary<string, double> HoleCardWinRate = new Dictionary<string, double>();
+        private readonly Dictionary<int, double> HoleCardWinRate = new Dictionary<int, double>();
 
         private Card[] Deck;
         private Card[] CommunityCards = new Card[5];
@@ -917,36 +966,38 @@ namespace ShortDeckStatistics
 
             StringBuilder sb = new StringBuilder();
 
-            var cardArray = new string[holeCardsAndWinRates.Count];
+            var cardNumericArray = new int[holeCardsAndWinRates.Count];
             var winRateArray = new double[holeCardsAndWinRates.Count];
-            holeCardsAndWinRates.Keys.CopyTo(cardArray, 0);
+            holeCardsAndWinRates.Keys.CopyTo(cardNumericArray, 0);
 
             var pos = 0;
             foreach (var holeCards in holeCardsAndWinRates)
             {
                 var winRate = holeCardsAndWinRates[holeCards.Key];
 
-                cardArray[pos] = holeCards.Key;
+                cardNumericArray[pos] = holeCards.Key;
                 winRateArray[pos] = winRate[0];
 
                 pos++;
             }
 
-            Array.Sort(winRateArray, cardArray);
+            Array.Sort(winRateArray, cardNumericArray);
             Array.Reverse(winRateArray);
-            Array.Reverse(cardArray);
+            Array.Reverse(cardNumericArray);
 
             sb.AppendLine("Hole Cards".PadRight(12) + "Win Rate".PadRight(25) + "Loss Rate".PadRight(25) + "Tie Rate");
-            for (int i = 0; i < cardArray.Length; i++)
+            for (int i = 0; i < cardNumericArray.Length; i++)
             {
-                var holeCards = cardArray[i];
-                var winRate = holeCardsAndWinRates[holeCards][0];
-                var lossRate = holeCardsAndWinRates[holeCards][1];
-                var tieRate = holeCardsAndWinRates[holeCards][2];
+                var holeCardsNumeric = cardNumericArray[i];
+                var winRate = holeCardsAndWinRates[holeCardsNumeric][0];
+                var lossRate = holeCardsAndWinRates[holeCardsNumeric][1];
+                var tieRate = holeCardsAndWinRates[holeCardsNumeric][2];
 
                 if (winRate == 0.0) continue;
 
-                sb.AppendLine($"{holeCards.PadRight(12)}{winRate.ToString().PadRight(25)}{lossRate.ToString().PadRight(25)}{tieRate.ToString()}");
+                var holeCardsString = PokerHand.ConvertHoleCardsNumericValueToString(holeCardsNumeric);
+
+                sb.AppendLine($"{holeCardsString.PadRight(12)}{winRate.ToString().PadRight(25)}{lossRate.ToString().PadRight(25)}{tieRate.ToString()}");
             }
             sb.AppendLine();
 
@@ -957,9 +1008,9 @@ namespace ShortDeckStatistics
         {
             var holeCardsAndWinRates = GetHoleCardsAndWinRates();
 
-            var cardArray = new string[holeCardsAndWinRates.Count];
+            var holeCardsArray = new int[holeCardsAndWinRates.Count];
             var winRateArray = new double[holeCardsAndWinRates.Count];
-            holeCardsAndWinRates.Keys.CopyTo(cardArray, 0);
+            holeCardsAndWinRates.Keys.CopyTo(holeCardsArray, 0);
 
             var holeCardsCount = 0;
             foreach (var holeCards in holeCardsAndWinRates)
@@ -969,15 +1020,15 @@ namespace ShortDeckStatistics
 
                 if (holeCardsResultStats[0] == 0.0) continue;
 
-                cardArray[holeCardsCount] = holeCards.Key;
+                holeCardsArray[holeCardsCount] = holeCards.Key;
                 winRateArray[holeCardsCount] = holeCardsResultStats[0];
 
                 holeCardsCount++;
             }
 
-            Array.Sort(winRateArray, cardArray);
+            Array.Sort(winRateArray, holeCardsArray);
             Array.Reverse(winRateArray);
-            Array.Reverse(cardArray);
+            Array.Reverse(holeCardsArray);
 
             StringBuilder sb = new StringBuilder();
 
@@ -986,7 +1037,7 @@ namespace ShortDeckStatistics
 
             for (int j = 0; j < holeCardsCount; j++)
             {
-                var targetCard = cardArray[j];
+                var targetCard = holeCardsArray[j];
                 var handsMadeArray = HandsMadeCount[targetCard];
                 var handsWonArray = HandsWonCount[targetCard];
                 var handsTiedArray = HandsTiedCount[targetCard];
@@ -997,7 +1048,9 @@ namespace ShortDeckStatistics
                     totalCardAppearances += handsMadeArray[i];
                 }
 
-                sb.AppendLine(targetCard.PadRight(8) + "Rank".PadRight(20) + "Rank Chance".PadRight(25) + "Rank Count".PadRight(15) + "Rank Win Count".PadRight(18) + "Rank Tie Count".PadRight(18) + "Rank Win Rate".PadRight(25) + "Rank Tie Rate".PadRight(25) + "Rank Win Index");
+                var targetCardString = PokerHand.ConvertHoleCardsNumericValueToString(targetCard);
+
+                sb.AppendLine(targetCardString.PadRight(8) + "Rank".PadRight(20) + "Rank Chance".PadRight(25) + "Rank Count".PadRight(15) + "Rank Win Count".PadRight(18) + "Rank Tie Count".PadRight(18) + "Rank Win Rate".PadRight(25) + "Rank Tie Rate".PadRight(25) + "Rank Win Index");
                 for (int i = 1; i < handsMadeArray.Length; i++)
                 {
                     var handRank = PokerHand.HandRanks[i].PadRight(20);
@@ -1024,70 +1077,27 @@ namespace ShortDeckStatistics
             Console.WriteLine(sb.ToString());
         }
 
-        public void PrintHoleCardsRankedByBestForArray()
-        {
-            var holeCardsAndWinRates = GetHoleCardsAndWinRates();
-
-            StringBuilder sb = new StringBuilder();
-
-            var cardArray = new string[holeCardsAndWinRates.Count];
-            var winRateArray = new double[holeCardsAndWinRates.Count];
-            holeCardsAndWinRates.Keys.CopyTo(cardArray, 0);
-
-            var pos = 0;
-            foreach (var holeCards in holeCardsAndWinRates)
-            {
-                var winRate = holeCardsAndWinRates[holeCards.Key];
-
-                cardArray[pos] = holeCards.Key;
-                winRateArray[pos] = winRate[0];
-
-                pos++;
-            }
-
-            Array.Sort(winRateArray, cardArray);
-            Array.Reverse(cardArray);
-
-            for (var i = 0; i < cardArray.Length; i++)
-            {
-                cardArray[i] = "\"" + cardArray[i] + "\"";
-            }
-
-            sb.Append("new string[] { ");
-            sb.Append(string.Join(", ", cardArray));
-            sb.Append(" },");
-
-            Console.WriteLine(sb.ToString());
-        }
-
         public void PrintHoleCardsNumericRankedByBestForArray()
         {
             var holeCardsAndWinRates = GetHoleCardsAndWinRates();
 
             StringBuilder sb = new StringBuilder();
 
-            var holeCardArray = new string[holeCardsAndWinRates.Count];
+            
             var holeCardNumericArray = new int[holeCardsAndWinRates.Count];
             var winRateArray = new double[holeCardsAndWinRates.Count];
-            holeCardsAndWinRates.Keys.CopyTo(holeCardArray, 0);
+            holeCardsAndWinRates.Keys.CopyTo(holeCardNumericArray, 0);
 
             var pos = 0;
             foreach (var holeCards in holeCardsAndWinRates)
             {
 
-                var holeCardsString = holeCards.Key;
-                var winRate = holeCardsAndWinRates[holeCardsString];
+                var holeCardsNumeric = holeCards.Key;
+                var winRate = holeCardsAndWinRates[holeCardsNumeric];
 
-                holeCardArray[pos] = holeCardsString;
                 winRateArray[pos] = winRate[0];
 
-                var holeCardProperties = holeCardsString.ToCharArray();
-                var biggestCardValue = Array.IndexOf(Card.CardValues, holeCardProperties[0].ToString());
-                var smallestCardValue = Array.IndexOf(Card.CardValues, holeCardProperties[1].ToString());
-                var suitedValue = holeCardProperties[2] == 's' ? 1 : 0;
-
-                var holeCardsNumericRepresentation = (biggestCardValue * 9 + smallestCardValue) * 2 + suitedValue;
-                holeCardNumericArray[pos] = holeCardsNumericRepresentation;
+                holeCardNumericArray[pos] = holeCardsNumeric;
 
                 pos++;
             }
@@ -1095,6 +1105,7 @@ namespace ShortDeckStatistics
             Array.Sort(winRateArray, holeCardNumericArray);
             Array.Reverse(holeCardNumericArray);
 
+            var holeCardArray = new string[holeCardsAndWinRates.Count];
             for (var i = 0; i < holeCardNumericArray.Length; i++)
             {
                 holeCardArray[i] = holeCardNumericArray[i].ToString();
@@ -1107,39 +1118,46 @@ namespace ShortDeckStatistics
             Console.WriteLine(sb.ToString());
         }
 
-        private Dictionary<string, double[]> GetHoleCardsAndWinRates()
+        private Dictionary<int, double[]> GetHoleCardsAndWinRates()
         {
-            var holeCardsAndWinRates = new Dictionary<string, double[]>();
+            var holeCardsAndWinRates = new Dictionary<int, double[]>();
 
-            for (int i = 0; i < HoleCardsWinCounter.Length; i++)
+            for (int smallCardValue = 0; smallCardValue < HoleCardsWinCounter.Length; smallCardValue++)
             {
-                for (int j = i; j < HoleCardsWinCounter[0].Length; j++)
+                for (int bigCardValue = smallCardValue; bigCardValue < HoleCardsWinCounter[0].Length; bigCardValue++)
                 {
-                    var dealCount = HoleCardsDealtCounter[i][j];
-                    var winCount = HoleCardsWinCounter[i][j];
-                    var tieCount = HoleCardsTieCounter[i][j];
+                    var dealCount = HoleCardsDealtCounter[smallCardValue][bigCardValue];
+                    var winCount = HoleCardsWinCounter[smallCardValue][bigCardValue];
+                    var tieCount = HoleCardsTieCounter[smallCardValue][bigCardValue];
                     var lossCount = dealCount - winCount - tieCount;
 
                     var winRate = dealCount == 0 ? 0 : (double)winCount / dealCount;
                     var tieRate = dealCount == 0 ? 0 : (double)tieCount / dealCount;
                     var lossRate = dealCount == 0 ? 0 : (double)lossCount / dealCount;
-                    holeCardsAndWinRates.Add($"{Card.CardValues[j]}{Card.CardValues[i]}o", new double[] { winRate, lossRate, tieRate });
+
+                    var holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(bigCardValue, smallCardValue, false);
+
+
+                    holeCardsAndWinRates.Add(holeCardsNumeric, new double[] { winRate, lossRate, tieRate });
                 }
             }
 
-            for (int i = 0; i < HoleCardsWinCounter.Length; i++)
+            for (int bigCardValue = 0; bigCardValue < HoleCardsWinCounter.Length; bigCardValue++)
             {
-                for (int j = 0; j < i; j++)
+                for (int smallcardValue = 0; smallcardValue < bigCardValue; smallcardValue++)
                 {
-                    var dealCount = HoleCardsDealtCounter[i][j];
-                    var winCount = HoleCardsWinCounter[i][j];
-                    var tieCount = HoleCardsTieCounter[i][j];
+                    var dealCount = HoleCardsDealtCounter[bigCardValue][smallcardValue];
+                    var winCount = HoleCardsWinCounter[bigCardValue][smallcardValue];
+                    var tieCount = HoleCardsTieCounter[bigCardValue][smallcardValue];
                     var lossCount = dealCount - winCount - tieCount;
 
                     var winRate = dealCount == 0 ? 0 : (double)winCount / dealCount;
                     var tieRate = dealCount == 0 ? 0 : (double)tieCount / dealCount;
                     var lossRate = dealCount == 0 ? 0 : (double)lossCount / dealCount;
-                    holeCardsAndWinRates.Add($"{Card.CardValues[i]}{Card.CardValues[j]}s", new double[] { winRate, lossRate, tieRate });
+
+                    var holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(bigCardValue, smallcardValue, true);
+
+                    holeCardsAndWinRates.Add(holeCardsNumeric, new double[] { winRate, lossRate, tieRate });
                 }
             }
 
@@ -1192,7 +1210,7 @@ namespace ShortDeckStatistics
         {
             Card biggestHoleCard;
             Card smallestHoleCard;
-            string handString;
+            int holeCardsNumeric;
             int handNumericalRepresentation;
 
             if (!ManiacPlay)
@@ -1223,9 +1241,8 @@ namespace ShortDeckStatistics
                     smallestHoleCard = temp;
                 }
 
-                handNumericalRepresentation = (biggestHoleCard.Value * 9 + smallestHoleCard.Value) * 2 + (biggestHoleCard.Suit == smallestHoleCard.Suit ? 1 : 0);
-                handString = PokerHand.HoleCardRepresentations[handNumericalRepresentation];
-                
+                holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, biggestHoleCard.Suit == smallestHoleCard.Suit);
+
                 if (biggestHoleCard.Suit == smallestHoleCard.Suit)
                 {
                     HoleCardsDealtCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
@@ -1235,14 +1252,14 @@ namespace ShortDeckStatistics
                     HoleCardsDealtCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
                 }
 
-                if (!HandsMadeCount.ContainsKey(handString))
+                if (!HandsMadeCount.ContainsKey(holeCardsNumeric))
                 {
-                    HandsMadeCount.Add(handString, new int[10]);
-                    HandsWonCount.Add(handString, new int[10]);
-                    HandsTiedCount.Add(handString, new int[10]);
+                    HandsMadeCount.Add(holeCardsNumeric, new int[10]);
+                    HandsWonCount.Add(holeCardsNumeric, new int[10]);
+                    HandsTiedCount.Add(holeCardsNumeric, new int[10]);
                 }
 
-                HandsMadeCount[handString][hand.HandRank / 100_000_000_000L]++;
+                HandsMadeCount[holeCardsNumeric][hand.HandRank / 100_000_000_000L]++;
             }
 
             //Determine the strongest hand among the live hands as villains.
@@ -1311,8 +1328,7 @@ namespace ShortDeckStatistics
                 smallestHoleCard = temp;
             }
 
-            handNumericalRepresentation = (biggestHoleCard.Value * 9 + smallestHoleCard.Value) * 2 + (biggestHoleCard.Suit == smallestHoleCard.Suit ? 1 : 0);
-            handString = PokerHand.HoleCardRepresentations[handNumericalRepresentation];
+            holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, biggestHoleCard.Suit == smallestHoleCard.Suit);
 
             if (isTie)
             {
@@ -1330,7 +1346,7 @@ namespace ShortDeckStatistics
                 for(int i = 0; i < HandRankCount[strongestHand.HandRank]; i++)
                 {
                     var pokerHand = tieingPokerHands[i];
-                    HandsTiedCount[pokerHand.HoleCardsRepresentation][pokerHand.HandRank / 100_000_000_000L]++;
+                    HandsTiedCount[pokerHand.HoleCardsNumericRepresentation][pokerHand.HandRank / 100_000_000_000L]++;
                 }
             }
             else
@@ -1344,7 +1360,7 @@ namespace ShortDeckStatistics
                     HoleCardsWinCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
                 }
 
-                HandsWonCount[handString][strongestHand.HandRank / 100_000_000_000L]++;
+                HandsWonCount[holeCardsNumeric][strongestHand.HandRank / 100_000_000_000L]++;
             }
         }
 
