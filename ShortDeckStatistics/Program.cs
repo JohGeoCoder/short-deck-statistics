@@ -10,21 +10,23 @@ namespace ShortDeckStatistics
         public static void Main(string[] args)
         {
             Console.WindowHeight = 50;
-            Console.WindowWidth = 400;
+            Console.WindowWidth = 200;
 
             var tableArray = new Table[3];
             for (int i = 2; i < tableArray.Length; i++)
             {
-                tableArray[i] = new Table(6, true);
-                tableArray[i].PlayHands(100_000, true, 20, 30);
+                tableArray[i] = new Table(6, false);
+                tableArray[i].PlayHands(1_000_000, true, 10, 30);
             }
 
             for (int i = 2; i < tableArray.Length; i++)
             {
-                //tableArray[i].PrintHoleCardWinRatesRankedByBest();
-                //tableArray[i].PrintWinRatesForPokerHandsMade();
+                tableArray[i].PrintHoleCardWinRatesRankedByBest();
+                tableArray[i].PrintWinRatesForPokerHandsMade();
                 //tableArray[i].PrintHoleCardsNumericRankedByBestForArray();
             }
+
+            Console.ReadKey();
 
 
             //var emotionalCards = PokerHand.EmotionalCards;
@@ -133,14 +135,14 @@ namespace ShortDeckStatistics
         {
             new int[0],
             new int[0],
-            new int[81],
-            new int[81],
-            new int[81],
-            new int[81],
-            new int[81],
-            new int[81],
-            new int[81],
-            new int[81]
+            new int[] { 160, 140, 120, 100, 80, 159, 157, 158, 155, 156, 60, 153, 139, 154, 137, 138, 152, 151, 135, 136, 119, 149, 150, 134, 117, 133, 118, 40, 147, 148, 116, 99, 132, 145, 115, 146, 131, 98, 129, 97, 144, 114, 113, 130, 20, 79, 127, 128, 96, 95, 112, 111, 78, 126, 77, 109, 93, 94, 110, 59, 76, 75, 0, 108, 92, 91, 57, 58, 73, 74, 90, 55, 56, 39, 72, 37, 54, 38, 19, 36, 18 },
+            new int[] { 160, 140, 120, 100, 80, 159, 157, 158, 155, 156, 60, 139, 153, 154, 137, 138, 135, 151, 152, 119, 136, 149, 117, 40, 134, 150, 133, 99, 118, 147, 116, 148, 145, 115, 131, 98, 132, 20, 146, 97, 129, 79, 113, 114, 144, 127, 95, 130, 0, 77, 96, 111, 78, 128, 112, 93, 109, 59, 75, 126, 94, 57, 76, 91, 110, 73, 58, 92, 108, 55, 39, 74, 56, 37, 90, 72, 19, 54, 38, 36, 18 },
+            new int[] { 160, 140, 120, 100, 80, 159, 157, 158, 60, 155, 139, 156, 153, 137, 154, 135, 138, 40, 151, 119, 152, 117, 149, 136, 99, 20, 133, 134, 147, 118, 150, 0, 145, 115, 116, 131, 97, 148, 98, 79, 129, 113, 132, 146, 95, 127, 77, 114, 111, 144, 96, 93, 130, 59, 109, 75, 78, 128, 57, 112, 91, 73, 94, 76, 126, 55, 39, 110, 58, 37, 92, 74, 108, 19, 56, 90, 72, 54, 38, 36, 18 },
+            new int[] { 160, 140, 120, 100, 80, 159, 60, 157, 158, 155, 139, 40, 153, 156, 137, 20, 135, 119, 151, 138, 0, 154, 117, 99, 152, 149, 136, 133, 147, 134, 118, 115, 145, 97, 150, 131, 79, 116, 98, 113, 129, 95, 148, 77, 127, 132, 111, 146, 59, 93, 75, 109, 114, 96, 144, 57, 78, 73, 91, 130, 55, 39, 112, 128, 94, 76, 37, 126, 110, 19, 58, 74, 92, 108, 56, 72, 90, 54, 38, 36, 18 },
+            new int[] { 160, 140, 120, 100, 80, 60, 159, 40, 157, 20, 158, 139, 155, 0, 153, 137, 156, 135, 119, 117, 151, 99, 138, 154, 149, 133, 152, 147, 136, 115, 79, 97, 145, 134, 118, 131, 113, 116, 129, 77, 95, 150, 98, 127, 111, 59, 75, 93, 148, 109, 57, 132, 73, 91, 146, 114, 78, 55, 96, 39, 144, 37, 130, 112, 76, 19, 128, 94, 126, 58, 110, 74, 92, 108, 56, 72, 90, 54, 38, 36, 18 },
+            new int[] { 160, 140, 120, 100, 80, 60, 40, 159, 20, 0, 157, 139, 155, 158, 153, 137, 135, 119, 117, 156, 99, 151, 138, 149, 154, 133, 147, 79, 115, 97, 152, 136, 145, 131, 118, 113, 77, 129, 134, 95, 127, 116, 98, 111, 75, 59, 93, 150, 109, 57, 73, 91, 55, 148, 39, 132, 37, 78, 146, 114, 96, 19, 144, 130, 76, 112, 94, 128, 126, 74, 58, 110, 92, 108, 56, 72, 90, 54, 38, 36, 18 },
+            new int[] { 160, 140, 120, 100, 80, 60, 40, 20, 0, 159, 157, 139, 155, 153, 137, 158, 119, 135, 117, 99, 151, 156, 149, 133, 138, 147, 79, 115, 97, 145, 154, 131, 77, 136, 113, 129, 152, 95, 127, 118, 134, 111, 75, 59, 93, 116, 98, 109, 57, 73, 91, 150, 55, 39, 37, 148, 132, 19, 78, 96, 114, 146, 144, 130, 76, 112, 94, 128, 126, 74, 58, 110, 92, 108, 56, 72, 90, 38, 54, 36, 18 },
+            new int[] { 160, 140, 120, 100, 80, 60, 40, 20, 0, 159, 157, 139, 155, 153, 137, 119, 135, 117, 99, 158, 151, 149, 133, 156, 147, 79, 115, 97, 145, 138, 131, 77, 113, 129, 95, 154, 127, 136, 111, 152, 75, 93, 118, 59, 109, 134, 57, 116, 98, 73, 91, 55, 39, 37, 150, 19, 148, 78, 132, 96, 114, 146, 144, 130, 76, 112, 94, 128, 126, 74, 110, 58, 92, 108, 56, 72, 90, 38, 54, 36, 18 },
         };
 
         public static readonly string[] EmotionalCards = new string[]
@@ -952,7 +954,7 @@ namespace ShortDeckStatistics
             {
                 PlayHand(isVillainEmotional, keepTopPercentHero, keepTopPercentVillain);
 
-                if(i % 10_000 == 0)
+                if(i % 100_000 == 0)
                 {
                     Console.Clear();
                     Console.WriteLine($"Player Count: { PlayerCount } - Hands Remaining: {iterations - i}");
@@ -1211,7 +1213,6 @@ namespace ShortDeckStatistics
             Card biggestHoleCard;
             Card smallestHoleCard;
             int holeCardsNumeric;
-            int handNumericalRepresentation;
 
             if (!ManiacPlay)
             {
@@ -1228,9 +1229,13 @@ namespace ShortDeckStatistics
                 if (!hasHeroHand) return;
             }
 
+            bool isSuited;
+
             //Log all hands made. Even the folded ones.
-            foreach (var hand in AllPlayerFullHands)
+            for (int handIndex = 0; handIndex < AllPlayerFullHands.Length; handIndex++)
             {
+                var hand = AllPlayerFullHands[handIndex];
+
                 //Biggest card first
                 biggestHoleCard = hand.HoleCards[0];
                 smallestHoleCard = hand.HoleCards[1];
@@ -1241,9 +1246,10 @@ namespace ShortDeckStatistics
                     smallestHoleCard = temp;
                 }
 
-                holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, biggestHoleCard.Suit == smallestHoleCard.Suit);
+                isSuited = biggestHoleCard.Suit == smallestHoleCard.Suit;
+                holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, isSuited);
 
-                if (biggestHoleCard.Suit == smallestHoleCard.Suit)
+                if (isSuited)
                 {
                     HoleCardsDealtCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
                 }
@@ -1266,11 +1272,13 @@ namespace ShortDeckStatistics
             PokerHand strongestHand = null;
             PokerHand strongestHandForHero = null;
             HandRankCount.Clear();
-            foreach (var result in AllPlayerFullHands)
+            for (int handIndex = 0; handIndex < AllPlayerFullHands.Length; handIndex++)
             {
-                if (!ManiacPlay && !result.IsLiveAsVillain) continue;
+                var hand = AllPlayerFullHands[handIndex];
 
-                var handRank = result.HandRank;
+                if (!ManiacPlay && !hand.IsLiveAsVillain) continue;
+
+                var handRank = hand.HandRank;
                 if (!HandRankCount.ContainsKey(handRank))
                 {
                     HandRankCount.Add(handRank, 0);
@@ -1280,20 +1288,20 @@ namespace ShortDeckStatistics
                 {
                     HandsWithRank.Add(handRank, new PokerHand[PlayerCount]);
                 }
-                HandsWithRank[handRank][HandRankCount[handRank]] = result;
+                HandsWithRank[handRank][HandRankCount[handRank]] = hand;
                 HandRankCount[handRank]++;
 
-                if (!ManiacPlay && result.IsLiveAsHero)
+                if (!ManiacPlay && hand.IsLiveAsHero)
                 {
                     if(strongestHandForHero == null || handRank > strongestHandForHero.HandRank)
                     {
-                        strongestHandForHero = result;
+                        strongestHandForHero = hand;
                     }
                 }
 
                 if (strongestHand == null || handRank > strongestHand.HandRank)
                 {
-                    strongestHand = result;
+                    strongestHand = hand;
                 }
             }
 
@@ -1328,11 +1336,12 @@ namespace ShortDeckStatistics
                 smallestHoleCard = temp;
             }
 
-            holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, biggestHoleCard.Suit == smallestHoleCard.Suit);
+            isSuited = biggestHoleCard.Suit == smallestHoleCard.Suit;
+            holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, isSuited);
 
             if (isTie)
             {
-                if (biggestHoleCard.Suit == smallestHoleCard.Suit)
+                if (isSuited)
                 {
                     HoleCardsTieCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;
                 }
