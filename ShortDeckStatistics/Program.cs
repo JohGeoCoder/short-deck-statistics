@@ -16,7 +16,7 @@ namespace ShortDeckStatistics
             for (int i = 2; i < tableArray.Length; i++)
             {
                 tableArray[i] = new Table(6, false);
-                tableArray[i].PlayHands(1_000_000, true, 10, 30);
+                tableArray[i].PlayHands(2_000_000, true, 30, 30);
             }
 
             for (int i = 2; i < tableArray.Length; i++)
@@ -1239,12 +1239,6 @@ namespace ShortDeckStatistics
                 //Biggest card first
                 biggestHoleCard = hand.HoleCards[0];
                 smallestHoleCard = hand.HoleCards[1];
-                if (biggestHoleCard.Value < smallestHoleCard.Value)
-                {
-                    Card temp = biggestHoleCard;
-                    biggestHoleCard = smallestHoleCard;
-                    smallestHoleCard = temp;
-                }
 
                 isSuited = biggestHoleCard.Suit == smallestHoleCard.Suit;
                 holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, isSuited);
@@ -1329,12 +1323,6 @@ namespace ShortDeckStatistics
             //Biggest card first
             biggestHoleCard = strongestHand.HoleCards[0];
             smallestHoleCard = strongestHand.HoleCards[1];
-            if (biggestHoleCard.Value < smallestHoleCard.Value)
-            {
-                Card temp = biggestHoleCard;
-                biggestHoleCard = smallestHoleCard;
-                smallestHoleCard = temp;
-            }
 
             isSuited = biggestHoleCard.Suit == smallestHoleCard.Suit;
             holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, isSuited);
@@ -1352,7 +1340,7 @@ namespace ShortDeckStatistics
 
                 //Mark all tied hands as a win
                 var tieingPokerHands = HandsWithRank[strongestHand.HandRank];
-                for(int i = 0; i < HandRankCount[strongestHand.HandRank]; i++)
+                for (int i = 0; i < HandRankCount[strongestHand.HandRank]; i++)
                 {
                     var pokerHand = tieingPokerHands[i];
                     HandsTiedCount[pokerHand.HoleCardsNumericRepresentation][pokerHand.HandRank / 100_000_000_000L]++;
