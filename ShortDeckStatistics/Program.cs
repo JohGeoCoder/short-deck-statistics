@@ -15,18 +15,23 @@ namespace ShortDeckStatistics
             var tableArray = new Table[3];
             for (int i = 2; i < tableArray.Length; i++)
             {
-                tableArray[i] = new Table(6, false, 30, 30);
-                tableArray[i].PlayHands(300_000, true);
+                tableArray[i] = new Table(6, false, 30, 30, true);
+                tableArray[i].PlayHands(200_000, true);
             }
 
             for (int i = 2; i < tableArray.Length; i++)
             {
                 tableArray[i].PrintHoleCardWinRatesRankedByBest();
-                tableArray[i].PrintWinRatesForPokerHandsMade();
+
+                if (tableArray[i].LogPokerHandResults)
+                {
+                    tableArray[i].PrintWinRatesForPokerHandsMade();
+                }
+                
                 //tableArray[i].PrintHoleCardsNumericRankedByBestForArray();
             }
 
-            Console.ReadKey();
+            //Console.ReadKey();
 
 
             //var emotionalCards = PokerHand.EmotionalCards;
@@ -102,11 +107,9 @@ namespace ShortDeckStatistics
 
         public int CompareTo(Card other)
         {
-            if (other == null) return 1;
+            if (this.Value == other.Value) return 0;
 
-            if (this.Value < other.Value) return -1;
-            else if (this.Value > other.Value) return 1;
-            else return 0;
+            return this.Value < other.Value ? -1 : 1;
         }
     }
 
@@ -918,14 +921,16 @@ namespace ShortDeckStatistics
 
         private readonly int PlayerCount;
         private readonly bool ManiacPlay;
+        public readonly bool LogPokerHandResults;
 
         private readonly int KeepTopPercentHero;
         private readonly int KeepTopPercentVillain;
 
-        public Table(int numPlayers, bool maniacPlay, int keepTopPercentHero, int keepTopPercentVillain)
+        public Table(int numPlayers, bool maniacPlay, int keepTopPercentHero, int keepTopPercentVillain, bool logPokerHandResults)
         {
             PlayerCount = numPlayers;
             ManiacPlay = maniacPlay;
+            LogPokerHandResults = logPokerHandResults;
 
             KeepTopPercentHero = keepTopPercentHero;
             KeepTopPercentVillain = keepTopPercentVillain;
@@ -1314,14 +1319,17 @@ namespace ShortDeckStatistics
                     HoleCardsDealtCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
                 }
 
-                if (!HandsMadeCount.ContainsKey(holeCardsNumeric))
+                if (LogPokerHandResults)
                 {
-                    HandsMadeCount.Add(holeCardsNumeric, new int[10]);
-                    HandsWonCount.Add(holeCardsNumeric, new int[10]);
-                    HandsTiedCount.Add(holeCardsNumeric, new int[10]);
-                }
+                    if (!HandsMadeCount.ContainsKey(holeCardsNumeric))
+                    {
+                        HandsMadeCount.Add(holeCardsNumeric, new int[10]);
+                        HandsWonCount.Add(holeCardsNumeric, new int[10]);
+                        HandsTiedCount.Add(holeCardsNumeric, new int[10]);
+                    }
 
-                HandsMadeCount[holeCardsNumeric][hand.HandRank / 100_000_000_000L]++;
+                    HandsMadeCount[holeCardsNumeric][hand.HandRank / 100_000_000_000L]++;
+                }
             }
 
             //Determine the strongest hand among the live hands as villains.
@@ -1340,11 +1348,15 @@ namespace ShortDeckStatistics
                     HandRankCount.Add(handRank, 0);
                 }
 
-                if (!HandsWithRank.ContainsKey(handRank))
+                if (LogPokerHandResults)
                 {
-                    HandsWithRank.Add(handRank, new PokerHand[PlayerCount]);
+                    if (!HandsWithRank.ContainsKey(handRank))
+                    {
+                        HandsWithRank.Add(handRank, new PokerHand[PlayerCount]);
+                    }
+                    HandsWithRank[handRank][HandRankCount[handRank]] = hand;
                 }
-                HandsWithRank[handRank][HandRankCount[handRank]] = hand;
+                
                 HandRankCount[handRank]++;
 
                 if (!ManiacPlay && hand.IsLiveAsHero)
@@ -1399,14 +1411,6 @@ namespace ShortDeckStatistics
                 {
                     HoleCardsTieCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
                 }
-
-                //Mark all tied hands as a win
-                var tieingPokerHands = HandsWithRank[strongestHand.HandRank];
-                for (int i = 0; i < HandRankCount[strongestHand.HandRank]; i++)
-                {
-                    var pokerHand = tieingPokerHands[i];
-                    HandsTiedCount[pokerHand.HoleCardsNumericRepresentation][pokerHand.HandRank / 100_000_000_000L]++;
-                }
             }
             else
             {
@@ -1418,8 +1422,24 @@ namespace ShortDeckStatistics
                 {
                     HoleCardsWinCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
                 }
+            }
 
-                HandsWonCount[holeCardsNumeric][strongestHand.HandRank / 100_000_000_000L]++;
+            if (LogPokerHandResults)
+            {
+                if (isTie)
+                {
+                    //Mark all tied hands as a win
+                    var tieingPokerHands = HandsWithRank[strongestHand.HandRank];
+                    for (int i = 0; i < HandRankCount[strongestHand.HandRank]; i++)
+                    {
+                        var pokerHand = tieingPokerHands[i];
+                        HandsTiedCount[pokerHand.HoleCardsNumericRepresentation][pokerHand.HandRank / 100_000_000_000L]++;
+                    }
+                }
+                else
+                {
+                    HandsWonCount[holeCardsNumeric][strongestHand.HandRank / 100_000_000_000L]++;
+                }
             }
         }
 
