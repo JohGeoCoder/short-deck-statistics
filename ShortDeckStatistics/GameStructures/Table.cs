@@ -278,25 +278,34 @@ namespace ShortDeckStatistics.GameStructures
 
                 var targetCardString = PokerHand.ConvertHoleCardsNumericValueToString(targetHoleCards);
 
-                sb.AppendLine(targetCardString.PadRight(8) + "Rank".PadRight(20) + "Rank Chance".PadRight(25) + "Rank Count".PadRight(15) + "Rank Win Count".PadRight(18) + "Rank Tie Count".PadRight(18) + "Rank Win Rate".PadRight(25) + "Rank Tie Rate".PadRight(25) + "Rank Win Index");
+                var targetCardPadding = 8;
+                var rankPadding = 18;
+                var rankChancePadding = 15;
+                var rankCountPadding = 12;
+                var rankWinCountPadding = 17;
+                var rankTieCountPadding = 17;
+                var rankWinRatePadding = 16;
+                var rankTieRatePadding = 16;
+
+                sb.AppendLine(targetCardString.PadRight(targetCardPadding) + "Rank".PadRight(rankPadding) + "Rank Chance".PadRight(rankChancePadding) + "Rank Count".PadRight(rankCountPadding) + "Rank Win Count".PadRight(rankWinCountPadding) + "Rank Tie Count".PadRight(rankTieCountPadding) + "Rank Win Rate".PadRight(rankWinRatePadding) + "Rank Tie Rate".PadRight(rankTieRatePadding) + "Rank Win Index");
                 for (int i = 1; i < handsMadeArray.Length; i++)
                 {
-                    var handRank = PokerHand.HandRanks[i].PadRight(20);
+                    var handRank = PokerHand.HandRanks[i].PadRight(rankPadding);
 
                     var handRankPossibility = (totalCardAppearances == 0 ? 0 : (double)handsMadeArray[i] / totalCardAppearances);
-                    var handRankPossibilityString = $"{handRankPossibility}".PadRight(25);
-                    var handRankCount = $"{handsMadeArray[i]}".PadRight(15);
-                    var handWinCount = $"{handsWonArray[i]}".PadRight(18);
-                    var handTieCount = $"{handsTiedArray[i]}".PadRight(18);
+                    var handRankPossibilityString = $"{handRankPossibility.ToString("0.0000")}".PadRight(rankChancePadding);
+                    var handRankCount = $"{handsMadeArray[i]}".PadRight(rankCountPadding);
+                    var handWinCount = $"{handsWonArray[i]}".PadRight(rankWinCountPadding);
+                    var handTieCount = $"{handsTiedArray[i]}".PadRight(rankTieCountPadding);
 
                     var handWinRate = (handsMadeArray[i] == 0 ? 0 : (double)handsWonArray[i] / handsMadeArray[i]);
-                    var handWinRateString = $"{handWinRate}".PadRight(25);
+                    var handWinRateString = $"{handWinRate.ToString("0.0000")}".PadRight(rankWinRatePadding);
 
                     var handTieRate = (handsMadeArray[i] == 0 ? 0 : (double)handsTiedArray[i] / handsMadeArray[i]);
-                    var handTieRateString = $"{handTieRate}".PadRight(25);
+                    var handTieRateString = $"{handTieRate.ToString("0.0000")}".PadRight(rankTieRatePadding);
 
                     var winIndex = handRankPossibility * (handWinRate + handTieRate);
-                    var winIndexString = $"{winIndex}";
+                    var winIndexString = $"{winIndex.ToString("0.0000")}";
                     sb.AppendLine($"        {handRank}{handRankPossibilityString}{handRankCount}{handWinCount}{handTieCount}{handWinRateString}{handTieRateString}{winIndexString}");
                 }
                 sb.AppendLine();
