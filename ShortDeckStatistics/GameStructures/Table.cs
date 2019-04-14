@@ -176,8 +176,6 @@ namespace ShortDeckStatistics.GameStructures
         {
             var holeCardsAndWinRates = GetHoleCardsAndWinRates();
 
-            StringBuilder sb = new StringBuilder();
-
             var cardNumericArray = new int[holeCardsAndWinRates.Count];
             var winRateArray = new double[holeCardsAndWinRates.Count];
             holeCardsAndWinRates.Keys.CopyTo(cardNumericArray, 0);
@@ -201,7 +199,11 @@ namespace ShortDeckStatistics.GameStructures
             Array.Reverse(winRateArray);
             Array.Reverse(cardNumericArray);
 
-            sb.AppendLine("Hole Cards".PadRight(12) + "Win Rate".PadRight(25) + "Loss Rate".PadRight(25) + "Tie Rate");
+            StringBuilder sb = new StringBuilder();
+
+            var ratePaddingLength = 12;
+
+            sb.AppendLine("Hole Cards".PadRight(ratePaddingLength) + "Win Rate".PadRight(ratePaddingLength) + "Loss Rate".PadRight(ratePaddingLength) + "Tie Rate");
             for (int i = 0; i < cardNumericArray.Length; i++)
             {
                 var holeCardsNumeric = cardNumericArray[i];
@@ -216,7 +218,7 @@ namespace ShortDeckStatistics.GameStructures
 
                 var holeCardsString = PokerHand.ConvertHoleCardsNumericValueToString(holeCardsNumeric);
 
-                sb.AppendLine($"{holeCardsString.PadRight(12)}{winRate.ToString().PadRight(25)}{lossRate.ToString().PadRight(25)}{tieRate.ToString()}");
+                sb.AppendLine($"{holeCardsString.PadRight(ratePaddingLength)}{winRate.ToString("0.0000").PadRight(ratePaddingLength)}{lossRate.ToString("0.0000").PadRight(ratePaddingLength)}{tieRate.ToString("0.0000")}");
             }
             sb.AppendLine();
 
