@@ -287,7 +287,17 @@ namespace ShortDeckStatistics.GameStructures
                 var rankWinRatePadding = 16;
                 var rankTieRatePadding = 16;
 
-                sb.AppendLine(targetCardString.PadRight(targetCardPadding) + "Rank".PadRight(rankPadding) + "Rank Chance".PadRight(rankChancePadding) + "Rank Count".PadRight(rankCountPadding) + "Rank Win Count".PadRight(rankWinCountPadding) + "Rank Tie Count".PadRight(rankTieCountPadding) + "Rank Win Rate".PadRight(rankWinRatePadding) + "Rank Tie Rate".PadRight(rankTieRatePadding) + "Rank Win Index");
+                sb.Append(targetCardString.PadRight(targetCardPadding));
+                sb.Append("Rank".PadRight(rankPadding));
+                sb.Append("Rank Chance".PadRight(rankChancePadding));
+                sb.Append("Rank Count".PadRight(rankCountPadding));
+                sb.Append("Rank Win Count".PadRight(rankWinCountPadding));
+                sb.Append("Rank Tie Count".PadRight(rankTieCountPadding));
+                sb.Append("Rank Win Rate".PadRight(rankWinRatePadding));
+                sb.Append("Rank Tie Rate".PadRight(rankTieRatePadding));
+                sb.Append("Rank Win Index");
+                sb.AppendLine();
+
                 for (int i = 1; i < handsMadeArray.Length; i++)
                 {
                     var handRank = PokerHand.HandRanks[i].PadRight(rankPadding);
@@ -306,7 +316,17 @@ namespace ShortDeckStatistics.GameStructures
 
                     var winIndex = handRankPossibility * (handWinRate + handTieRate);
                     var winIndexString = $"{winIndex.ToString("0.0000")}";
-                    sb.AppendLine($"        {handRank}{handRankPossibilityString}{handRankCount}{handWinCount}{handTieCount}{handWinRateString}{handTieRateString}{winIndexString}");
+
+                    sb.Append("".PadLeft(targetCardPadding));
+                    sb.Append(handRank);
+                    sb.Append(handRankPossibilityString);
+                    sb.Append(handRankCount);
+                    sb.Append(handWinCount);
+                    sb.Append(handTieCount);
+                    sb.Append(handWinRateString);
+                    sb.Append(handTieRateString);
+                    sb.Append(winIndexString);
+                    sb.AppendLine();
                 }
                 sb.AppendLine();
             }
