@@ -10,29 +10,29 @@ namespace ShortDeckStatistics.GameStructures
 {
             new string[] { }, //Zero players
             new string[] { }, //One player
-            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "AKo", "AQs", "AJs", "AQo", "99o", "ATs", "KQs", "AJo", "ATo", "KTs", "KQo", "KJs", "A9s", "KJo", "A8s", "QJs", "A9o", "KTo", "QTs", "QJo", "K9s", "88o", "A8o", "A7s", "QTo", "JTs", "Q9s", "K9o", "K8s", "A6s", "A7o", "JTo", "K7s", "Q9o", "Q8s", "J9s", "A6o", "K8o", "T9s", "77o", "K6s", "K7o", "J9o", "Q8o", "Q7s", "J8s", "T8s", "T9o", "Q6s", "K6o", "J8o", "J7s", "98s", "Q7o", "66o", "T8o", "J6s", "T7s", "Q6o", "97s", "J7o", "98o", "T7o", "T6s", "87s", "J6o", "97o", "96s", "T6o", "86s", "96o", "87o", "76s", "86o", "76o" },
-            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "AQs", "AKo", "AJs", "AQo", "KQs", "99o", "ATs", "KJs", "AJo", "KQo", "A9s", "KTs", "ATo", "QJs", "A8s", "KJo", "QTs", "88o", "JTs", "KTo", "A9o", "QJo", "K9s", "A7s", "QTo", "A6s", "A8o", "Q9s", "JTo", "K8s", "77o", "K9o", "A7o", "K7s", "J9s", "Q8s", "T9s", "Q9o", "A6o", "K6s", "J8s", "K8o", "J9o", "Q7s", "T8s", "66o", "K7o", "Q8o", "T9o", "J7s", "Q6s", "98s", "T7s", "K6o", "J8o", "T8o", "97s", "J6s", "Q7o", "T6s", "87s", "Q6o", "J7o", "98o", "96s", "T7o", "86s", "97o", "J6o", "T6o", "76s", "96o", "87o", "86o", "76o" },
-            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "AKo", "AQs", "99o", "AJs", "KQs", "AQo", "ATs", "KJs", "KTs", "AJo", "KQo", "QJs", "A9s", "88o", "QTs", "ATo", "A8s", "KJo", "JTs", "77o", "KTo", "K9s", "A7s", "A9o", "QJo", "Q9s", "QTo", "66o", "A6s", "K8s", "J9s", "A8o", "T9s", "JTo", "K7s", "K9o", "Q8s", "A7o", "J8s", "T8s", "K6s", "Q9o", "Q7s", "A6o", "K8o", "J7s", "Q6s", "98s", "J9o", "T7s", "T9o", "K7o", "Q8o", "97s", "J6s", "J8o", "T6s", "K6o", "96s", "T8o", "87s", "Q7o", "J7o", "98o", "T7o", "86s", "Q6o", "97o", "76s", "J6o", "T6o", "87o", "96o", "86o", "76o" },
-            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "99o", "AQs", "AKo", "KQs", "AJs", "88o", "ATs", "AQo", "KJs", "77o", "KTs", "QJs", "QTs", "KQo", "AJo", "A9s", "66o", "JTs", "ATo", "A8s", "KJo", "A7s", "K9s", "KTo", "Q9s", "QJo", "A6s", "J9s", "T9s", "A9o", "K8s", "QTo", "K7s", "Q8s", "JTo", "T8s", "K6s", "A8o", "J8s", "K9o", "Q7s", "A7o", "J7s", "98s", "T7s", "Q6s", "Q9o", "97s", "T9o", "A6o", "J9o", "J6s", "K8o", "T6s", "87s", "K7o", "Q8o", "96s", "J8o", "86s", "T8o", "K6o", "Q7o", "76s", "T7o", "J7o", "98o", "Q6o", "97o", "T6o", "J6o", "96o", "87o", "86o", "76o" },
-            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "AKs", "88o", "AQs", "77o", "AKo", "KQs", "AJs", "66o", "KJs", "ATs", "AQo", "KTs", "QJs", "JTs", "A9s", "QTs", "KQo", "A8s", "AJo", "K9s", "ATo", "A7s", "KJo", "A6s", "J9s", "KTo", "Q9s", "T9s", "QJo", "K8s", "K7s", "T8s", "Q8s", "QTo", "J8s", "A9o", "K6s", "JTo", "98s", "T7s", "Q7s", "A8o", "J7s", "Q6s", "K9o", "97s", "J6s", "A7o", "T6s", "T9o", "96s", "J9o", "Q9o", "87s", "A6o", "86s", "K8o", "Q8o", "K7o", "T8o", "J8o", "76s", "K6o", "Q7o", "T7o", "J7o", "98o", "Q6o", "97o", "T6o", "J6o", "87o", "96o", "86o", "76o" },
-            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "88o", "AKs", "77o", "66o", "AQs", "KQs", "AJs", "AKo", "KJs", "ATs", "QJs", "KTs", "AQo", "QTs", "JTs", "A9s", "KQo", "AJo", "A8s", "K9s", "A7s", "T9s", "Q9s", "J9s", "ATo", "K8s", "A6s", "KJo", "QJo", "Q8s", "J8s", "K7s", "KTo", "T8s", "QTo", "JTo", "T7s", "98s", "K6s", "Q7s", "J7s", "A9o", "97s", "Q6s", "J6s", "T6s", "96s", "87s", "A8o", "K9o", "86s", "T9o", "A7o", "Q9o", "J9o", "K8o", "A6o", "76s", "Q8o", "T8o", "K7o", "J8o", "K6o", "T7o", "Q7o", "98o", "J7o", "Q6o", "97o", "T6o", "J6o", "87o", "96o", "86o", "76o" },
-            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "88o", "77o", "66o", "AKs", "AQs", "KQs", "AJs", "ATs", "KJs", "AKo", "QJs", "KTs", "JTs", "QTs", "A9s", "AQo", "A8s", "K9s", "KQo", "A7s", "T9s", "J9s", "A6s", "K8s", "Q9s", "Q8s", "AJo", "KJo", "T8s", "J8s", "ATo", "K7s", "QJo", "K6s", "Q7s", "T7s", "KTo", "QTo", "J7s", "98s", "JTo", "Q6s", "97s", "T6s", "J6s", "96s", "87s", "A9o", "86s", "A8o", "T9o", "K9o", "76s", "Q9o", "A7o", "J9o", "K8o", "A6o", "T8o", "Q8o", "J8o", "K7o", "K6o", "T7o", "Q7o", "J7o", "98o", "Q6o", "97o", "T6o", "J6o", "96o", "87o", "86o", "76o" },
-            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "88o", "77o", "66o", "AKs", "AQs", "AJs", "KQs", "ATs", "KJs", "QJs", "KTs", "QTs", "JTs", "AKo", "A9s", "A7s", "A8s", "T9s", "K9s", "AQo", "Q9s", "J9s", "KQo", "A6s", "K7s", "Q8s", "AJo", "K8s", "T8s", "J8s", "K6s", "Q7s", "KJo", "J7s", "ATo", "QJo", "98s", "Q6s", "T7s", "KTo", "JTo", "97s", "QTo", "T6s", "J6s", "87s", "96s", "86s", "A9o", "76s", "A8o", "J9o", "T9o", "K9o", "Q9o", "A7o", "A6o", "K8o", "T8o", "Q8o", "J8o", "K7o", "K6o", "T7o", "Q7o", "J7o", "98o", "Q6o", "97o", "J6o", "T6o", "87o", "96o", "86o", "76o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "88o", "77o", "AKs", "AQs", "AKo", "AJs", "AQo", "66o", "KQs", "AJo", "A9s", "ATs", "ATo", "KJs", "A8s", "KTs", "55o", "KQo", "A7s", "KJo", "K9s", "A9o", "A6s", "QJs", "KTo", "A8o", "A5s", "K8s", "A7o", "QTs", "A4s", "K9o", "K7s", "44o", "QJo", "Q9s", "A6o", "A5o", "QTo", "K8o", "JTs", "A3s", "A2s", "Q8s", "A4o", "Q9o", "K6s", "K4s", "J9s", "K7o", "K3s", "33o", "K2s", "JTo", "Q6s", "A3o", "K6o", "K5s", "Q8o", "Q7s", "A2o", "J8s", "K5o", "J9o", "T9s", "Q5s", "T8s", "K4o", "Q7o", "J7s", "Q4s", "22o", "K3o", "J8o", "Q6o", "98s", "Q3s", "T9o", "J6s", "Q2s", "J5s", "K2o", "T7s", "Q5o", "T8o", "J4s", "J7o", "Q4o", "J6o", "97s", "T6s", "Q2o", "96s", "J3s", "J2s", "Q3o", "T7o", "T5s", "98o", "J5o", "T4s", "87s", "97o", "T6o", "J3o", "86s", "95s", "J4o", "94s", "T2s", "T3s", "T5o", "J2o", "76s", "96o", "87o", "85s", "84s", "93s", "T4o", "65s", "95o", "T3o", "86o", "92s", "75s", "T2o", "74s", "83s", "85o", "76o", "82s", "94o", "64s", "73s", "93o", "75o", "84o", "54s", "92o", "63s", "65o", "72s", "74o", "53s", "83o", "62s", "43s", "64o", "82o", "52s", "73o", "63o", "42s", "54o", "72o", "53o", "62o", "32s", "52o", "43o", "42o", "32o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "AKs", "88o", "AQs", "AJs", "AKo", "77o", "ATs", "AQo", "KQs", "KTs", "KJs", "AJo", "66o", "A9s", "QJs", "ATo", "KQo", "A8s", "KJo", "A7s", "QTs", "A9o", "KTo", "55o", "K9s", "QJo", "A6s", "A8o", "K8s", "Q9s", "JTs", "A5s", "QTo", "K9o", "K6s", "A7o", "K7s", "Q8s", "J9s", "44o", "A4s", "A3s", "JTo", "A6o", "A2s", "K5s", "Q9o", "K8o", "T9s", "A5o", "J8s", "K3s", "A4o", "T8s", "Q7s", "Q6s", "J9o", "K4s", "J7s", "Q5s", "K2s", "K7o", "33o", "98s", "K6o", "Q8o", "A3o", "T7s", "T9o", "A2o", "K5o", "97s", "Q4s", "J6s", "J8o", "22o", "Q3s", "K4o", "Q7o", "Q2s", "87s", "J4s", "J5s", "Q6o", "T8o", "T6s", "96s", "J7o", "Q5o", "K3o", "K2o", "98o", "T5s", "76s", "86s", "T7o", "J3s", "95s", "J2s", "Q4o", "T4s", "85s", "97o", "J6o", "T3s", "Q3o", "75s", "J5o", "87o", "T6o", "T2s", "65s", "84s", "74s", "Q2o", "J4o", "94s", "96o", "93s", "64s", "54s", "92s", "J3o", "T5o", "86o", "83s", "76o", "82s", "73s", "95o", "T4o", "J2o", "63s", "53s", "85o", "T3o", "75o", "72s", "65o", "52s", "T2o", "43s", "94o", "62s", "74o", "84o", "64o", "92o", "42s", "93o", "32s", "54o", "63o", "73o", "83o", "82o", "53o", "43o", "72o", "62o", "52o", "42o", "32o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "99o", "AKs", "AQs", "88o", "AKo", "KQs", "AJs", "KJs", "AQo", "77o", "ATs", "AJo", "QJs", "KQo", "A9s", "KTs", "QTs", "A8s", "ATo", "66o", "K9s", "KJo", "JTs", "A7s", "KTo", "K8s", "A6s", "QJo", "A9o", "Q9s", "A5s", "J9s", "55o", "T9s", "A8o", "Q8s", "QTo", "A4s", "A3s", "K7s", "JTo", "K9o", "44o", "A7o", "J8s", "K6s", "A2s", "K5s", "Q9o", "Q6s", "T8s", "Q7s", "J7s", "98s", "K4s", "A6o", "J9o", "K2s", "K8o", "Q5s", "A5o", "T7s", "K7o", "Q8o", "K3s", "T9o", "87s", "33o", "J6s", "97s", "A4o", "Q4s", "K6o", "A3o", "J8o", "J5s", "Q3s", "Q2s", "A2o", "76s", "T6s", "J4s", "T8o", "Q7o", "86s", "J3s", "22o", "98o", "K5o", "95s", "96s", "J7o", "T5s", "K4o", "J2s", "T4s", "Q6o", "T3s", "K3o", "65s", "75s", "T7o", "Q5o", "85s", "97o", "K2o", "T2s", "74s", "64s", "84s", "J6o", "87o", "94s", "Q4o", "93s", "J5o", "92s", "54s", "Q3o", "T6o", "Q2o", "63s", "83s", "73s", "96o", "J4o", "86o", "76o", "72s", "43s", "53s", "T5o", "82s", "J3o", "95o", "85o", "T4o", "62s", "65o", "J2o", "75o", "52s", "T3o", "42s", "T2o", "84o", "94o", "32s", "74o", "64o", "93o", "92o", "54o", "73o", "63o", "83o", "53o", "82o", "43o", "62o", "72o", "52o", "42o", "32o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "99o", "AQs", "AKo", "AJs", "KQs", "88o", "ATs", "KJs", "AQo", "KTs", "77o", "QJs", "QTs", "AJo", "A9s", "KQo", "A8s", "K9s", "A7s", "66o", "ATo", "KJo", "JTs", "A6s", "Q9s", "QJo", "KTo", "K8s", "J9s", "A5s", "T9s", "A9o", "55o", "QTo", "K6s", "Q8s", "K7s", "A8o", "A4s", "JTo", "A2s", "K9o", "A3s", "J8s", "T8s", "Q7s", "44o", "K5s", "A7o", "98s", "K4s", "Q6s", "Q9o", "K3s", "J7s", "33o", "T7s", "K8o", "A6o", "97s", "J9o", "K2s", "Q5s", "J6s", "87s", "T9o", "Q4s", "K7o", "A5o", "Q8o", "96s", "T6s", "Q2s", "J5s", "Q3s", "76s", "J8o", "A4o", "J4s", "86s", "T8o", "A3o", "K6o", "T5s", "J3s", "22o", "K5o", "A2o", "85s", "Q7o", "95s", "98o", "J2s", "T4s", "65s", "75s", "T3s", "Q6o", "94s", "K4o", "T2s", "T7o", "J7o", "84s", "64s", "K3o", "92s", "Q5o", "97o", "87o", "54s", "83s", "93s", "K2o", "63s", "74s", "J6o", "Q4o", "73s", "53s", "62s", "86o", "Q3o", "T6o", "82s", "J5o", "72s", "96o", "43s", "76o", "Q2o", "52s", "J4o", "T5o", "42s", "75o", "T4o", "85o", "J3o", "95o", "65o", "J2o", "32s", "T3o", "84o", "64o", "74o", "T2o", "94o", "93o", "54o", "63o", "92o", "73o", "83o", "53o", "82o", "43o", "62o", "72o", "52o", "42o", "32o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "AQs", "99o", "AJs", "KQs", "AKo", "88o", "ATs", "KJs", "AQo", "QJs", "KTs", "A9s", "KQo", "AJo", "77o", "QTs", "JTs", "K9s", "A8s", "KJo", "66o", "ATo", "A7s", "Q9s", "A6s", "K8s", "QJo", "J9s", "A5s", "55o", "Q8s", "KTo", "A4s", "K7s", "A9o", "T9s", "QTo", "A3s", "A2s", "J8s", "K6s", "T8s", "JTo", "K5s", "44o", "A8o", "K9o", "Q7s", "Q6s", "K4s", "98s", "K3s", "J7s", "Q9o", "33o", "A7o", "T7s", "J6s", "K2s", "Q5s", "J9o", "Q4s", "97s", "87s", "22o", "T6s", "K8o", "Q3s", "A6o", "T9o", "K7o", "J3s", "J5s", "A5o", "76s", "86s", "J4s", "Q2s", "Q8o", "96s", "95s", "A4o", "T5s", "J2s", "J8o", "65s", "T4s", "85s", "75s", "T3s", "K6o", "A3o", "64s", "94s", "T8o", "98o", "A2o", "T2s", "Q7o", "54s", "K5o", "63s", "74s", "84s", "93s", "J7o", "92s", "53s", "K4o", "Q6o", "T7o", "83s", "87o", "82s", "73s", "K3o", "97o", "43s", "Q5o", "K2o", "62s", "72s", "J6o", "52s", "Q4o", "T6o", "Q3o", "42s", "32s", "96o", "86o", "J5o", "76o", "Q2o", "T5o", "J4o", "J3o", "85o", "65o", "75o", "95o", "J2o", "T4o", "T3o", "64o", "T2o", "84o", "74o", "94o", "54o", "93o", "92o", "63o", "53o", "83o", "73o", "82o", "62o", "43o", "52o", "72o", "42o", "32o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "AKs", "TTo", "AQs", "99o", "KQs", "AKo", "AJs", "ATs", "KJs", "88o", "QJs", "AQo", "KTs", "A9s", "QTs", "KQo", "77o", "AJo", "A8s", "K9s", "JTs", "A7s", "66o", "Q9s", "ATo", "KJo", "A4s", "J9s", "K8s", "A6s", "A5s", "55o", "QJo", "K7s", "T9s", "Q8s", "KTo", "A3s", "A2s", "T8s", "K6s", "QTo", "44o", "J8s", "A9o", "98s", "K5s", "33o", "K4s", "Q6s", "K2s", "J7s", "JTo", "22o", "Q7s", "K3s", "K9o", "T7s", "Q4s", "A8o", "Q3s", "Q5s", "97s", "J6s", "87s", "A7o", "Q9o", "T6s", "J5s", "Q2s", "76s", "96s", "J9o", "86s", "A6o", "J2s", "J3s", "T9o", "K8o", "T5s", "75s", "J4s", "65s", "A5o", "T3s", "85s", "95s", "T4s", "Q8o", "K7o", "64s", "T2s", "A4o", "93s", "74s", "J8o", "K6o", "54s", "T8o", "84s", "A3o", "92s", "94s", "Q7o", "A2o", "98o", "83s", "63s", "82s", "K5o", "62s", "J7o", "53s", "43s", "73s", "K4o", "72s", "Q6o", "52s", "T7o", "42s", "97o", "K3o", "Q5o", "87o", "32s", "K2o", "J6o", "Q4o", "96o", "T6o", "86o", "Q3o", "76o", "J5o", "Q2o", "J4o", "T5o", "65o", "85o", "J3o", "75o", "95o", "J2o", "T4o", "64o", "T3o", "T2o", "84o", "74o", "54o", "94o", "93o", "53o", "63o", "92o", "73o", "82o", "83o", "43o", "62o", "52o", "72o", "42o", "32o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "AKs", "TTo", "AQs", "AJs", "KQs", "99o", "AKo", "ATs", "KJs", "88o", "KTs", "QJs", "A9s", "AQo", "77o", "QTs", "JTs", "KQo", "A8s", "AJo", "K9s", "66o", "A7s", "A6s", "Q9s", "A5s", "55o", "J9s", "K8s", "KJo", "ATo", "A4s", "T9s", "K7s", "A3s", "A2s", "44o", "33o", "K6s", "QJo", "KTo", "J8s", "Q8s", "Q7s", "22o", "K5s", "K4s", "T8s", "K2s", "K3s", "98s", "QTo", "J7s", "Q6s", "A9o", "T7s", "Q5s", "JTo", "Q3s", "97s", "J6s", "Q4s", "A8o", "87s", "86s", "K9o", "Q2s", "T6s", "J5s", "76s", "96s", "A7o", "J4s", "T4s", "65s", "Q9o", "J3s", "J2s", "95s", "J9o", "75s", "T5s", "K8o", "T9o", "A6o", "85s", "T3s", "54s", "64s", "94s", "T2s", "74s", "Q8o", "93s", "A5o", "84s", "A4o", "92s", "K7o", "63s", "53s", "83s", "J8o", "73s", "43s", "A3o", "A2o", "K6o", "T8o", "62s", "82s", "72s", "98o", "52s", "42s", "Q7o", "K5o", "32s", "K4o", "J7o", "K3o", "T7o", "97o", "Q6o", "K2o", "87o", "Q5o", "Q4o", "76o", "J6o", "T6o", "86o", "Q3o", "Q2o", "96o", "J5o", "75o", "J4o", "65o", "T5o", "J2o", "85o", "J3o", "T4o", "64o", "95o", "54o", "74o", "T3o", "T2o", "84o", "94o", "63o", "93o", "53o", "73o", "92o", "83o", "43o", "82o", "52o", "62o", "72o", "42o", "32o" },
+            new string[] { "AAo", "KKo", "QQo", "JJo", "AKs", "TTo", "AQs", "99o", "AJs", "KQs", "ATs", "AKo", "KJs", "88o", "QJs", "KTs", "77o", "AQo", "A9s", "QTs", "K9s", "A8s", "66o", "JTs", "KQo", "A7s", "AJo", "55o", "Q9s", "44o", "K8s", "A5s", "A6s", "33o", "A3s", "A4s", "J9s", "K7s", "22o", "A2s", "ATo", "KJo", "Q8s", "T9s", "T8s", "K5s", "K6s", "J8s", "QJo", "Q7s", "K3s", "K2s", "K4s", "KTo", "Q6s", "98s", "J7s", "97s", "Q5s", "QTo", "T7s", "A9o", "JTo", "Q4s", "87s", "Q2s", "Q3s", "J6s", "T6s", "A8o", "65s", "K9o", "76s", "96s", "86s", "J5s", "J3s", "J4s", "T5s", "64s", "J2s", "75s", "T3s", "95s", "A7o", "Q9o", "T2s", "T4s", "54s", "85s", "74s", "94s", "K8o", "53s", "A6o", "T9o", "J9o", "84s", "93s", "A5o", "92s", "63s", "73s", "43s", "82s", "A4o", "83s", "Q8o", "62s", "A3o", "K7o", "52s", "J8o", "72s", "A2o", "T8o", "42s", "K6o", "32s", "98o", "Q7o", "K5o", "K4o", "T7o", "J7o", "87o", "97o", "Q6o", "K3o", "K2o", "Q5o", "76o", "Q4o", "86o", "96o", "Q3o", "J6o", "T6o", "Q2o", "J5o", "65o", "75o", "85o", "64o", "J4o", "95o", "J3o", "T5o", "J2o", "T4o", "74o", "54o", "T3o", "T2o", "84o", "63o", "94o", "53o", "43o", "93o", "92o", "73o", "82o", "62o", "83o", "42o", "52o", "72o", "32o" },
 };
 
         public static readonly int[][] BestHoleCardsNumericByPlayerCount = new int[][]
         {
             new int[0],
             new int[0],
-            new int[] { 160, 140, 120, 100, 80, 159, 157, 158, 155, 156, 60, 153, 139, 154, 137, 138, 152, 151, 135, 136, 119, 149, 150, 134, 117, 133, 118, 40, 147, 148, 116, 99, 132, 145, 115, 146, 131, 98, 129, 97, 144, 114, 113, 130, 20, 79, 127, 128, 96, 95, 112, 111, 78, 126, 77, 109, 93, 94, 110, 59, 76, 75, 0, 108, 92, 91, 57, 58, 73, 74, 90, 55, 56, 39, 72, 37, 54, 38, 19, 36, 18 },
-            new int[] { 160, 140, 120, 100, 80, 159, 157, 158, 155, 156, 60, 139, 153, 154, 137, 138, 135, 151, 152, 119, 136, 149, 117, 40, 134, 150, 133, 99, 118, 147, 116, 148, 145, 115, 131, 98, 132, 20, 146, 97, 129, 79, 113, 114, 144, 127, 95, 130, 0, 77, 96, 111, 78, 128, 112, 93, 109, 59, 75, 126, 94, 57, 76, 91, 110, 73, 58, 92, 108, 55, 39, 74, 56, 37, 90, 72, 19, 54, 38, 36, 18 },
-            new int[] { 160, 140, 120, 100, 80, 159, 157, 158, 60, 155, 139, 156, 153, 137, 154, 135, 138, 40, 151, 119, 152, 117, 149, 136, 99, 20, 133, 134, 147, 118, 150, 0, 145, 115, 116, 131, 97, 148, 98, 79, 129, 113, 132, 146, 95, 127, 77, 114, 111, 144, 96, 93, 130, 59, 109, 75, 78, 128, 57, 112, 91, 73, 94, 76, 126, 55, 39, 110, 58, 37, 92, 74, 108, 19, 56, 90, 72, 54, 38, 36, 18 },
-            new int[] { 160, 140, 120, 100, 80, 159, 60, 157, 158, 155, 139, 40, 153, 156, 137, 20, 135, 119, 151, 138, 0, 154, 117, 99, 152, 149, 136, 133, 147, 134, 118, 115, 145, 97, 150, 131, 79, 116, 98, 113, 129, 95, 148, 77, 127, 132, 111, 146, 59, 93, 75, 109, 114, 96, 144, 57, 78, 73, 91, 130, 55, 39, 112, 128, 94, 76, 37, 126, 110, 19, 58, 74, 92, 108, 56, 72, 90, 54, 38, 36, 18 },
-            new int[] { 160, 140, 120, 100, 80, 60, 159, 40, 157, 20, 158, 139, 155, 0, 153, 137, 156, 135, 119, 117, 151, 99, 138, 154, 149, 133, 152, 147, 136, 115, 79, 97, 145, 134, 118, 131, 113, 116, 129, 77, 95, 150, 98, 127, 111, 59, 75, 93, 148, 109, 57, 132, 73, 91, 146, 114, 78, 55, 96, 39, 144, 37, 130, 112, 76, 19, 128, 94, 126, 58, 110, 74, 92, 108, 56, 72, 90, 54, 38, 36, 18 },
-            new int[] { 160, 140, 120, 100, 80, 60, 40, 159, 20, 0, 157, 139, 155, 158, 153, 137, 135, 119, 117, 156, 99, 151, 138, 149, 154, 133, 147, 79, 115, 97, 152, 136, 145, 131, 118, 113, 77, 129, 134, 95, 127, 116, 98, 111, 75, 59, 93, 150, 109, 57, 73, 91, 55, 148, 39, 132, 37, 78, 146, 114, 96, 19, 144, 130, 76, 112, 94, 128, 126, 74, 58, 110, 92, 108, 56, 72, 90, 54, 38, 36, 18 },
-            new int[] { 160, 140, 120, 100, 80, 60, 40, 20, 0, 159, 157, 139, 155, 153, 137, 158, 119, 135, 117, 99, 151, 156, 149, 133, 138, 147, 79, 115, 97, 145, 154, 131, 77, 136, 113, 129, 152, 95, 127, 118, 134, 111, 75, 59, 93, 116, 98, 109, 57, 73, 91, 150, 55, 39, 37, 148, 132, 19, 78, 96, 114, 146, 144, 130, 76, 112, 94, 128, 126, 74, 58, 110, 92, 108, 56, 72, 90, 38, 54, 36, 18 },
-            new int[] { 160, 140, 120, 100, 80, 60, 40, 20, 0, 159, 157, 139, 155, 153, 137, 119, 135, 117, 99, 158, 151, 149, 133, 156, 147, 79, 115, 97, 145, 138, 131, 77, 113, 129, 95, 154, 127, 136, 111, 152, 75, 93, 118, 59, 109, 134, 57, 116, 98, 73, 91, 55, 39, 37, 150, 19, 148, 78, 132, 96, 114, 146, 144, 130, 76, 112, 94, 128, 126, 74, 110, 58, 92, 108, 56, 72, 90, 38, 54, 36, 18 },
-        };
+            new int[] { 336, 308, 280, 252, 224, 196, 168, 140, 335, 333, 334, 331, 332, 112, 307, 330, 327, 329, 328, 305, 325, 303, 84, 306, 323, 304, 301, 326, 321, 279, 302, 324, 319, 299, 322, 277, 317, 300, 297, 56, 278, 275, 320, 318, 276, 298, 251, 315, 313, 273, 316, 274, 295, 291, 249, 296, 289, 28, 287, 250, 269, 314, 294, 293, 272, 271, 312, 247, 292, 248, 223, 267, 221, 290, 270, 245, 265, 0, 288, 246, 268, 195, 263, 222, 243, 261, 241, 286, 219, 266, 220, 239, 244, 264, 242, 193, 217, 260, 191, 237, 235, 262, 218, 215, 194, 240, 213, 167, 192, 216, 236, 165, 189, 238, 187, 209, 211, 214, 234, 139, 190, 166, 163, 161, 185, 212, 111, 188, 210, 164, 183, 137, 208, 135, 159, 162, 138, 157, 186, 109, 133, 184, 136, 160, 83, 182, 107, 110, 131, 134, 81, 158, 105, 55, 108, 156, 79, 132, 106, 53, 82, 130, 80, 104, 27, 78, 54, 52, 26 },
+            new int[] { 336, 308, 280, 252, 224, 196, 335, 168, 333, 331, 334, 140, 329, 332, 307, 303, 305, 330, 112, 327, 279, 328, 306, 325, 304, 323, 277, 326, 302, 84, 301, 278, 321, 324, 299, 275, 251, 319, 276, 300, 295, 322, 297, 273, 249, 56, 317, 315, 250, 320, 313, 293, 274, 298, 223, 318, 247, 289, 316, 221, 271, 269, 248, 291, 245, 267, 287, 296, 28, 195, 294, 272, 314, 219, 222, 312, 292, 193, 265, 243, 246, 0, 263, 290, 270, 261, 167, 239, 241, 268, 220, 217, 191, 244, 266, 288, 286, 194, 215, 139, 165, 218, 237, 189, 235, 264, 213, 163, 192, 242, 211, 262, 137, 240, 166, 216, 209, 111, 161, 135, 260, 238, 187, 190, 185, 109, 83, 183, 236, 214, 164, 159, 138, 157, 133, 188, 212, 234, 107, 81, 162, 210, 136, 131, 110, 79, 208, 55, 186, 105, 134, 160, 108, 182, 53, 184, 27, 82, 106, 132, 158, 156, 80, 54, 130, 104, 78, 52, 26 },
+            new int[] { 336, 308, 280, 252, 224, 196, 335, 333, 168, 334, 307, 331, 305, 332, 140, 329, 330, 279, 306, 327, 303, 277, 325, 328, 112, 301, 304, 251, 323, 302, 299, 321, 278, 326, 275, 319, 249, 84, 223, 324, 273, 276, 317, 315, 297, 250, 300, 56, 322, 247, 295, 313, 293, 274, 269, 221, 271, 245, 195, 291, 320, 248, 287, 298, 267, 318, 219, 296, 272, 289, 222, 167, 28, 243, 193, 316, 265, 294, 314, 246, 241, 263, 261, 312, 139, 217, 239, 220, 270, 165, 237, 0, 194, 292, 189, 191, 244, 215, 290, 235, 213, 268, 211, 288, 111, 137, 218, 266, 163, 192, 286, 209, 135, 109, 161, 242, 166, 187, 264, 185, 240, 183, 83, 262, 216, 260, 107, 159, 133, 190, 238, 164, 138, 131, 55, 81, 214, 157, 236, 188, 162, 212, 105, 110, 234, 136, 79, 210, 53, 208, 160, 186, 27, 134, 108, 184, 182, 82, 132, 106, 158, 80, 156, 54, 104, 130, 78, 52, 26 },
+            new int[] { 336, 308, 280, 252, 224, 335, 196, 333, 334, 331, 307, 168, 329, 305, 332, 303, 140, 279, 277, 330, 327, 306, 325, 301, 323, 112, 328, 304, 251, 321, 275, 278, 302, 299, 249, 319, 223, 326, 84, 276, 295, 273, 297, 324, 317, 250, 313, 300, 315, 247, 221, 271, 56, 293, 322, 195, 291, 269, 274, 289, 245, 28, 219, 298, 320, 193, 248, 287, 267, 243, 167, 222, 265, 296, 318, 272, 191, 217, 261, 241, 263, 139, 246, 316, 239, 165, 220, 314, 294, 215, 237, 0, 292, 312, 163, 270, 189, 194, 235, 213, 111, 137, 211, 268, 187, 290, 209, 218, 244, 161, 109, 288, 183, 266, 192, 166, 83, 159, 185, 286, 107, 135, 242, 264, 133, 81, 105, 164, 262, 216, 157, 240, 131, 190, 55, 138, 260, 79, 238, 214, 53, 136, 212, 162, 236, 188, 110, 234, 27, 210, 160, 108, 134, 208, 186, 184, 82, 106, 182, 132, 158, 80, 156, 54, 104, 130, 78, 52, 26 },
+            new int[] { 336, 308, 280, 252, 224, 335, 333, 196, 331, 307, 334, 168, 329, 305, 332, 279, 303, 327, 306, 330, 140, 277, 251, 301, 325, 304, 112, 328, 323, 275, 321, 299, 278, 249, 319, 84, 273, 302, 317, 297, 326, 223, 276, 315, 313, 247, 295, 221, 250, 293, 56, 324, 300, 271, 269, 291, 195, 289, 245, 274, 28, 322, 219, 243, 287, 267, 248, 265, 193, 167, 0, 217, 298, 263, 320, 222, 296, 237, 241, 318, 139, 165, 239, 261, 272, 191, 189, 316, 215, 235, 246, 111, 213, 163, 137, 211, 294, 314, 109, 187, 220, 194, 312, 209, 270, 83, 292, 107, 135, 161, 185, 244, 183, 81, 290, 268, 218, 159, 166, 157, 133, 288, 192, 55, 266, 286, 105, 131, 242, 79, 264, 216, 262, 53, 27, 190, 164, 240, 138, 260, 214, 238, 236, 162, 110, 136, 188, 234, 212, 210, 108, 208, 160, 134, 186, 82, 184, 182, 106, 80, 158, 132, 156, 104, 54, 78, 130, 52, 26 },
+            new int[] { 336, 308, 280, 252, 335, 224, 333, 196, 307, 334, 331, 329, 305, 168, 279, 332, 303, 327, 277, 306, 140, 330, 325, 301, 251, 323, 112, 275, 328, 304, 317, 249, 299, 321, 319, 84, 278, 297, 223, 273, 302, 315, 313, 221, 295, 276, 56, 247, 326, 195, 293, 28, 291, 269, 287, 245, 250, 0, 271, 289, 300, 219, 265, 324, 263, 267, 193, 243, 167, 322, 274, 217, 241, 261, 139, 191, 248, 165, 320, 235, 237, 222, 298, 215, 137, 239, 111, 318, 211, 163, 189, 213, 272, 296, 109, 209, 316, 185, 135, 246, 294, 83, 220, 161, 314, 183, 187, 270, 312, 194, 159, 107, 157, 292, 105, 244, 81, 55, 133, 290, 131, 268, 79, 218, 53, 192, 288, 266, 166, 27, 286, 242, 264, 190, 216, 164, 262, 138, 240, 260, 238, 214, 110, 162, 236, 136, 188, 234, 212, 108, 210, 208, 160, 134, 82, 186, 184, 80, 106, 182, 132, 156, 158, 54, 104, 78, 130, 52, 26 },
+            new int[] { 336, 308, 280, 252, 335, 224, 333, 331, 307, 196, 334, 329, 305, 168, 303, 279, 327, 332, 140, 277, 251, 306, 325, 330, 301, 112, 323, 321, 275, 319, 84, 249, 299, 304, 328, 317, 223, 297, 315, 313, 56, 28, 295, 278, 302, 247, 273, 271, 0, 293, 291, 221, 287, 289, 195, 276, 245, 269, 326, 219, 267, 250, 263, 193, 243, 265, 324, 167, 165, 300, 261, 217, 241, 139, 191, 322, 239, 213, 111, 274, 237, 235, 189, 248, 137, 215, 298, 222, 320, 163, 211, 83, 109, 187, 209, 135, 272, 185, 318, 161, 316, 183, 296, 107, 81, 159, 246, 133, 55, 314, 312, 294, 220, 105, 157, 131, 194, 79, 53, 270, 292, 27, 290, 244, 288, 218, 192, 268, 286, 166, 266, 264, 138, 242, 216, 164, 262, 260, 190, 240, 136, 238, 110, 214, 234, 162, 236, 212, 108, 188, 82, 134, 210, 208, 160, 186, 106, 184, 80, 132, 182, 158, 54, 156, 78, 104, 130, 52, 26 },
+            new int[] { 336, 308, 280, 252, 335, 224, 333, 196, 307, 331, 334, 305, 329, 168, 279, 303, 327, 140, 332, 112, 277, 251, 325, 301, 84, 306, 323, 56, 330, 321, 299, 275, 223, 317, 28, 315, 319, 249, 313, 328, 304, 0, 297, 273, 278, 295, 293, 221, 247, 195, 291, 245, 271, 302, 219, 289, 287, 269, 265, 267, 193, 276, 326, 263, 250, 243, 165, 167, 191, 261, 217, 300, 241, 324, 235, 139, 111, 239, 237, 137, 189, 215, 213, 163, 109, 211, 274, 322, 209, 187, 81, 83, 248, 135, 185, 183, 320, 161, 222, 298, 107, 159, 133, 55, 318, 316, 131, 105, 296, 272, 79, 53, 157, 246, 314, 220, 27, 312, 294, 194, 292, 270, 290, 218, 288, 286, 166, 268, 244, 192, 266, 138, 264, 164, 242, 190, 260, 262, 216, 136, 110, 240, 108, 238, 162, 236, 214, 188, 134, 212, 234, 210, 82, 208, 80, 106, 160, 186, 184, 54, 182, 132, 158, 104, 156, 52, 130, 78, 26 },
+    };
 
         public static int[] BestHoleCardsNumericHero;
         public static int[] BestHoleCardsNumericVillain;
@@ -69,8 +69,14 @@ namespace ShortDeckStatistics.GameStructures
         private readonly int KeepTopPercentHero;
         private readonly int KeepTopPercentVillain;
 
+        public readonly int DeckNumericValueCount;
+        public readonly int DeckSuitCount;
+
         public Table(int numPlayers, bool maniacPlay, int keepTopPercentHero, int keepTopPercentVillain, bool logPokerHandResults)
         {
+            DeckNumericValueCount = 13;
+            DeckSuitCount = 4;
+
             PlayerCount = numPlayers;
             ManiacPlay = maniacPlay;
             LogPokerHandResults = logPokerHandResults;
@@ -100,31 +106,31 @@ namespace ShortDeckStatistics.GameStructures
                 Array.Sort(BestHoleCardsNumericByPlayerCount[i]);
             }
 
-            HoleCardsWinCounter = new long[9][];
+            HoleCardsWinCounter = new long[DeckNumericValueCount][];
             for (int i = 0; i < HoleCardsWinCounter.Length; i++)
             {
-                HoleCardsWinCounter[i] = new long[9];
+                HoleCardsWinCounter[i] = new long[DeckNumericValueCount];
             }
 
-            HoleCardsDealtCounter = new long[9][];
+            HoleCardsDealtCounter = new long[DeckNumericValueCount][];
             for (int i = 0; i < HoleCardsDealtCounter.Length; i++)
             {
-                HoleCardsDealtCounter[i] = new long[9];
+                HoleCardsDealtCounter[i] = new long[DeckNumericValueCount];
             }
 
-            HoleCardsTieCounter = new long[9][];
+            HoleCardsTieCounter = new long[DeckNumericValueCount][];
             for (int i = 0; i < HoleCardsTieCounter.Length; i++)
             {
-                HoleCardsTieCounter[i] = new long[9];
+                HoleCardsTieCounter[i] = new long[DeckNumericValueCount];
             }
 
             //Populate the deck
-            Deck = new Card[36];
-            for (short suit = 0; suit < 4; suit++)
+            Deck = new Card[DeckSuitCount * DeckNumericValueCount];
+            for (short suit = 0; suit < DeckSuitCount; suit++)
             {
-                for (short value = 0; value < 9; value++)
+                for (short value = 0; value < DeckNumericValueCount; value++)
                 {
-                    int slot = suit * 9 + value;
+                    int slot = suit * DeckNumericValueCount + value;
                     Deck[slot] = new Card(suit, value);
                 }
             }
@@ -138,7 +144,7 @@ namespace ShortDeckStatistics.GameStructures
             AllPlayerFullHands = new PokerHand[numPlayers];
             for (int i = 0; i < numPlayers; i++)
             {
-                AllPlayerFullHands[i] = new PokerHand();
+                AllPlayerFullHands[i] = new PokerHand(this);
             }
         }
 
@@ -180,7 +186,7 @@ namespace ShortDeckStatistics.GameStructures
             var winRateArray = new double[holeCardsAndWinRates.Count];
             holeCardsAndWinRates.Keys.CopyTo(cardNumericArray, 0);
 
-            var holeCardsInput = PokerHand.ConvertCardStringToNumericValue(holeCardsStringInput);
+            var holeCardsInput = PokerHand.ConvertCardStringToNumericValue(holeCardsStringInput, this);
 
             var pos = -1;
             foreach (var holeCards in holeCardsAndWinRates)
@@ -216,7 +222,7 @@ namespace ShortDeckStatistics.GameStructures
 
                 if (winRate == 0.0) continue;
 
-                var holeCardsString = PokerHand.ConvertHoleCardsNumericValueToString(holeCardsNumeric);
+                var holeCardsString = PokerHand.ConvertHoleCardsNumericValueToString(holeCardsNumeric, this);
 
                 sb.AppendLine($"{holeCardsString.PadRight(ratePaddingLength)}{winRate.ToString("0.0000").PadRight(ratePaddingLength)}{lossRate.ToString("0.0000").PadRight(ratePaddingLength)}{tieRate.ToString("0.0000")}");
             }
@@ -233,7 +239,7 @@ namespace ShortDeckStatistics.GameStructures
             var winRateArray = new double[holeCardsAndWinRates.Count];
             holeCardsAndWinRates.Keys.CopyTo(holeCardsArray, 0);
 
-            var holeCardsInput = PokerHand.ConvertCardStringToNumericValue(holeCardsStringInput);
+            var holeCardsInput = PokerHand.ConvertCardStringToNumericValue(holeCardsStringInput, this);
 
             var holeCardsCount = 0;
             foreach (var holeCards in holeCardsAndWinRates)
@@ -276,7 +282,7 @@ namespace ShortDeckStatistics.GameStructures
                     totalCardAppearances += handsMadeArray[i];
                 }
 
-                var targetCardString = PokerHand.ConvertHoleCardsNumericValueToString(targetHoleCards);
+                var targetCardString = PokerHand.ConvertHoleCardsNumericValueToString(targetHoleCards, this);
 
                 var targetCardPadding = 8;
                 var rankPadding = 18;
@@ -375,6 +381,47 @@ namespace ShortDeckStatistics.GameStructures
             Console.WriteLine(sb.ToString());
         }
 
+        public void PrintHoleCardsRankedByBestForArray()
+        {
+            var holeCardsAndWinRates = GetHoleCardsAndWinRates();
+
+            StringBuilder sb = new StringBuilder();
+
+
+            var holeCardNumericArray = new int[holeCardsAndWinRates.Count];
+            var winRateArray = new double[holeCardsAndWinRates.Count];
+            holeCardsAndWinRates.Keys.CopyTo(holeCardNumericArray, 0);
+
+            var pos = 0;
+            foreach (var holeCards in holeCardsAndWinRates)
+            {
+
+                var holeCardsNumeric = holeCards.Key;
+                var winRate = holeCardsAndWinRates[holeCardsNumeric];
+
+                winRateArray[pos] = winRate[0];
+
+                holeCardNumericArray[pos] = holeCardsNumeric;
+
+                pos++;
+            }
+
+            Array.Sort(winRateArray, holeCardNumericArray);
+            Array.Reverse(holeCardNumericArray);
+
+            var holeCardArray = new string[holeCardsAndWinRates.Count];
+            for (var i = 0; i < holeCardNumericArray.Length; i++)
+            {
+                holeCardArray[i] = "\"" + PokerHand.ConvertHoleCardsNumericValueToString(holeCardNumericArray[i], this) + "\"";
+            }
+
+            sb.Append("new string[] { ");
+            sb.Append(string.Join(", ", holeCardArray));
+            sb.Append(" },");
+
+            Console.WriteLine(sb.ToString());
+        }
+
         private Dictionary<int, double[]> GetHoleCardsAndWinRates()
         {
             var holeCardsAndWinRates = new Dictionary<int, double[]>();
@@ -392,7 +439,7 @@ namespace ShortDeckStatistics.GameStructures
                     var tieRate = dealCount == 0 ? 0 : (double)tieCount / dealCount;
                     var lossRate = dealCount == 0 ? 0 : (double)lossCount / dealCount;
 
-                    var holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(bigCardValue, smallCardValue, false);
+                    var holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(bigCardValue, smallCardValue, false, this);
 
 
                     holeCardsAndWinRates.Add(holeCardsNumeric, new double[] { winRate, lossRate, tieRate });
@@ -412,7 +459,7 @@ namespace ShortDeckStatistics.GameStructures
                     var tieRate = dealCount == 0 ? 0 : (double)tieCount / dealCount;
                     var lossRate = dealCount == 0 ? 0 : (double)lossCount / dealCount;
 
-                    var holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(bigCardValue, smallcardValue, true);
+                    var holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(bigCardValue, smallcardValue, true, this);
 
                     holeCardsAndWinRates.Add(holeCardsNumeric, new double[] { winRate, lossRate, tieRate });
                 }
@@ -496,7 +543,7 @@ namespace ShortDeckStatistics.GameStructures
                 smallestHoleCard = hand.HoleCards[1];
 
                 isSuited = biggestHoleCard.Suit == smallestHoleCard.Suit;
-                holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, isSuited);
+                holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, isSuited, this);
 
                 if (isSuited)
                 {
@@ -516,7 +563,9 @@ namespace ShortDeckStatistics.GameStructures
                         HandsTiedCount.Add(holeCardsNumeric, new int[10]);
                     }
 
-                    HandsMadeCount[holeCardsNumeric][hand.HandRank / 100_000_000_000L]++;
+                    var handRank = hand.HandRank / 100_000_000_000L;
+
+                    HandsMadeCount[holeCardsNumeric][handRank]++;
                 }
             }
 
@@ -587,7 +636,7 @@ namespace ShortDeckStatistics.GameStructures
             smallestHoleCard = strongestHand.HoleCards[1];
 
             isSuited = biggestHoleCard.Suit == smallestHoleCard.Suit;
-            holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, isSuited);
+            holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, isSuited, this);
 
             if (isTie)
             {

@@ -36,9 +36,12 @@ namespace ShortDeckStatistics.GameStructures
         public bool IsLiveAsVillain;
         public bool ManiacPlay;
 
-        public PokerHand()
+        public Table Table;
+
+        public PokerHand(Table table)
         {
             _sevenCardHand = new Card[7];
+            Table = table;
         }
 
         public void GeneratePokerHand(Card[] holeCards, Card[] communityCards, int playerCount, bool isVillainEmotional, int keepTopPercentHero, int keepTopPercentVillain, bool maniacPlay)
@@ -59,7 +62,7 @@ namespace ShortDeckStatistics.GameStructures
                 smallestHoleCard = temp;
             }
 
-            HoleCardsNumericRepresentation = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, biggestHoleCard.Suit == smallestHoleCard.Suit);
+            HoleCardsNumericRepresentation = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, biggestHoleCard.Suit == smallestHoleCard.Suit, Table);
 
             var holeCardPos = 0;
             var communityCardPos = 0;
@@ -246,7 +249,7 @@ namespace ShortDeckStatistics.GameStructures
 
         private int[] ScoreFlush()
         {
-            var suitCounter = new int[4];
+            var suitCounter = new int[Table.DeckSuitCount];
             for (int pos = 0; pos < _sevenCardHand.Length; pos++)
             {
                 var card = _sevenCardHand[pos];
@@ -256,7 +259,7 @@ namespace ShortDeckStatistics.GameStructures
             var flushedSuit = -1;
             for (int suit = 0; suit < suitCounter.Length; suit++)
             {
-                if (suitCounter[suit] >= 5)
+                if (suitCounter[suit] >= Table.DeckSuitCount + 1)
                 {
                     flushedSuit = suit;
                     break;
@@ -373,7 +376,7 @@ namespace ShortDeckStatistics.GameStructures
             if (biggestPairCardValue == -1) return ZeroScore;
 
             ScoreContainer[0] = 6;
-            ScoreContainer[1] = biggestSetCardValue * 9 + biggestPairCardValue;
+            ScoreContainer[1] = biggestSetCardValue * Table.DeckNumericValueCount + biggestPairCardValue;
             ScoreContainer[2] = 0;
             return ScoreContainer;
         }
@@ -572,7 +575,7 @@ namespace ShortDeckStatistics.GameStructures
             var kickerVal = kickerValues[0];
 
             ScoreContainer[0] = 3;
-            ScoreContainer[1] = biggestPairCardValue * 9 + smallestPairCardValue;
+            ScoreContainer[1] = biggestPairCardValue * Table.DeckNumericValueCount + smallestPairCardValue;
             ScoreContainer[2] = kickerVal;
             return ScoreContainer;
         }
@@ -725,22 +728,22 @@ namespace ShortDeckStatistics.GameStructures
             return isStartingHand;
         }
 
-        public static int ConvertHoleCardsToNumericValue(int biggestCardValue, int smallestCardValue, bool areSuited)
+        public static int ConvertHoleCardsToNumericValue(int biggestCardValue, int smallestCardValue, bool areSuited, Table table)
         {
-            return (biggestCardValue * 9 + smallestCardValue) * 2 + (areSuited ? 1 : 0);
+            return (biggestCardValue * table.DeckNumericValueCount + smallestCardValue) * 2 + (areSuited ? 1 : 0);
         }
 
-        public static string ConvertHoleCardsNumericValueToString(int holeCardsNumericValue)
+        public static string ConvertHoleCardsNumericValueToString(int holeCardsNumericValue, Table table)
         {
             bool suited = holeCardsNumericValue % 2 == 1;
 
-            int biggestCardValue = (holeCardsNumericValue / 2) / 9;
-            int smallestCardValue = (holeCardsNumericValue / 2) % 9;
+            int biggestCardValue = (holeCardsNumericValue / 2) / table.DeckNumericValueCount;
+            int smallestCardValue = (holeCardsNumericValue / 2) % table.DeckNumericValueCount;
 
             return $"{Card.CardValues[biggestCardValue]}{Card.CardValues[smallestCardValue]}{(suited ? "s" : "o")}";
         }
 
-        public static int ConvertCardStringToNumericValue(string cardString)
+        public static int ConvertCardStringToNumericValue(string cardString, Table table)
         {
             if (string.IsNullOrEmpty(cardString)) return 0;
 
@@ -754,7 +757,7 @@ namespace ShortDeckStatistics.GameStructures
 
             if (biggestCardValue == -1 || smallestCardValue == -1) return 0;
 
-            var holeCardsNumericRepresentation = ConvertHoleCardsToNumericValue(biggestCardValue, smallestCardValue, areSuited);
+            var holeCardsNumericRepresentation = ConvertHoleCardsToNumericValue(biggestCardValue, smallestCardValue, areSuited, table);
             return holeCardsNumericRepresentation;
         }
     }

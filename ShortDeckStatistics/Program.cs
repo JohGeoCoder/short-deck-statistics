@@ -16,8 +16,8 @@ namespace ShortDeckStatistics
             var tableArray = new Table[3];
             for (int i = 2; i < tableArray.Length; i++)
             {
-                tableArray[i] = new Table(9, false, 40, 40, true);
-                tableArray[i].PlayHands(10_000_000, false);
+                tableArray[i] = new Table(9, true, 40, 40, true);
+                tableArray[i].PlayHands(1_000_000, false);
             }
 
             //for (int i = 2; i < tableArray.Length; i++)
@@ -42,6 +42,8 @@ namespace ShortDeckStatistics
 
                 Console.Clear();
                 table.PrintHoleCardWinRatesRankedByBest(input);
+                table.PrintHoleCardsNumericRankedByBestForArray();
+                table.PrintHoleCardsRankedByBestForArray();
                 table.PrintWinRatesForPokerHandsMade(input);
             }
 

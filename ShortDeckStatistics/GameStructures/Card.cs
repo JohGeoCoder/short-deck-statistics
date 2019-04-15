@@ -11,7 +11,7 @@ namespace ShortDeckStatistics.GameStructures
 
         private string _cardString;
 
-        public static readonly string[] CardValues = new string[] { "6", "7", "8", "9", "T", "J", "Q", "K", "A" };
+        public static readonly string[] CardValues = new string[] { "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A" };
         public static readonly string[] CardSuits = new string[] { "s", "c", "h", "d" };
 
         public Card(short suit, short value)
