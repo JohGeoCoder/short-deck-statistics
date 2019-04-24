@@ -110,10 +110,10 @@ namespace ShortDeckStatistics.GameStructures
         {
             var scoreData = ScoreStraightFlush();
             if (scoreData[0] == 0) scoreData = ScoreFourOfAKind();
-            if (scoreData[0] == 0) scoreData = ScoreFlush();
             if (scoreData[0] == 0) scoreData = ScoreFullHouse();
-            if (scoreData[0] == 0) scoreData = ScoreThreeOfAKind();
+            if (scoreData[0] == 0) scoreData = ScoreFlush();
             if (scoreData[0] == 0) scoreData = ScoreStraight();
+            if (scoreData[0] == 0) scoreData = ScoreThreeOfAKind();
             if (scoreData[0] == 0) scoreData = ScoreTwoPair();
             if (scoreData[0] == 0) scoreData = ScorePair();
             if (scoreData[0] == 0) scoreData = ScoreHighCard();
@@ -247,61 +247,6 @@ namespace ShortDeckStatistics.GameStructures
             return ScoreContainer;
         }
 
-        private int[] ScoreFlush()
-        {
-            var suitCounter = new int[Table.DeckSuitCount];
-            for (int pos = 0; pos < _sevenCardHand.Length; pos++)
-            {
-                var card = _sevenCardHand[pos];
-                suitCounter[card.Suit]++;
-            }
-
-            var flushedSuit = -1;
-            for (int suit = 0; suit < suitCounter.Length; suit++)
-            {
-                if (suitCounter[suit] >= Table.DeckSuitCount + 1)
-                {
-                    flushedSuit = suit;
-                    break;
-                }
-            }
-
-            if (flushedSuit == -1) return ZeroScore;
-
-            var highestFlushValue = -1;
-            var flushKickers = new Card[4];
-            var flushKickerCount = 0;
-            for (int pos = 0; pos < _sevenCardHand.Length; pos++)
-            {
-                var card = _sevenCardHand[pos];
-                if (card.Suit == flushedSuit)
-                {
-                    if (highestFlushValue == -1)
-                    {
-                        highestFlushValue = card.Value;
-                    }
-                    else
-                    {
-                        flushKickers[flushKickerCount] = card;
-                        flushKickerCount++;
-
-                        if (flushKickerCount == 4) break;
-                    }
-                }
-            }
-
-            var kickerVal =
-                1_000_000 * flushKickers[0].Value
-                + 10_000 * flushKickers[1].Value
-                + 100 * flushKickers[2].Value
-                + 1 * flushKickers[3].Value;
-
-            ScoreContainer[0] = 7;
-            ScoreContainer[1] = highestFlushValue;
-            ScoreContainer[2] = kickerVal;
-            return ScoreContainer;
-        }
-
         private int[] ScoreFullHouse()
         {
             //Find the value of the biggest set
@@ -375,8 +320,114 @@ namespace ShortDeckStatistics.GameStructures
             //If a pair doesn't exist, then the poker hand cannot be a full house.
             if (biggestPairCardValue == -1) return ZeroScore;
 
-            ScoreContainer[0] = 6;
+            ScoreContainer[0] = 7;
             ScoreContainer[1] = biggestSetCardValue * Table.DeckNumericValueCount + biggestPairCardValue;
+            ScoreContainer[2] = 0;
+            return ScoreContainer;
+        }
+
+        private int[] ScoreFlush()
+        {
+            var suitCounter = new int[Table.DeckSuitCount];
+            for (int pos = 0; pos < _sevenCardHand.Length; pos++)
+            {
+                var card = _sevenCardHand[pos];
+                suitCounter[card.Suit]++;
+            }
+
+            var flushedSuit = -1;
+            for (int suit = 0; suit < suitCounter.Length; suit++)
+            {
+                if (suitCounter[suit] >= Table.DeckSuitCount + 1)
+                {
+                    flushedSuit = suit;
+                    break;
+                }
+            }
+
+            if (flushedSuit == -1) return ZeroScore;
+
+            var highestFlushValue = -1;
+            var flushKickers = new Card[4];
+            var flushKickerCount = 0;
+            for (int pos = 0; pos < _sevenCardHand.Length; pos++)
+            {
+                var card = _sevenCardHand[pos];
+                if (card.Suit == flushedSuit)
+                {
+                    if (highestFlushValue == -1)
+                    {
+                        highestFlushValue = card.Value;
+                    }
+                    else
+                    {
+                        flushKickers[flushKickerCount] = card;
+                        flushKickerCount++;
+
+                        if (flushKickerCount == 4) break;
+                    }
+                }
+            }
+
+            var kickerVal =
+                1_000_000 * flushKickers[0].Value
+                + 10_000 * flushKickers[1].Value
+                + 100 * flushKickers[2].Value
+                + 1 * flushKickers[3].Value;
+
+            ScoreContainer[0] = 6;
+            ScoreContainer[1] = highestFlushValue;
+            ScoreContainer[2] = kickerVal;
+            return ScoreContainer;
+        }
+
+        private int[] ScoreStraight()
+        {
+            //Check for sequentiality
+            var consecutiveSequenceLength = 0;
+            var highestSequentialCardPosition = -1;
+            for (int i = 0; i < _sevenCardHand.Length; i++)
+            {
+                var currentCard = _sevenCardHand[i];
+                Card nextCard = null;
+
+                //Populate the next card, taking into consideration that it may be an Ace in the first position.
+                if (i < _sevenCardHand.Length - 1)
+                {
+                    nextCard = _sevenCardHand[i + 1];
+                }
+                else
+                {
+                    nextCard = _sevenCardHand[0];
+                }
+
+                //If the current card and next card are in sequence, update the sequence count.
+                //Otherwise, reset the sequence count.
+                //Take into consideration that the next sequential card may be an Ace in the first position.
+                if (nextCard.Value == currentCard.Value - 1 || currentCard.Value == 0 && nextCard.Value == 8)
+                {
+                    if (consecutiveSequenceLength == 0)
+                    {
+                        consecutiveSequenceLength = 2;
+                        highestSequentialCardPosition = i;
+                    }
+                    else consecutiveSequenceLength++;
+
+                    if (consecutiveSequenceLength == 5) break;
+                }
+                else
+                {
+                    consecutiveSequenceLength = 0;
+                    highestSequentialCardPosition = -1;
+                }
+            }
+
+            //If there is not a 5-card sequence, then the poker hand cannot be a straight flush.
+            if (consecutiveSequenceLength < 5) return ZeroScore;
+
+            //The value of this straight equals the face value of the highest card in the sequence.
+            ScoreContainer[0] = 5;
+            ScoreContainer[1] = _sevenCardHand[highestSequentialCardPosition].Value;
             ScoreContainer[2] = 0;
             return ScoreContainer;
         }
@@ -445,60 +496,9 @@ namespace ShortDeckStatistics.GameStructures
                 100 * kickerValues[0]
                 + 1 * kickerValues[1];
 
-            ScoreContainer[0] = 5;
+            ScoreContainer[0] = 4;
             ScoreContainer[1] = biggestSetCardValue + 1;
             ScoreContainer[2] = kickerVal;
-            return ScoreContainer;
-        }
-
-        private int[] ScoreStraight()
-        {
-            //Check for sequentiality
-            var consecutiveSequenceLength = 0;
-            var highestSequentialCardPosition = -1;
-            for (int i = 0; i < _sevenCardHand.Length; i++)
-            {
-                var currentCard = _sevenCardHand[i];
-                Card nextCard = null;
-
-                //Populate the next card, taking into consideration that it may be an Ace in the first position.
-                if (i < _sevenCardHand.Length - 1)
-                {
-                    nextCard = _sevenCardHand[i + 1];
-                }
-                else
-                {
-                    nextCard = _sevenCardHand[0];
-                }
-
-                //If the current card and next card are in sequence, update the sequence count.
-                //Otherwise, reset the sequence count.
-                //Take into consideration that the next sequential card may be an Ace in the first position.
-                if (nextCard.Value == currentCard.Value - 1 || currentCard.Value == 0 && nextCard.Value == 8)
-                {
-                    if (consecutiveSequenceLength == 0)
-                    {
-                        consecutiveSequenceLength = 2;
-                        highestSequentialCardPosition = i;
-                    }
-                    else consecutiveSequenceLength++;
-
-                    if (consecutiveSequenceLength == 5) break;
-                }
-                else
-                {
-                    consecutiveSequenceLength = 0;
-                    highestSequentialCardPosition = -1;
-                }
-            }
-
-            //If there is not a 5-card sequence, then the poker hand cannot be a straight flush.
-            if (consecutiveSequenceLength < 5) return ZeroScore;
-
-            //The value of this straight equals the face value of the highest card in the sequence.
-            ScoreContainer[0] = 4;
-            ScoreContainer[1] = _sevenCardHand[highestSequentialCardPosition].Value;
-            ScoreContainer[2] = 0;
             return ScoreContainer;
         }
 
