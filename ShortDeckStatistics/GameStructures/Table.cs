@@ -477,6 +477,8 @@ namespace ShortDeckStatistics.GameStructures
                 var holeCard = i / PlayerHoleCards.Length;
 
                 PlayerHoleCards[player][holeCard] = Deck[i];
+
+                Deck[i].isHoleCard = true;
             }
         }
 
@@ -682,8 +684,16 @@ namespace ShortDeckStatistics.GameStructures
 
         private void ShuffleDeck()
         {
-            //Shuffle the deck.
+            //Put all the cards back in the deck.
             var cardIndexPosition = Deck.Length;
+            while(cardIndexPosition > 1)
+            {
+                cardIndexPosition--;
+                Deck[cardIndexPosition].isHoleCard = false;
+            }
+
+            //Shuffle the deck.
+            cardIndexPosition = Deck.Length;
             while (cardIndexPosition > 1)
             {
                 cardIndexPosition--;
