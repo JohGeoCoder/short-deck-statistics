@@ -9,7 +9,7 @@ namespace ShortDeckStatistics.GameStructures
         public static readonly int[] ZeroScore = new int[] { 0, 0, 0 };
         public static readonly int[] ScoreContainer = new int[3];
 
-        public static readonly string[] HandRanks = new string[] { "Error", "High Card", "Pair", "Two Pair", "Straight", "Three of a Kind", "Full House", "Flush", "Four of a Kind", "Straight Flush" };
+        public static readonly string[] HandRanks = new string[] { "Error", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush" };
 
         private Card[] _sevenCardHand;
 
@@ -119,7 +119,7 @@ namespace ShortDeckStatistics.GameStructures
             if (scoreData[0] == 0) scoreData = ScoreHighCard();
 
             var score =
-                1L * scoreData[2]
+                1_000L * scoreData[2]
                 + 100_000_000L * scoreData[1]
                 + 100_000_000_000L * scoreData[0];
 
@@ -370,10 +370,10 @@ namespace ShortDeckStatistics.GameStructures
             }
 
             var kickerVal =
-                1_000_000 * flushKickers[0].Value
-                + 10_000 * flushKickers[1].Value
-                + 100 * flushKickers[2].Value
-                + 1 * flushKickers[3].Value;
+                Table.DeckNumericValueCount * Table.DeckNumericValueCount * Table.DeckNumericValueCount * flushKickers[0].Value
+                + Table.DeckNumericValueCount * Table.DeckNumericValueCount * flushKickers[1].Value
+                + Table.DeckNumericValueCount * flushKickers[2].Value
+                + flushKickers[3].Value;
 
             ScoreContainer[0] = 6;
             ScoreContainer[1] = highestFlushValue;
@@ -493,8 +493,8 @@ namespace ShortDeckStatistics.GameStructures
             }
 
             var kickerVal =
-                100 * kickerValues[0]
-                + 1 * kickerValues[1];
+                Table.DeckNumericValueCount * kickerValues[0]
+                + kickerValues[1];
 
             ScoreContainer[0] = 4;
             ScoreContainer[1] = biggestSetCardValue + 1;
@@ -622,9 +622,9 @@ namespace ShortDeckStatistics.GameStructures
             }
 
             var kickerVal =
-                10_000 * kickerValues[0]
-                + 100 * kickerValues[1]
-                + 1 * kickerValues[2];
+                Table.DeckNumericValueCount * Table.DeckNumericValueCount * kickerValues[0]
+                + Table.DeckNumericValueCount * kickerValues[1]
+                + kickerValues[2];
 
             ScoreContainer[0] = 2;
             ScoreContainer[1] = pairCardValue + 1;
@@ -637,10 +637,10 @@ namespace ShortDeckStatistics.GameStructures
             var highestValueCard = _sevenCardHand[0];
 
             var kickerVal =
-                1_000_000 * _sevenCardHand[1].Value
-                + 10_000 * _sevenCardHand[2].Value
-                + 100 * _sevenCardHand[3].Value
-                + 1 * _sevenCardHand[4].Value;
+                Table.DeckNumericValueCount * Table.DeckNumericValueCount * Table.DeckNumericValueCount * _sevenCardHand[1].Value
+                + Table.DeckNumericValueCount * Table.DeckNumericValueCount * _sevenCardHand[2].Value
+                + Table.DeckNumericValueCount * _sevenCardHand[3].Value
+                + _sevenCardHand[4].Value;
 
             ScoreContainer[0] = 1;
             ScoreContainer[1] = highestValueCard.Value;
