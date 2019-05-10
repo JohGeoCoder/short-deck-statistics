@@ -547,6 +547,10 @@ namespace ShortDeckStatistics.GameStructures
                 isSuited = biggestHoleCard.Suit == smallestHoleCard.Suit;
                 holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, isSuited, this);
 
+                //Determines which side of hole card matrix to log the cards.
+                //One side of the diagonal represents suited holde cards. The 
+                //diagonal itself and the other side represents unsuited hole
+                //cards.
                 if (isSuited)
                 {
                     HoleCardsDealtCounter[biggestHoleCard.Value][smallestHoleCard.Value]++;

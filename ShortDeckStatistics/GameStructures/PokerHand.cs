@@ -320,6 +320,21 @@ namespace ShortDeckStatistics.GameStructures
             //If a pair doesn't exist, then the poker hand cannot be a full house.
             if (biggestPairCardValue == -1) return ZeroScore;
 
+            //Determine subtype:
+            //Nut Boat
+            //Top Set Low Pair
+            //Underset
+            //Second Set
+            //Board Set Top Pair
+            //Board Set Bottom Pair
+            //Board Set Overpair
+            //Board Set Underpair
+            //One Hole Top Set
+            //One Hole Bottom Set
+            //Board Boat
+            //Counterfeit
+
+
             ScoreContainer[0] = 7;
             ScoreContainer[1] = biggestSetCardValue * Table.DeckNumericValueCount + biggestPairCardValue;
             ScoreContainer[2] = 0;
@@ -375,6 +390,15 @@ namespace ShortDeckStatistics.GameStructures
                 + Table.DeckNumericValueCount * flushKickers[2].Value
                 + flushKickers[3].Value;
 
+            //Determine subtype:
+            //Top Hole Flush
+            //Bottom Hole Flush
+            //Hole Suited Board 3
+            //Hole Suited Board 4
+            //Hole Suited Board 5
+            //Counterfeit
+            //Board Flush
+
             ScoreContainer[0] = 6;
             ScoreContainer[1] = highestFlushValue;
             ScoreContainer[2] = kickerVal;
@@ -424,6 +448,16 @@ namespace ShortDeckStatistics.GameStructures
 
             //If there is not a 5-card sequence, then the poker hand cannot be a straight flush.
             if (consecutiveSequenceLength < 5) return ZeroScore;
+
+            //Determine subtype:
+            //Two Top
+            //One Top
+            //One Card Top
+            //One Card Bottom
+            //One Card Middle
+            //Two Bottom
+            //Filling Gaps
+            //Board Straight
 
             //The value of this straight equals the face value of the highest card in the sequence.
             ScoreContainer[0] = 5;
@@ -495,6 +529,12 @@ namespace ShortDeckStatistics.GameStructures
             var kickerVal =
                 Table.DeckNumericValueCount * kickerValues[0]
                 + kickerValues[1];
+
+            //Determine subtype:
+            //Top Set
+            //Second Set
+            //Low Set
+            //Board Set
 
             ScoreContainer[0] = 4;
             ScoreContainer[1] = biggestSetCardValue + 1;
@@ -574,6 +614,15 @@ namespace ShortDeckStatistics.GameStructures
 
             var kickerVal = kickerValues[0];
 
+            //Determine subtype:
+            //Top Two
+            //Over Two Pair
+            //Highest Top
+            //Second Top Two
+            //Low Two Pair
+            //Under Two Pair
+            //Board Two Pair
+
             ScoreContainer[0] = 3;
             ScoreContainer[1] = biggestPairCardValue * Table.DeckNumericValueCount + smallestPairCardValue;
             ScoreContainer[2] = kickerVal;
@@ -625,6 +674,15 @@ namespace ShortDeckStatistics.GameStructures
                 Table.DeckNumericValueCount * Table.DeckNumericValueCount * kickerValues[0]
                 + Table.DeckNumericValueCount * kickerValues[1]
                 + kickerValues[2];
+
+            //Determine subtype:
+            //Board Pair
+            //Overpair
+            //Top Pair
+            //Second Pair
+            //Low Pair
+            //Underpair
+            //Counterfeit
 
             ScoreContainer[0] = 2;
             ScoreContainer[1] = pairCardValue + 1;
