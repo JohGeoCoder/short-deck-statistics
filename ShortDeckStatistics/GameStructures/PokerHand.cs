@@ -16,7 +16,7 @@ namespace ShortDeckStatistics.GameStructures
         public Card[] HoleCards;
         public int HoleCardsNumericRepresentation;
 
-        public Card[] CommunityCards;
+        public Card[] CommunityCards; //Sorted in descending order.
 
         private long _handRank = -1L;
         public long HandRank
@@ -64,9 +64,9 @@ namespace ShortDeckStatistics.GameStructures
 
             HoleCardsNumericRepresentation = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, biggestHoleCard.Suit == smallestHoleCard.Suit, Table);
 
+            //Merge the hole cards and community cards into a sorted 7-card hand.
             var holeCardPos = 0;
             var communityCardPos = 0;
-
             while (holeCardPos < 2 && communityCardPos < 5)
             {
 
@@ -81,13 +81,11 @@ namespace ShortDeckStatistics.GameStructures
                     communityCardPos++;
                 }
             }
-
             while (holeCardPos < 2)
             {
                 _sevenCardHand[holeCardPos + communityCardPos] = holeCards[holeCardPos];
                 holeCardPos++;
             }
-
             while (communityCardPos < 5)
             {
                 _sevenCardHand[holeCardPos + communityCardPos] = communityCards[communityCardPos];
@@ -182,6 +180,10 @@ namespace ShortDeckStatistics.GameStructures
             //If there is not a 5-card sequence, then the poker hand cannot be a straight flush.
             if (consecutiveSequenceLength < 5) return ZeroScore;
 
+            //Determine subtype:
+            //Nuts
+            //Low SF
+
             //The value of this straight flush equals the face value of the highest card in the sequence.
             ScoreContainer[0] = 9;
             ScoreContainer[1] = _sevenCardHand[highestSequentialCardPosition].Value + 1;
@@ -240,6 +242,10 @@ namespace ShortDeckStatistics.GameStructures
             }
 
             var kickerVal = kickerValues[0];
+
+            //Determine subtype:
+            //Top Quads
+            //Second Quads
 
             ScoreContainer[0] = 8;
             ScoreContainer[1] = fourOfAKindCardValue + 1;
@@ -676,13 +682,82 @@ namespace ShortDeckStatistics.GameStructures
                 + kickerValues[2];
 
             //Determine subtype:
-            //Board Pair
             //Overpair
             //Top Pair
-            //Second Pair
+            //Second Pair //Not sufficiently defined or necessary. Merged with low pair.
             //Low Pair
             //Underpair
-            //Counterfeit
+            //Board Pair
+            //Counterfeit //Can't determine because 2pair would be on the board.
+
+            var subtypeScore = 0;
+
+            //Check for Board Pair subtype.
+            if (
+                CommunityCards[0].Value == CommunityCards[1].Value
+                || CommunityCards[1].Value == CommunityCards[2].Value
+                || CommunityCards[2].Value == CommunityCards[3].Value
+                || CommunityCards[3].Value == CommunityCards[4].Value
+            )
+            {
+                subtypeScore = 1; //Underpair subtype.
+            }
+
+            //Check for Underpair subtype.
+            if(subtypeScore == 0
+                && HoleCards[0].Value == HoleCards[1].Value
+                && HoleCards[0].Value < CommunityCards[4].Value)
+            {
+                subtypeScore = 2; //Underpair subtype.
+            }
+
+            //Check for Low Pair subtype.
+            if (subtypeScore == 0
+                && (
+                    HoleCards[0].Value != HoleCards[1].Value
+                    && (
+                        HoleCards[0].Value == CommunityCards[4].Value
+                        || HoleCards[0].Value == CommunityCards[3].Value
+                        || HoleCards[0].Value == CommunityCards[2].Value
+                        || HoleCards[0].Value == CommunityCards[1].Value
+                        || HoleCards[1].Value == CommunityCards[4].Value
+                        || HoleCards[1].Value == CommunityCards[3].Value
+                        || HoleCards[1].Value == CommunityCards[2].Value
+                        || HoleCards[1].Value == CommunityCards[1].Value
+                    )
+                )
+                || (
+                    HoleCards[0].Value == HoleCards[1].Value
+                    && (
+                        HoleCards[0].Value > CommunityCards[4].Value
+                        && HoleCards[0].Value < CommunityCards[0].Value
+                    )
+                )
+            )
+            {
+                subtypeScore = 3; //Low Pair subtype.
+            }
+
+            //Check for Top Pair subtype
+            if (subtypeScore == 0
+                && HoleCards[0].Value != HoleCards[1].Value
+                && (
+                    HoleCards[0].Value == CommunityCards[0].Value
+                    || HoleCards[1].Value == CommunityCards[0].Value
+                )
+            )
+            {
+                subtypeScore = 4; //Top Pair subtype.
+            }
+
+            //Check for Overpair subtype
+            if(subtypeScore == 0
+                && HoleCards[0].Value == HoleCards[1].Value
+                && HoleCards[0].Value > CommunityCards[0].Value
+            )
+            {
+                subtypeScore = 5; //Overpair subtype.
+            }
 
             ScoreContainer[0] = 2;
             ScoreContainer[1] = pairCardValue + 1;
