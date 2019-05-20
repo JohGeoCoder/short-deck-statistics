@@ -622,12 +622,121 @@ namespace ShortDeckStatistics.GameStructures
 
             //Determine subtype:
             //Top Two
-            //Over Two Pair
+            //Over Two Pair //Not necessary. Merged with Top Two Pair.
             //Highest Top
-            //Second Top Two
+            //Second Top Two //Not sufficiently defined or necessary. Merged with Low Two Pair.
             //Low Two Pair
-            //Under Two Pair
+            //Under Two Pair //Not necessary. Merged with Low Two Pair.
             //Board Two Pair
+
+            var subtypeScore = 0;
+
+            //Check for Board Two Pair subtype.
+            if (
+                (
+                    CommunityCards[0].Value == CommunityCards[1].Value && CommunityCards[2].Value == CommunityCards[3].Value
+                    || CommunityCards[0].Value == CommunityCards[1].Value && CommunityCards[3].Value == CommunityCards[4].Value
+                    || CommunityCards[1].Value == CommunityCards[2].Value && CommunityCards[3].Value == CommunityCards[4].Value
+                )
+                && (
+                    (
+                        HoleCards[0].Value != HoleCards[1].Value
+                        && HoleCards[0].Value != CommunityCards[0].Value
+                        && HoleCards[1].Value != CommunityCards[0].Value
+                        && HoleCards[0].Value != CommunityCards[2].Value
+                        && HoleCards[1].Value != CommunityCards[2].Value
+                    )
+                    || (
+                        HoleCards[0].Value == HoleCards[1].Value
+                        && HoleCards[0].Value < CommunityCards[3].Value
+                    ) 
+                )
+            )
+            {
+                subtypeScore = 1; //Board Two Pair subtype.
+            }
+
+            //Check for Low Two Pair subtype.
+            if(subtypeScore == 0
+                && (
+                    (
+                        HoleCards[0].Value != HoleCards[1].Value
+                        && HoleCards[0].Value != CommunityCards[0].Value
+                    )
+                    || (
+                        HoleCards[0].Value == HoleCards[1].Value
+                        && HoleCards[0].Value < CommunityCards[2].Value
+                    )
+                )
+            )
+            {
+                subtypeScore = 2; //Low Two Pair subtype.
+            }
+
+            //Check for Highest Top subtype.
+            if(subtypeScore == 0
+                && (
+                    (
+                        HoleCards[0].Value != HoleCards[1].Value
+                        && (
+                            (
+                                CommunityCards[0].Value == CommunityCards[1].Value
+                                && HoleCards[0].Value != CommunityCards[2].Value
+                                && HoleCards[1].Value != CommunityCards[2].Value
+                            )
+                            || (
+                                CommunityCards[0].Value != CommunityCards[1].Value
+                                && (
+                                    (
+                                        HoleCards[0].Value == CommunityCards[0].Value
+                                        && CommunityCards[1] != CommunityCards[2]
+                                        && HoleCards[1] != CommunityCards[1]
+                                    )
+                                    || (
+                                        HoleCards[1].Value == CommunityCards[0].Value
+                                        && CommunityCards[1] != CommunityCards[2]
+                                    )
+                                )
+                            )
+                        )
+                    )
+                    || (
+                        HoleCards[0].Value == HoleCards[1].Value
+                        && (
+                            (
+                                CommunityCards[0].Value == CommunityCards[1].Value
+                                && HoleCards[0].Value < CommunityCards[2].Value
+                            )
+                            || (
+                                CommunityCards[0].Value != CommunityCards[1].Value
+                                && HoleCards[0].Value > CommunityCards[0].Value
+                            )
+                        )
+                    )
+                )
+            )
+            {
+                subtypeScore = 3; // Highest Top subtype.
+            }
+
+            //Check for Top Two Pair subtype.
+            if(subtypeScore == 0
+                && (
+                    (
+                        HoleCards[0].Value != HoleCards[1].Value
+                        && HoleCards[0].Value == CommunityCards[0].Value
+                        && HoleCards[1].Value == CommunityCards[0].Value
+                    )
+                    || (
+                        HoleCards[0].Value == HoleCards[1].Value
+                        && CommunityCards[0].Value == CommunityCards[1].Value
+                        && HoleCards[0].Value > CommunityCards[2].Value
+                    )
+                )
+            )
+            {
+                subtypeScore = 4;
+            }
 
             ScoreContainer[0] = 3;
             ScoreContainer[1] = biggestPairCardValue * Table.DeckNumericValueCount + smallestPairCardValue;
