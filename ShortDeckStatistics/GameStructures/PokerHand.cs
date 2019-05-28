@@ -147,9 +147,9 @@ namespace ShortDeckStatistics.GameStructures
                     var secondCard = _sevenCardHand[1];
                     var thirdCard = _sevenCardHand[2];
 
-                    if (firstCard.Value == 8 && firstCard.Suit == currentCard.Suit) nextCard = firstCard;
-                    else if (secondCard.Value == 8 && secondCard.Suit == currentCard.Suit) nextCard = secondCard;
-                    else if (thirdCard.Value == 8 && thirdCard.Suit == currentCard.Suit) nextCard = thirdCard;
+                    if (firstCard.Value == Table.DeckNumericValueCount - 1 && firstCard.Suit == currentCard.Suit) nextCard = firstCard;
+                    else if (secondCard.Value == Table.DeckNumericValueCount - 1 && secondCard.Suit == currentCard.Suit) nextCard = secondCard;
+                    else if (thirdCard.Value == Table.DeckNumericValueCount - 1 && thirdCard.Suit == currentCard.Suit) nextCard = thirdCard;
                     else
                     {
                         break;
@@ -159,7 +159,8 @@ namespace ShortDeckStatistics.GameStructures
                 //If the current card and next card are in sequence, update the sequence count.
                 //Otherwise, reset the sequence count.
                 //Take into consideration that the next sequential card may be an Ace in the first position.
-                if (nextCard.Suit == currentCard.Suit && (nextCard.Value == currentCard.Value - 1 || currentCard.Value == 0 && nextCard.Value == 8))
+                //@TODO: BUG - What about duplicate card values?
+                if (nextCard.Suit == currentCard.Suit && (nextCard.Value == currentCard.Value - 1 || currentCard.Value == 0 && nextCard.Value == Table.DeckNumericValueCount - 1))
                 {
                     if (consecutiveSequenceLength == 0)
                     {
@@ -415,6 +416,7 @@ namespace ShortDeckStatistics.GameStructures
         {
             //Check for sequentiality
             var consecutiveSequenceLength = 0;
+            var lowestSequentialCardPosition = -1;
             var highestSequentialCardPosition = -1;
             for (int i = 0; i < _sevenCardHand.Length; i++)
             {
@@ -434,14 +436,23 @@ namespace ShortDeckStatistics.GameStructures
                 //If the current card and next card are in sequence, update the sequence count.
                 //Otherwise, reset the sequence count.
                 //Take into consideration that the next sequential card may be an Ace in the first position.
-                if (nextCard.Value == currentCard.Value - 1 || currentCard.Value == 0 && nextCard.Value == 8)
+                if(nextCard.Value == currentCard.Value)
+                {
+                    continue;
+                }
+                else if (nextCard.Value == currentCard.Value - 1 || currentCard.Value == 0 && nextCard.Value == Table.DeckNumericValueCount - 1)
                 {
                     if (consecutiveSequenceLength == 0)
                     {
                         consecutiveSequenceLength = 2;
                         highestSequentialCardPosition = i;
+                        lowestSequentialCardPosition = i + 1;
                     }
-                    else consecutiveSequenceLength++;
+                    else
+                    {
+                        consecutiveSequenceLength++;
+                        lowestSequentialCardPosition = i;
+                    }
 
                     if (consecutiveSequenceLength == 5) break;
                 }
@@ -458,12 +469,98 @@ namespace ShortDeckStatistics.GameStructures
             //Determine subtype:
             //Two Top
             //One Top
-            //One Card Top
-            //One Card Bottom
-            //One Card Middle
+
+
+
+            //Two-Card Guts
+
             //Two Bottom
-            //Filling Gaps
+            //One Card Top
+            //One-Card Gut
+            //One Card Bottom
             //Board Straight
+
+            var subtypeScore = 0;
+
+            //Check for Board Straight subtype
+            if (
+                HoleCards[0].Value - CommunityCards[0].Value != 1
+                && HoleCards[1].Value - CommunityCards[0].Value != 1
+                && CommunityCards[0].Value - CommunityCards[1].Value == 1
+                && CommunityCards[1].Value - CommunityCards[2].Value == 1
+                && CommunityCards[2].Value - CommunityCards[3].Value == 1
+                && CommunityCards[3].Value - CommunityCards[4].Value == 1
+            )
+            {
+                subtypeScore = 1; //Board Straight
+            }
+
+            //Check for One Card Bottom subtype
+            if(subtypeScore == 0
+                && (
+                    (
+                        CommunityCards[0].Value - CommunityCards[1].Value == 1
+                        && CommunityCards[1].Value - CommunityCards[2].Value == 1
+                        && CommunityCards[2].Value - CommunityCards[3].Value == 1
+                        && (
+                            CommunityCards[3].Value - HoleCards[0].Value == 1
+                            || CommunityCards[3].Value - HoleCards[1].Value == 1
+                        )
+                    )
+                    || (
+                        CommunityCards[1].Value - CommunityCards[2].Value == 1
+                        && CommunityCards[2].Value - CommunityCards[3].Value == 1
+                        && CommunityCards[3].Value - CommunityCards[4].Value == 1
+                        && (
+                            CommunityCards[4].Value - HoleCards[0].Value == 1
+                            || CommunityCards[4].Value - HoleCards[1].Value == 1
+                        )
+                    )
+                )
+            )
+            {
+                subtypeScore = 2; //One Card Bottom
+            }
+
+            //Check for One Card Gut subtype
+            if(subtypeScore == 0)
+            {
+                if(highestSequentialCardPosition - lowestSequentialCardPosition == 4) //No repeated numbers in the straight
+                {
+                    var holeCardCount = 0;
+
+                    for(var i = highestSequentialCardPosition; i <= lowestSequentialCardPosition; i++)
+                    {
+                        if (_sevenCardHand[i].isHoleCard) holeCardCount++;
+                    }
+
+                    if(holeCardCount == 1)
+                    {
+                        if(!_sevenCardHand[highestSequentialCardPosition].isHoleCard && !_sevenCardHand[lowestSequentialCardPosition].isHoleCard)
+                        {
+                            subtypeScore = 3; //One Card Gut
+                        }
+                    }
+                }
+                else if(highestSequentialCardPosition - lowestSequentialCardPosition == 5)
+                {
+                    var holeCardCount = 0;
+                    for (var i = highestSequentialCardPosition; i <= lowestSequentialCardPosition; i++)
+                    {
+                        if (_sevenCardHand[i].isHoleCard) holeCardCount++;
+                    }
+
+                    if(holeCardCount == 1)
+                    {
+
+                    }
+                }
+            }
+
+            if(subtypeScore == 0)
+            {
+
+            }
 
             //The value of this straight equals the face value of the highest card in the sequence.
             ScoreContainer[0] = 5;
@@ -538,9 +635,46 @@ namespace ShortDeckStatistics.GameStructures
 
             //Determine subtype:
             //Top Set
-            //Second Set
+            //Second Set //Not necessary. Merged with Low Set.
             //Low Set
             //Board Set
+
+            var subtypeScore = 0;
+
+            //Check for Board Set subtype.
+            if (
+                (
+                    CommunityCards[0].Value == CommunityCards[1].Value
+                    && CommunityCards[1].Value == CommunityCards[2].Value
+                )
+                || (
+                    CommunityCards[1].Value == CommunityCards[2].Value
+                    && CommunityCards[2].Value == CommunityCards[3].Value
+                )
+                || (
+                    CommunityCards[2].Value == CommunityCards[3].Value
+                    && CommunityCards[3].Value == CommunityCards[4].Value
+                )
+            )
+            {
+                subtypeScore = 1; //Board Set subtype.
+            }
+
+            //Check for Low Set subtype
+            if (subtypeScore == 0
+                && biggestSetCardValue < CommunityCards[0].Value
+            )
+            {
+                subtypeScore = 2; //Low Set Subtype
+            }
+
+            //Check for Top Set subtype
+            if(subtypeScore == 0
+                && biggestSetCardValue == CommunityCards[0].Value
+            )
+            {
+                subtypeScore = 3; //Top Set subtype
+            }
 
             ScoreContainer[0] = 4;
             ScoreContainer[1] = biggestSetCardValue + 1;
