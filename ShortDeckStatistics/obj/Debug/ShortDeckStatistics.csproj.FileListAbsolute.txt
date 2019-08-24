@@ -4,3 +4,9 @@ C:\U\OtherClients\ShortDeckStatistics\ShortDeckStatistics\obj\Debug\ShortDeckSta
 C:\U\OtherClients\ShortDeckStatistics\ShortDeckStatistics\obj\Debug\ShortDeckStatistics.csproj.CoreCompileInputs.cache
 C:\U\OtherClients\ShortDeckStatistics\ShortDeckStatistics\obj\Debug\ShortDeckStatistics.exe
 C:\U\OtherClients\ShortDeckStatistics\ShortDeckStatistics\obj\Debug\ShortDeckStatistics.pdb
+C:\X\projects\short-deck-statistics\ShortDeckStatistics\bin\Debug\ShortDeckStatistics.exe
+C:\X\projects\short-deck-statistics\ShortDeckStatistics\bin\Debug\ShortDeckStatistics.pdb
+C:\X\projects\short-deck-statistics\ShortDeckStatistics\obj\Debug\ShortDeckStatistics.csproj.CoreCompileInputs.cache
+C:\X\projects\short-deck-statistics\ShortDeckStatistics\obj\Debug\ShortDeckStatistics.exe
+C:\X\projects\short-deck-statistics\ShortDeckStatistics\obj\Debug\ShortDeckStatistics.pdb
+C:\X\projects\short-deck-statistics\ShortDeckStatistics\obj\Debug\ShortDeckStatistics.csprojAssemblyReference.cache

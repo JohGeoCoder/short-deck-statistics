@@ -143,6 +143,10 @@ namespace ShortDeckStatistics.GameStructures
                 }
                 else
                 {
+                    //We've checked all the cards so far.
+                    //The bottom of the straight may be an ace, which would be at the beginning of the 7-card hand.
+                    //If an ace of the proper suit does exist, it would be within the first three cards of the 
+                    //7-card poker hand. Check the first three cards for an Ace of the proper suit.
                     var firstCard = _sevenCardHand[0];
                     var secondCard = _sevenCardHand[1];
                     var thirdCard = _sevenCardHand[2];
@@ -156,10 +160,13 @@ namespace ShortDeckStatistics.GameStructures
                     }
                 }
 
+                //If the current card and next card have the same value, then
+                //skip to the next card.
+                if (nextCard.Value == currentCard.Value) continue;
+
                 //If the current card and next card are in sequence, update the sequence count.
                 //Otherwise, reset the sequence count.
                 //Take into consideration that the next sequential card may be an Ace in the first position.
-                //@TODO: BUG - What about duplicate card values?
                 if (nextCard.Suit == currentCard.Suit && (nextCard.Value == currentCard.Value - 1 || currentCard.Value == 0 && nextCard.Value == Table.DeckNumericValueCount - 1))
                 {
                     if (consecutiveSequenceLength == 0)
@@ -411,7 +418,7 @@ namespace ShortDeckStatistics.GameStructures
             ScoreContainer[2] = kickerVal;
             return ScoreContainer;
         }
-
+        #region Straight
         private int[] ScoreStraight()
         {
             //Check for sequentiality
@@ -484,8 +491,8 @@ namespace ShortDeckStatistics.GameStructures
 
             //Check for Board Straight subtype
             if (
-                HoleCards[0].Value - CommunityCards[0].Value != 1
-                && HoleCards[1].Value - CommunityCards[0].Value != 1
+                HoleCards[0].Value - CommunityCards[0].Value != 1 //The first hole card is not one bigger than the top of the board straight.
+                && HoleCards[1].Value - CommunityCards[0].Value != 1 //The second hole card is not one bigger than the top of the board straight.
                 && CommunityCards[0].Value - CommunityCards[1].Value == 1
                 && CommunityCards[1].Value - CommunityCards[2].Value == 1
                 && CommunityCards[2].Value - CommunityCards[3].Value == 1
@@ -568,6 +575,13 @@ namespace ShortDeckStatistics.GameStructures
             ScoreContainer[2] = 0;
             return ScoreContainer;
         }
+
+        public bool IsNutStraight()
+        {
+
+        }
+
+        #endregion
 
         private int[] ScoreThreeOfAKind()
         {
