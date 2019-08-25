@@ -6,8 +6,8 @@ namespace ShortDeckStatistics.GameStructures
 {
     public class PokerHand
     {
-        public static readonly int[] ZeroScore = new int[] { 0, 0, 0 };
-        public static readonly int[] ScoreContainer = new int[3];
+        public static readonly int[] ZeroScore = new int[] { 0, 0, 0, 0 };
+        public static readonly int[] ScoreContainer = new int[4];
 
         public static readonly string[] HandRanks = new string[] { "Error", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush" };
 
@@ -117,7 +117,8 @@ namespace ShortDeckStatistics.GameStructures
             if (scoreData[0] == 0) scoreData = ScoreHighCard();
 
             var score =
-                1_000L * scoreData[2]
+                scoreData[3]
+                + 1_000L * scoreData[2]
                 + 100_000_000L * scoreData[1]
                 + 100_000_000_000L * scoreData[0];
 
@@ -474,105 +475,17 @@ namespace ShortDeckStatistics.GameStructures
             if (consecutiveSequenceLength < 5) return ZeroScore;
 
             //Determine subtype:
-            //Two Top
-            //One Top
-
-
-
-            //Two-Card Guts
-
-            //Two Bottom
-            //One Card Top
-            //One-Card Gut
-            //One Card Bottom
-            //Board Straight
+            //Is Nuts
 
             var subtypeScore = 0;
 
-            //Check for Board Straight subtype
-            if (
-                HoleCards[0].Value - CommunityCards[0].Value != 1 //The first hole card is not one bigger than the top of the board straight.
-                && HoleCards[1].Value - CommunityCards[0].Value != 1 //The second hole card is not one bigger than the top of the board straight.
-                && CommunityCards[0].Value - CommunityCards[1].Value == 1
-                && CommunityCards[1].Value - CommunityCards[2].Value == 1
-                && CommunityCards[2].Value - CommunityCards[3].Value == 1
-                && CommunityCards[3].Value - CommunityCards[4].Value == 1
-            )
-            {
-                subtypeScore = 1; //Board Straight
-            }
-
-            //Check for One Card Bottom subtype
-            if(subtypeScore == 0
-                && (
-                    (
-                        CommunityCards[0].Value - CommunityCards[1].Value == 1
-                        && CommunityCards[1].Value - CommunityCards[2].Value == 1
-                        && CommunityCards[2].Value - CommunityCards[3].Value == 1
-                        && (
-                            CommunityCards[3].Value - HoleCards[0].Value == 1
-                            || CommunityCards[3].Value - HoleCards[1].Value == 1
-                        )
-                    )
-                    || (
-                        CommunityCards[1].Value - CommunityCards[2].Value == 1
-                        && CommunityCards[2].Value - CommunityCards[3].Value == 1
-                        && CommunityCards[3].Value - CommunityCards[4].Value == 1
-                        && (
-                            CommunityCards[4].Value - HoleCards[0].Value == 1
-                            || CommunityCards[4].Value - HoleCards[1].Value == 1
-                        )
-                    )
-                )
-            )
-            {
-                subtypeScore = 2; //One Card Bottom
-            }
-
-            //Check for One Card Gut subtype
-            if(subtypeScore == 0)
-            {
-                if(highestSequentialCardPosition - lowestSequentialCardPosition == 4) //No repeated numbers in the straight
-                {
-                    var holeCardCount = 0;
-
-                    for(var i = highestSequentialCardPosition; i <= lowestSequentialCardPosition; i++)
-                    {
-                        if (_sevenCardHand[i].isHoleCard) holeCardCount++;
-                    }
-
-                    if(holeCardCount == 1)
-                    {
-                        if(!_sevenCardHand[highestSequentialCardPosition].isHoleCard && !_sevenCardHand[lowestSequentialCardPosition].isHoleCard)
-                        {
-                            subtypeScore = 3; //One Card Gut
-                        }
-                    }
-                }
-                else if(highestSequentialCardPosition - lowestSequentialCardPosition == 5)
-                {
-                    var holeCardCount = 0;
-                    for (var i = highestSequentialCardPosition; i <= lowestSequentialCardPosition; i++)
-                    {
-                        if (_sevenCardHand[i].isHoleCard) holeCardCount++;
-                    }
-
-                    if(holeCardCount == 1)
-                    {
-
-                    }
-                }
-            }
-
-            if(subtypeScore == 0)
-            {
-
-            }
+            if (IsNutStraight()) subtypeScore = 1;
 
             //The value of this straight equals the face value of the highest card in the sequence.
             ScoreContainer[0] = 5;
             ScoreContainer[1] = _sevenCardHand[highestSequentialCardPosition].Value;
             ScoreContainer[2] = 0;
+            ScoreContainer[3] = subtypeScore;
             return ScoreContainer;
         }
 
@@ -867,6 +780,7 @@ namespace ShortDeckStatistics.GameStructures
             ScoreContainer[0] = 4;
             ScoreContainer[1] = biggestSetCardValue + 1;
             ScoreContainer[2] = kickerVal;
+            ScoreContainer[3] = subtypeScore;
             return ScoreContainer;
         }
 
@@ -1063,6 +977,7 @@ namespace ShortDeckStatistics.GameStructures
             ScoreContainer[0] = 3;
             ScoreContainer[1] = biggestPairCardValue * Table.DeckNumericValueCount + smallestPairCardValue;
             ScoreContainer[2] = kickerVal;
+            ScoreContainer[3] = subtypeScore;
             return ScoreContainer;
         }
 
@@ -1193,6 +1108,7 @@ namespace ShortDeckStatistics.GameStructures
             ScoreContainer[0] = 2;
             ScoreContainer[1] = pairCardValue + 1;
             ScoreContainer[2] = kickerVal;
+            ScoreContainer[3] = subtypeScore;
             return ScoreContainer;
         }
 
@@ -1209,6 +1125,7 @@ namespace ShortDeckStatistics.GameStructures
             ScoreContainer[0] = 1;
             ScoreContainer[1] = highestValueCard.Value;
             ScoreContainer[2] = kickerVal;
+            ScoreContainer[3] = 0; //Empty subscore type
             return ScoreContainer;
         }
 
