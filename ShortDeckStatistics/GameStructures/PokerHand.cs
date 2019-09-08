@@ -356,6 +356,8 @@ namespace ShortDeckStatistics.GameStructures
             return ScoreContainer;
         }
 
+        #region Flush
+
         private int[] ScoreFlush()
         {
             var suitCounter = new int[Table.DeckSuitCount];
@@ -414,11 +416,73 @@ namespace ShortDeckStatistics.GameStructures
             //Counterfeit
             //Board Flush
 
+            var subtypeScore = 0;
+
+            if (IsNutFlush(flushedSuit)) subtypeScore = 1;
+
             ScoreContainer[0] = 6;
             ScoreContainer[1] = highestFlushValue;
             ScoreContainer[2] = kickerVal;
+            ScoreContainer[3] = subtypeScore;
             return ScoreContainer;
         }
+
+        private bool IsNutFlush(int suitValue)
+        {
+            var nutHoleCardValue = -1;
+
+            var isHighestCard = true;
+            var targetNextCardValue = -1;
+            for(var j = 0; j < CommunityCards.Length; j++)
+            {
+                if (CommunityCards[j].Suit != suitValue) continue;
+
+                //If this is the first card of the target suit (also the highest value), check to see
+                //if it is a King or smaller. That would mean the nut card is an Ace
+                if (isHighestCard)
+                {
+                    if(CommunityCards[j].Value < Table.DeckNumericValueCount - 1)
+                    {
+                        nutHoleCardValue = Table.DeckNumericValueCount - 1;
+                        break;
+                    }
+
+                    //This block only runs once.
+                    isHighestCard = false;
+                }
+
+                //If there was a previous card to compare the current card to, then check for a gap.
+                //Otherwise, set the initial card value.
+                if(targetNextCardValue > -1)
+                {
+                    //If we find a gap, then the value of the card that should be in the gap is the
+                    //nut card for the flush.
+                    if(targetNextCardValue != CommunityCards[j].Value)
+                    {
+                        nutHoleCardValue = targetNextCardValue;
+                        break;
+                    }
+
+                    targetNextCardValue--;
+                }
+                else
+                {
+                    targetNextCardValue = CommunityCards[j].Value - 1;
+                }
+
+                //If both the target nut hole cards have been identified, then we are done.
+                if(nutHoleCardValue > -1)
+                {
+                    break;
+                }
+            }
+
+            return HoleCards[0].Suit == suitValue && HoleCards[0].Value == nutHoleCardValue 
+                || HoleCards[1].Suit == suitValue && HoleCards[1].Value == nutHoleCardValue;
+        }
+
+        #endregion Flush
+
         #region Straight
         private int[] ScoreStraight()
         {
