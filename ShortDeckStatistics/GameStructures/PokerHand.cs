@@ -262,6 +262,7 @@ namespace ShortDeckStatistics.GameStructures
             return ScoreContainer;
         }
 
+        #region Full House
         private int[] ScoreFullHouse()
         {
             //Find the value of the biggest set
@@ -349,12 +350,157 @@ namespace ShortDeckStatistics.GameStructures
             //Board Boat
             //Counterfeit
 
+            var subtypeScore = 0;
+
+            if (IsNutFullHouse()) subtypeScore = 1;
 
             ScoreContainer[0] = 7;
             ScoreContainer[1] = biggestSetCardValue * Table.DeckNumericValueCount + biggestPairCardValue;
             ScoreContainer[2] = 0;
+            ScoreContainer[3] = subtypeScore;
             return ScoreContainer;
         }
+
+        private bool IsNutFullHouse()
+        {
+            var firstNutHoleCardValue = -1;
+            var secondNutHoleCardValue = -1;
+
+            var highestNonPairCardValue = -1;
+            var pairValueHighest = -1;
+            var pairValueLowest = -1;
+            var tripsValue = -1;
+            var lastPositionPairValue = -1;
+
+            //Determine the board flavor
+            for (int i = 0; i < CommunityCards.Length - 1; i++)
+            {
+                var currentCard = CommunityCards[i];
+                var nextCard = CommunityCards[i + 1];
+
+                if(currentCard.Value == nextCard.Value)
+                {
+                    //If there are two pair evaluations in a row, that's a 3 of a kind.
+                    //There can be only one set on a board. Skip the next position.
+                    if (lastPositionPairValue > -1)
+                    {
+                        tripsValue = nextCard.Value;
+
+                        //The existence of trips eliminates a pair.
+                        if(pairValueLowest > -1)
+                        {
+                            pairValueLowest = -1;
+                        }
+                        else
+                        {
+                            pairValueHighest = -1;
+                        }
+
+                        i++;
+                    }
+                    else
+                    {
+                        //Keep track of the highest and lowest pair.
+                        if(nextCard.Value > pairValueHighest)
+                        {
+                            pairValueLowest = pairValueHighest;
+                            pairValueHighest = nextCard.Value;
+                        }
+                        else if (nextCard.Value > pairValueLowest)
+                        {
+                            pairValueLowest = nextCard.Value;
+                        }
+                    }
+
+                    //Keep track of the pair for this position.
+                    lastPositionPairValue = nextCard.Value;
+                }
+                else
+                {
+                    //Keep track of the highest non-pair card.
+                    if (lastPositionPairValue == -1)
+                    {
+                        if (currentCard.Value > highestNonPairCardValue)
+                        {
+                            highestNonPairCardValue = currentCard.Value;
+                        }
+                    }
+
+                    //This position has no pair. Reset the flag.
+                    lastPositionPairValue = -1;
+                }
+            }
+
+            //Are there trips on the board?
+            if(tripsValue > -1)
+            {
+                //Are the trips Aces?
+                if (tripsValue == Table.DeckNumericValueCount - 1)
+                {
+                    //Is there a pair of kings on the board?
+                    if(pairValueHighest == Table.DeckNumericValueCount - 2)
+                    {
+                        //Then the board is the nut full house
+                    }
+                    //Else is there a king on the board?
+                    else if (highestNonPairCardValue == Table.DeckNumericValueCount - 2)
+                    {
+                        //Then a king in hand is the nut full house
+                        firstNutHoleCardValue = Table.DeckNumericValueCount - 2;
+                    }
+                    else
+                    {
+                        //Then pocket Kings is the nut full house
+                        firstNutHoleCardValue = Table.DeckNumericValueCount - 2;
+                        secondNutHoleCardValue = Table.DeckNumericValueCount - 2;
+                    }
+                }
+                //Else the trips are kings or below.
+                else
+                {
+                    //Is the highest non-pair value card on the board higher than the value of the trips?
+                    if (highestNonPairCardValue > tripsValue)
+                    {
+                        //Then the nut full house is a pocket pair of that highest value
+                        firstNutHoleCardValue = highestNonPairCardValue;
+                        secondNutHoleCardValue = highestNonPairCardValue;
+                    }
+                    else
+                    {
+                        //The nut full house is a pair of pocket Aces
+                        firstNutHoleCardValue = Table.DeckNumericValueCount - 1;
+                        secondNutHoleCardValue = Table.DeckNumericValueCount - 1;
+                    }
+                }
+            }
+            else
+            {
+                //If the highest non-pair card value is higher than the highest pair value.
+                if (highestNonPairCardValue > pairValueHighest)
+                {
+                    //Then the nut full house is a pocket pair of that highest value
+                    firstNutHoleCardValue = highestNonPairCardValue;
+                    secondNutHoleCardValue = highestNonPairCardValue;
+                }
+                else if(highestNonPairCardValue > pairValueLowest)
+                {
+                    //Then the nut full house is a hand with the pair value and highest non-pair card value.
+                    firstNutHoleCardValue = pairValueHighest;
+                    secondNutHoleCardValue = highestNonPairCardValue;
+                }
+                else
+                {
+                    //Implying there are two pairs on the board, and the highest non-pair card is lower than the lowest pair.
+                    //The nut full house is a hand with the value card that matches the highest pair.
+                    firstNutHoleCardValue = pairValueHighest;
+                }
+            }
+
+            return (firstNutHoleCardValue == -1 || HoleCards[0].Value == firstNutHoleCardValue)
+                && (secondNutHoleCardValue == -1 || HoleCards[1].Value == secondNutHoleCardValue);
+        }
+
+        #endregion Full House
 
         #region Flush
 
