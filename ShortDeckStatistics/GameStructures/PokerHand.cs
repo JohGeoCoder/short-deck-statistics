@@ -125,6 +125,7 @@ namespace ShortDeckStatistics.GameStructures
             return score;
         }
 
+        #region Straight Flush
         private int[] ScoreStraightFlush()
         {
             //Check for sequentiality
@@ -193,6 +194,10 @@ namespace ShortDeckStatistics.GameStructures
             //Nuts
             //Low SF
 
+            var subtypeScore = 0;
+
+            if (IsNutStraightFlush()) subtypeScore = 1;
+
             //The value of this straight flush equals the face value of the highest card in the sequence.
             ScoreContainer[0] = 9;
             ScoreContainer[1] = _sevenCardHand[highestSequentialCardPosition].Value + 1;
@@ -200,6 +205,14 @@ namespace ShortDeckStatistics.GameStructures
             return ScoreContainer;
         }
 
+        private bool IsNutStraightFlush()
+        {
+
+        }
+
+        #endregion StraightFlush
+
+        #region Four of a Kind
         private int[] ScoreFourOfAKind()
         {
             var consecutiveValueLength = 0;
@@ -256,11 +269,39 @@ namespace ShortDeckStatistics.GameStructures
             //Top Quads
             //Second Quads
 
+            var subtypeScore = 0;
+
+            if (IsNutFourOfAKind()) subtypeScore = 1;
+
             ScoreContainer[0] = 8;
             ScoreContainer[1] = fourOfAKindCardValue + 1;
             ScoreContainer[2] = kickerVal;
+            ScoreContainer[3] = subtypeScore;
             return ScoreContainer;
         }
+
+        public bool IsNutFourOfAKind()
+        {
+            //Find the value of the biggest pair that has a different card value than the set.
+            short biggestCommunityPairValue = -1;
+            for (int i = 0; i < CommunityCards.Length - 1; i++)
+            {
+                var currentCard = CommunityCards[i];
+                Card nextCard = CommunityCards[i + 1];
+
+                //Detect consecutive identical card values.
+                if (currentCard.Value == nextCard.Value)
+                {
+                    biggestCommunityPairValue = currentCard.Value;
+                    break;
+                }
+            }
+
+            return HoleCards[0].Value == biggestCommunityPairValue
+                && HoleCards[1].Value == biggestCommunityPairValue;
+        }
+
+        #endregion Four of a Kind
 
         #region Full House
         private int[] ScoreFullHouse()
