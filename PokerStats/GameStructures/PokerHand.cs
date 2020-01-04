@@ -10,6 +10,7 @@ namespace PokerStats.GameStructures
         public static readonly int[] ScoreContainer = new int[4];
 
         public static readonly string[] HandRanks = new string[] { "Error", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush" };
+        public static readonly string[] CardValues = new string[] { "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A" };
 
         private Card[] _sevenCardHand;
 
@@ -1649,7 +1650,7 @@ namespace PokerStats.GameStructures
             int biggestCardValue = (holeCardsNumericValue / 2) / table.DeckNumericValueCount;
             int smallestCardValue = (holeCardsNumericValue / 2) % table.DeckNumericValueCount;
 
-            return $"{Card.CardValues[biggestCardValue]}{Card.CardValues[smallestCardValue]}{(suited ? "s" : "o")}";
+            return $"{CardValues[biggestCardValue]}{CardValues[smallestCardValue]}{(suited ? "s" : "o")}";
         }
 
         public static int ConvertCardStringToNumericValue(string cardString, Table table)
@@ -1660,8 +1661,8 @@ namespace PokerStats.GameStructures
 
             if (holeCardProperties.Length != 3) return 0;
 
-            var biggestCardValue = Array.IndexOf(Card.CardValues, holeCardProperties[0].ToString());
-            var smallestCardValue = Array.IndexOf(Card.CardValues, holeCardProperties[1].ToString());
+            var biggestCardValue = Array.IndexOf(CardValues, holeCardProperties[0].ToString());
+            var smallestCardValue = Array.IndexOf(CardValues, holeCardProperties[1].ToString());
             var areSuited = holeCardProperties[2] == 's';
 
             if (biggestCardValue == -1 || smallestCardValue == -1) return 0;
