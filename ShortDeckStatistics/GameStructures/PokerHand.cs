@@ -202,12 +202,188 @@ namespace ShortDeckStatistics.GameStructures
             ScoreContainer[0] = 9;
             ScoreContainer[1] = _sevenCardHand[highestSequentialCardPosition].Value + 1;
             ScoreContainer[2] = 0;
+            ScoreContainer[3] = subtypeScore;
             return ScoreContainer;
         }
 
         private bool IsNutStraightFlush()
         {
+            var firstNutHoleCardValue = -1;
+            var secondNutHoleCardValue = -1;
 
+            for (int i = 0; i < 3; i++)
+            {
+                var patternArray = new bool[] { false, false, false, false, false };
+
+                var targetCardValue = CommunityCards[i].Value;
+
+                //Set the target card as the first value in the pattern array
+                patternArray[0] = true;
+
+                //Iterate through the remaining community cards.
+                //Each subsequent index of the array represents the next consecutive value card.
+                //Build the pattern.
+                for (int j = i + 1; j < CommunityCards.Length; j++)
+                {
+                    var relationIndex = targetCardValue - CommunityCards[j].Value;
+                    if (relationIndex < 5)
+                    {
+                        patternArray[relationIndex] = true;
+                    }
+                }
+
+                //Determine which pattern exists and return true if the 
+                //corresponding nut hand matches the hole cards.
+                //Return false if otherwise.                
+                if (patternArray[1] && patternArray[2])
+                {
+                    //Case when target card is Ace
+                    if (targetCardValue == Table.DeckNumericValueCount - 1)
+                    {
+                        //If a Jack is in the pattern, a Ten is the nuts
+                        if (patternArray[3])
+                        {
+                            firstNutHoleCardValue = targetCardValue - 4;
+                        }
+                        else //Jack Ten is the nuts
+                        {
+                            firstNutHoleCardValue = targetCardValue - 3;
+                            secondNutHoleCardValue = targetCardValue - 4;
+                        }
+                    }
+                    //Case when target card is King
+                    else if (targetCardValue == Table.DeckNumericValueCount - 2)
+                    {
+                        //If a Ten is in the pattern, an Ace is the nuts
+                        if (patternArray[3])
+                        {
+                            firstNutHoleCardValue = targetCardValue + 1;
+                        }
+                        else //Ace Ten is the nuts
+                        {
+                            firstNutHoleCardValue = targetCardValue + 1;
+                            secondNutHoleCardValue = targetCardValue - 3;
+                        }
+                    }
+                    else
+                    {
+                        firstNutHoleCardValue = targetCardValue + 2;
+                        secondNutHoleCardValue = targetCardValue + 1;
+                    }
+                }
+                else if (patternArray[1] && patternArray[3])
+                {
+                    //Case when target card is Ace
+                    if (targetCardValue == Table.DeckNumericValueCount - 1)
+                    {
+                        //Queen Ten is the nuts
+                        firstNutHoleCardValue = targetCardValue - 2;
+                        secondNutHoleCardValue = targetCardValue - 4;
+                    }
+                    else
+                    {
+                        firstNutHoleCardValue = targetCardValue + 1;
+                        secondNutHoleCardValue = targetCardValue - 2;
+                    }
+                }
+                else if (patternArray[1] && patternArray[4])
+                {
+                    firstNutHoleCardValue = targetCardValue - 2;
+                    secondNutHoleCardValue = targetCardValue - 3;
+                }
+                else if (patternArray[2] && patternArray[3])
+                {
+                    //Case when target card is Ace
+                    if (targetCardValue == Table.DeckNumericValueCount - 1)
+                    {
+                        firstNutHoleCardValue = targetCardValue - 1;
+                        secondNutHoleCardValue = targetCardValue - 4;
+                    }
+                    else
+                    {
+                        firstNutHoleCardValue = targetCardValue + 1;
+                        secondNutHoleCardValue = targetCardValue - 1;
+                    }
+                }
+                else if (patternArray[2] && patternArray[4])
+                {
+                    firstNutHoleCardValue = targetCardValue - 1;
+                    secondNutHoleCardValue = targetCardValue - 3;
+                }
+                else if (patternArray[3] && patternArray[4])
+                {
+                    firstNutHoleCardValue = targetCardValue - 1;
+                    secondNutHoleCardValue = targetCardValue - 2;
+                }
+                else
+                {
+                    //No pattern found
+                }
+            }
+
+            if (firstNutHoleCardValue == -1)
+            {
+                //No pattern found. Look for lower-end straight.
+                //For there to be a lower-end nut straight that's not handled
+                //by an existing pattern, there must be an Ace involved.
+                if (CommunityCards[0].Value == Table.DeckNumericValueCount - 1)
+                {
+                    //Record the existence of Twos, Threes, fours, and Fives.
+                    var wheelContents = new bool[] { false, false, false, false };
+                    var wheelCount = 0;
+
+                    for (int i = 1; i < CommunityCards.Length; i++)
+                    {
+                        var communityCardValue = CommunityCards[i].Value;
+                        if (communityCardValue < wheelContents.Length)
+                        {
+                            if (!wheelContents[communityCardValue])
+                            {
+                                wheelCount++;
+                                wheelContents[communityCardValue] = true;
+                            }
+                        }
+                    }
+
+                    if (wheelCount == 2)
+                    {
+                        for (int i = wheelContents.Length - 1; i >= 0; i--)
+                        {
+
+                            if (!wheelContents[i])
+                            {
+                                if (firstNutHoleCardValue == -1)
+                                {
+                                    firstNutHoleCardValue = i;
+                                }
+                                else if (secondNutHoleCardValue == -1)
+                                {
+                                    secondNutHoleCardValue = i;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            //Check if the hole cards contain the nuts.
+            if (firstNutHoleCardValue != -1)
+            {
+                if (secondNutHoleCardValue != -1)
+                {
+                    return HoleCards[0].Value == firstNutHoleCardValue
+                        && HoleCards[1].Value == secondNutHoleCardValue;
+                }
+                else
+                {
+                    return HoleCards[0].Value == firstNutHoleCardValue
+                        || HoleCards[1].Value == firstNutHoleCardValue;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
 
         #endregion StraightFlush
