@@ -132,12 +132,12 @@ namespace PokerStats.GameStructures
             //Check for sequentiality
             var consecutiveSequenceLength = 0;
             var highestSequentialCardPosition = -1;
-            Card currentCard = null;
-            Card nextCard = null;
+            Card currentCard = default(Card);
+            Card nextCard = default(Card);
             for (byte i = 0; i < _sevenCardHand.Length; i++)
             {
                 currentCard = _sevenCardHand[i];
-                nextCard = null;
+                nextCard = default(Card);
 
                 //Populate the next card, taking into consideration that it may be an Ace in the first position.
                 if (i < _sevenCardHand.Length - 1)
@@ -857,7 +857,7 @@ namespace PokerStats.GameStructures
             for (short i = 0; i < _sevenCardHand.Length; i++)
             {
                 var currentCard = _sevenCardHand[i];
-                Card nextCard = null;
+                Card nextCard = default(Card);
 
                 //Populate the next card, taking into consideration that it may be an Ace in the first position.
                 if (i < _sevenCardHand.Length - 1)
@@ -1354,12 +1354,12 @@ namespace PokerStats.GameStructures
                                 && (
                                     (
                                         HoleCards[0].Value == CommunityCards[0].Value
-                                        && CommunityCards[1] != CommunityCards[2]
-                                        && HoleCards[1] != CommunityCards[1]
+                                        && CommunityCards[1].Value != CommunityCards[2].Value
+                                        && HoleCards[1].Value != CommunityCards[1].Value
                                     )
                                     || (
                                         HoleCards[1].Value == CommunityCards[0].Value
-                                        && CommunityCards[1] != CommunityCards[2]
+                                        && CommunityCards[1].Value != CommunityCards[2].Value
                                     )
                                 )
                             )

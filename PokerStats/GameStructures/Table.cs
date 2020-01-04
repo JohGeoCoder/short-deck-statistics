@@ -487,7 +487,9 @@ namespace PokerStats.GameStructures
             Array.Copy(Deck, numCardsDealtToPlayers, CommunityCards, 0, 5);
 
             //Sort community cards in descending order
-            Array.Sort(CommunityCards);
+            Array.Sort(CommunityCards, (cardA, cardB) => {
+                return cardA.Value.CompareTo(cardB.Value);
+            });
             Array.Reverse(CommunityCards);
         }
 
