@@ -9,8 +9,6 @@ namespace PokerStats.GameStructures
         public readonly short Value;
         public readonly short Suit;
 
-        private string _cardString;
-
         public static readonly string[] CardValues = new string[] { "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A" };
         public static readonly string[] CardSuits = new string[] { "s", "c", "h", "d" };
 
@@ -18,13 +16,6 @@ namespace PokerStats.GameStructures
         {
             Suit = suit;
             Value = value;
-
-            _cardString = $"{CardValues[Value]}{CardSuits[Suit]}";
-        }
-
-        public override string ToString()
-        {
-            return _cardString;
         }
 
         public int CompareTo(Card other)
