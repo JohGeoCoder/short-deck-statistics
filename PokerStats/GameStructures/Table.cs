@@ -166,7 +166,7 @@ namespace PokerStats.GameStructures
 
         public void PlayHands(long iterations, bool isVillainEmotional)
         {
-            for (int i = 0; i < iterations; i++)
+            for (long i = 0L; i < iterations; i++)
             {
                 PlayHand(isVillainEmotional);
 
@@ -471,14 +471,12 @@ namespace PokerStats.GameStructures
         private void DealCardsToPlayers()
         {
             //Deal cards
-            for (int i = 0; i < PlayerHoleCards.Length * PlayerHoleCards[0].Length; i++)
+            for (byte i = 0; i < PlayerHoleCards.Length * PlayerHoleCards[0].Length; i++)
             {
                 var player = i % PlayerHoleCards.Length;
                 var holeCard = i / PlayerHoleCards.Length;
 
                 PlayerHoleCards[player][holeCard] = Deck[i];
-
-                Deck[i].isHoleCard = true;
             }
         }
 
@@ -693,7 +691,6 @@ namespace PokerStats.GameStructures
             while (cardIndexPosition > 1)
             {
                 cardIndexPosition--;
-                Deck[cardIndexPosition].isHoleCard = false;
             }
 
             //Shuffle the deck.
