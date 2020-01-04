@@ -14,7 +14,7 @@ namespace PokerStats
             for (int i = 2; i < tableArray.Length; i++)
             {
                 tableArray[i] = new Table(9, true, 40, 40, true);
-                tableArray[i].PlayHands(100_000, false);
+                tableArray[i].PlayHands(1_000_000, false);
             }
 
             //for (int i = 2; i < tableArray.Length; i++)
@@ -41,11 +41,12 @@ namespace PokerStats
                 table.PrintHoleCardWinRatesRankedByBest(input);
                 table.PrintHoleCardsNumericRankedByBestForArray();
                 table.PrintHoleCardsRankedByBestForArray();
-                table.PrintWinRatesForPokerHandsMade(input);
+
+                if (table.LogPokerHandResults)
+                {
+                    table.PrintWinRatesForPokerHandsMade(input);
+                }
             }
-
-
-
         }
     }
 }
