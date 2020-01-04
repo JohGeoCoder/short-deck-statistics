@@ -23,3 +23,4 @@
 /.vs/config/applicationhost.config
 /.vs/PokerStats/v15/.suo
 /.vs/PokerStats/DesignTimeBuild/.dtbcache
+/PokerStats/bin/Release/netcoreapp3.1
