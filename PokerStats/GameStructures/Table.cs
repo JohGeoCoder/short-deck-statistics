@@ -57,9 +57,9 @@ namespace PokerStats.GameStructures
         private readonly Dictionary<long, PokerHand[]> HandsWithRank = new Dictionary<long, PokerHand[]>();
         private readonly Dictionary<int, double> HoleCardWinRate = new Dictionary<int, double>();
 
-        private int[] Deck;
-        private int[] CommunityCards = new int[5];
-        private int[][] PlayerHoleCards;
+        private int[][] Deck;
+        private int[][] CommunityCards = new int[5][];
+        private int[][][] PlayerHoleCards;
         private PokerHand[] AllPlayerFullHands;
 
         private readonly int PlayerCount;
@@ -125,20 +125,20 @@ namespace PokerStats.GameStructures
             }
 
             //Populate the deck
-            Deck = new int[DeckSuitCount * DeckNumericValueCount];
+            Deck = new int[DeckSuitCount * DeckNumericValueCount][];
             for (short suit = 0; suit < DeckSuitCount; suit++)
             {
                 for (short value = 0; value < DeckNumericValueCount; value++)
                 {
                     int slot = suit * DeckNumericValueCount + value;
-                    Deck[slot] = slot;
+                    Deck[slot] = new int[] { suit, value };
                 }
             }
 
-            PlayerHoleCards = new int[numPlayers][];
+            PlayerHoleCards = new int[numPlayers][][];
             for (int i = 0; i < PlayerHoleCards.Length; i++)
             {
-                PlayerHoleCards[i] = new int[2];
+                PlayerHoleCards[i] = new int[2][];
             }
 
             AllPlayerFullHands = new PokerHand[numPlayers];
@@ -488,7 +488,7 @@ namespace PokerStats.GameStructures
 
             //Sort community cards in descending order
             Array.Sort(CommunityCards, (x,y) => {
-                return (x % DeckNumericValueCount).CompareTo(y % DeckNumericValueCount);
+                return (x[1]).CompareTo(y[1]);
             });
             Array.Reverse(CommunityCards);
         }
@@ -502,7 +502,7 @@ namespace PokerStats.GameStructures
                 var firstHoleCard = playerHoleCards[0];
                 var secondHoleCard = playerHoleCards[1];
 
-                if (firstHoleCard % DeckNumericValueCount < secondHoleCard % DeckNumericValueCount)
+                if (firstHoleCard[1] < secondHoleCard[1])
                 {
                     playerHoleCards[0] = secondHoleCard;
                     playerHoleCards[1] = firstHoleCard;
@@ -514,8 +514,8 @@ namespace PokerStats.GameStructures
 
         private void LogHandResults()
         {
-            int biggestHoleCard;
-            int smallestHoleCard;
+            var biggestHoleCard = (int[])null;
+            var smallestHoleCard = (int[])null;
             int holeCardsNumeric;
 
             if (!ManiacPlay)
@@ -544,8 +544,8 @@ namespace PokerStats.GameStructures
                 biggestHoleCard = hand.HoleCards[0];
                 smallestHoleCard = hand.HoleCards[1];
 
-                isSuited = biggestHoleCard / DeckNumericValueCount == smallestHoleCard / DeckNumericValueCount;
-                holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard % DeckNumericValueCount, smallestHoleCard % DeckNumericValueCount, isSuited, this);
+                isSuited = biggestHoleCard[0] == smallestHoleCard[0];
+                holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard[1], smallestHoleCard[1], isSuited, this);
 
                 //Determines which side of hole card matrix to log the cards.
                 //One side of the diagonal represents suited holde cards. The 
@@ -553,11 +553,11 @@ namespace PokerStats.GameStructures
                 //cards.
                 if (isSuited)
                 {
-                    HoleCardsDealtCounter[biggestHoleCard % DeckNumericValueCount][smallestHoleCard % DeckNumericValueCount]++;
+                    HoleCardsDealtCounter[biggestHoleCard[1]][smallestHoleCard[1]]++;
                 }
                 else
                 {
-                    HoleCardsDealtCounter[smallestHoleCard % DeckNumericValueCount][biggestHoleCard % DeckNumericValueCount]++;
+                    HoleCardsDealtCounter[smallestHoleCard[1]][biggestHoleCard[1]]++;
                 }
 
                 if (LogPokerHandResults)
@@ -641,29 +641,29 @@ namespace PokerStats.GameStructures
             biggestHoleCard = strongestHand.HoleCards[0];
             smallestHoleCard = strongestHand.HoleCards[1];
 
-            isSuited = biggestHoleCard / DeckNumericValueCount == smallestHoleCard / DeckNumericValueCount;
-            holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard % DeckNumericValueCount, smallestHoleCard % DeckNumericValueCount, isSuited, this);
+            isSuited = biggestHoleCard[0] == smallestHoleCard[0];
+            holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard[1], smallestHoleCard[1], isSuited, this);
 
             if (isTie)
             {
                 if (isSuited)
                 {
-                    HoleCardsTieCounter[biggestHoleCard % DeckNumericValueCount][smallestHoleCard % DeckNumericValueCount]++;
+                    HoleCardsTieCounter[biggestHoleCard[1]][smallestHoleCard[1]]++;
                 }
                 else
                 {
-                    HoleCardsTieCounter[smallestHoleCard % DeckNumericValueCount][biggestHoleCard % DeckNumericValueCount]++;
+                    HoleCardsTieCounter[smallestHoleCard[1]][biggestHoleCard[1]]++;
                 }
             }
             else
             {
-                if (biggestHoleCard / DeckNumericValueCount == smallestHoleCard / DeckNumericValueCount)
+                if (biggestHoleCard[0] == smallestHoleCard[0])
                 {
-                    HoleCardsWinCounter[biggestHoleCard % DeckNumericValueCount][smallestHoleCard % DeckNumericValueCount]++;
+                    HoleCardsWinCounter[biggestHoleCard[1]][smallestHoleCard[1]]++;
                 }
                 else
                 {
-                    HoleCardsWinCounter[smallestHoleCard % DeckNumericValueCount][biggestHoleCard % DeckNumericValueCount]++;
+                    HoleCardsWinCounter[smallestHoleCard[1]][biggestHoleCard[1]]++;
                 }
             }
 

@@ -12,12 +12,12 @@ namespace PokerStats.GameStructures
         public static readonly string[] HandRanks = new string[] { "Error", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush" };
         public static readonly string[] CardValues = new string[] { "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A" };
 
-        private int[] _sevenCardHand;
+        private int[][] _sevenCardHand;
 
-        public int[] HoleCards;
+        public int[][] HoleCards;
         public int HoleCardsNumericRepresentation;
 
-        public int[] CommunityCards; //Sorted in descending order by value.
+        public int[][] CommunityCards; //Sorted in descending order by value.
 
         private long _handRank = -1L;
         public long HandRank
@@ -41,11 +41,11 @@ namespace PokerStats.GameStructures
 
         public PokerHand(Table table)
         {
-            _sevenCardHand = new int[7];
+            _sevenCardHand = new int[7][];
             Table = table;
         }
 
-        public void GeneratePokerHand(int[] holeCards, int[] communityCards, int playerCount, bool isVillainEmotional, int keepTopPercentHero, int keepTopPercentVillain, bool maniacPlay)
+        public void GeneratePokerHand(int[][] holeCards, int[][] communityCards, int playerCount, bool isVillainEmotional, int keepTopPercentHero, int keepTopPercentVillain, bool maniacPlay)
         {
             _handRank = -1;
 
@@ -56,14 +56,14 @@ namespace PokerStats.GameStructures
             var biggestHoleCard = holeCards[0];
             var smallestHoleCard = holeCards[1];
 
-            if (biggestHoleCard % Table.DeckNumericValueCount < smallestHoleCard % Table.DeckNumericValueCount)
+            if (biggestHoleCard[1] < smallestHoleCard[1])
             {
-                int temp = biggestHoleCard;
+                var temp = biggestHoleCard;
                 biggestHoleCard = smallestHoleCard;
                 smallestHoleCard = temp;
             }
 
-            HoleCardsNumericRepresentation = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard % Table.DeckNumericValueCount, smallestHoleCard % Table.DeckNumericValueCount, biggestHoleCard / Table.DeckNumericValueCount == smallestHoleCard / Table.DeckNumericValueCount, Table);
+            HoleCardsNumericRepresentation = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard[1], smallestHoleCard[1], biggestHoleCard[0] == smallestHoleCard[0], Table);
 
             //Merge the hole cards and community cards into a sorted 7-card hand.
             var holeCardPos = 0;
@@ -71,7 +71,7 @@ namespace PokerStats.GameStructures
             while (holeCardPos < 2 && communityCardPos < 5)
             {
 
-                if (holeCards[holeCardPos] % Table.DeckNumericValueCount > communityCards[communityCardPos] % Table.DeckNumericValueCount)
+                if (holeCards[holeCardPos][1] > communityCards[communityCardPos][1])
                 {
                     _sevenCardHand[holeCardPos + communityCardPos] = holeCards[holeCardPos];
                     holeCardPos++;
@@ -132,12 +132,12 @@ namespace PokerStats.GameStructures
             //Check for sequentiality
             var consecutiveSequenceLength = 0;
             var highestSequentialCardPosition = -1;
-            int currentCard = -1;
-            int nextCard = -1;
+            var currentCard = (int[])null;
+            var nextCard = (int[])null;
             for (byte i = 0; i < _sevenCardHand.Length; i++)
             {
                 currentCard = _sevenCardHand[i];
-                nextCard = -1;
+                nextCard = null;
 
                 //Populate the next card, taking into consideration that it may be an Ace in the first position.
                 if (i < _sevenCardHand.Length - 1)
@@ -154,9 +154,9 @@ namespace PokerStats.GameStructures
                     var secondCard = _sevenCardHand[1];
                     var thirdCard = _sevenCardHand[2];
 
-                    if (firstCard % Table.DeckNumericValueCount == Table.DeckNumericValueCount - 1 && firstCard / Table.DeckNumericValueCount == currentCard / Table.DeckNumericValueCount) nextCard = firstCard;
-                    else if (secondCard % Table.DeckNumericValueCount == Table.DeckNumericValueCount - 1 && secondCard / Table.DeckNumericValueCount == currentCard / Table.DeckNumericValueCount) nextCard = secondCard;
-                    else if (thirdCard % Table.DeckNumericValueCount == Table.DeckNumericValueCount - 1 && thirdCard / Table.DeckNumericValueCount == currentCard / Table.DeckNumericValueCount) nextCard = thirdCard;
+                    if (firstCard[1] == Table.DeckNumericValueCount - 1 && firstCard[0] == currentCard[0]) nextCard = firstCard;
+                    else if (secondCard[1] == Table.DeckNumericValueCount - 1 && secondCard[0] == currentCard[0]) nextCard = secondCard;
+                    else if (thirdCard[1] == Table.DeckNumericValueCount - 1 && thirdCard[0] == currentCard[0]) nextCard = thirdCard;
                     else
                     {
                         break;
@@ -165,12 +165,12 @@ namespace PokerStats.GameStructures
 
                 //If the current card and next card have the same value, then
                 //skip to the next card.
-                if (nextCard % Table.DeckNumericValueCount == currentCard % Table.DeckNumericValueCount) continue;
+                if (nextCard[1] == currentCard[1]) continue;
 
                 //If the current card and next card are in sequence, update the sequence count.
                 //Otherwise, reset the sequence count.
                 //Take into consideration that the next sequential card may be an Ace in the first position.
-                if (nextCard / Table.DeckNumericValueCount == currentCard / Table.DeckNumericValueCount && (nextCard % Table.DeckNumericValueCount == currentCard % Table.DeckNumericValueCount - 1 || currentCard % Table.DeckNumericValueCount == 0 && nextCard % Table.DeckNumericValueCount == Table.DeckNumericValueCount - 1))
+                if (nextCard[0] == currentCard[0] && (nextCard[1] == currentCard[1] - 1 || currentCard[1] == 0 && nextCard[1] == Table.DeckNumericValueCount - 1))
                 {
                     if (consecutiveSequenceLength == 0)
                     {
@@ -201,7 +201,7 @@ namespace PokerStats.GameStructures
 
             //The value of this straight flush equals the face value of the highest card in the sequence.
             ScoreContainer[0] = 9;
-            ScoreContainer[1] = _sevenCardHand[highestSequentialCardPosition] % Table.DeckNumericValueCount + 1;
+            ScoreContainer[1] = _sevenCardHand[highestSequentialCardPosition][1] + 1;
             ScoreContainer[2] = 0;
             ScoreContainer[3] = subtypeScore;
             return ScoreContainer;
@@ -216,7 +216,7 @@ namespace PokerStats.GameStructures
             {
                 Span<bool> patternArray = stackalloc bool[] { false, false, false, false, false };
 
-                var targetCardValue = CommunityCards[i] % Table.DeckNumericValueCount;
+                var targetCardValue = CommunityCards[i][1];
 
                 //Set the target card as the first value in the pattern array
                 patternArray[0] = true;
@@ -226,7 +226,7 @@ namespace PokerStats.GameStructures
                 //Build the pattern.
                 for (int j = i + 1; j < CommunityCards.Length; j++)
                 {
-                    var relationIndex = targetCardValue - CommunityCards[j] % Table.DeckNumericValueCount;
+                    var relationIndex = targetCardValue - CommunityCards[j][1];
                     if (relationIndex < 5)
                     {
                         patternArray[relationIndex] = true;
@@ -327,7 +327,7 @@ namespace PokerStats.GameStructures
                 //No pattern found. Look for lower-end straight.
                 //For there to be a lower-end nut straight that's not handled
                 //by an existing pattern, there must be an Ace involved.
-                if (CommunityCards[0] % Table.DeckNumericValueCount == Table.DeckNumericValueCount - 1)
+                if (CommunityCards[0][1] == Table.DeckNumericValueCount - 1)
                 {
                     //Record the existence of Twos, Threes, fours, and Fives.
                     Span<bool> wheelContents = stackalloc bool[] { false, false, false, false };
@@ -335,7 +335,7 @@ namespace PokerStats.GameStructures
 
                     for (int i = 1; i < CommunityCards.Length; i++)
                     {
-                        var communityCardValue = CommunityCards[i] % Table.DeckNumericValueCount;
+                        var communityCardValue = CommunityCards[i][1];
                         if (communityCardValue < wheelContents.Length)
                         {
                             if (!wheelContents[communityCardValue])
@@ -372,13 +372,13 @@ namespace PokerStats.GameStructures
             {
                 if (secondNutHoleCardValue != -1)
                 {
-                    return HoleCards[0] % Table.DeckNumericValueCount == firstNutHoleCardValue
-                        && HoleCards[1] % Table.DeckNumericValueCount == secondNutHoleCardValue;
+                    return HoleCards[0][1] == firstNutHoleCardValue
+                        && HoleCards[1][1] == secondNutHoleCardValue;
                 }
                 else
                 {
-                    return HoleCards[0] % Table.DeckNumericValueCount == firstNutHoleCardValue
-                        || HoleCards[1] % Table.DeckNumericValueCount == firstNutHoleCardValue;
+                    return HoleCards[0][1] == firstNutHoleCardValue
+                        || HoleCards[1][1] == firstNutHoleCardValue;
                 }
             }
             else
@@ -396,14 +396,14 @@ namespace PokerStats.GameStructures
             var fourOfAKindCardValue = -1;
             for (short i = 0; i < _sevenCardHand.Length - 1; i++)
             {
-                int currentCard = _sevenCardHand[i];
-                int nextCard = _sevenCardHand[i + 1];
+                var currentCard = _sevenCardHand[i];
+                var nextCard = _sevenCardHand[i + 1];
 
-                if (currentCard % Table.DeckNumericValueCount == nextCard % Table.DeckNumericValueCount)
+                if (currentCard[1] == nextCard[1])
                 {
                     if (consecutiveValueLength == 0)
                     {
-                        fourOfAKindCardValue = currentCard % Table.DeckNumericValueCount;
+                        fourOfAKindCardValue = currentCard[1];
                         consecutiveValueLength = 2;
                     }
                     else
@@ -429,7 +429,7 @@ namespace PokerStats.GameStructures
             var kickerCount = 0;
             while (kickerCount < 1)
             {
-                var currentCardValue = _sevenCardHand[pos] % Table.DeckNumericValueCount;
+                var currentCardValue = _sevenCardHand[pos][1];
 
                 if (currentCardValue != fourOfAKindCardValue)
                 {
@@ -463,19 +463,19 @@ namespace PokerStats.GameStructures
             int biggestCommunityPairValue = -1;
             for (short i = 0; i < CommunityCards.Length - 1; i++)
             {
-                int currentCard = CommunityCards[i];
-                int nextCard = CommunityCards[i + 1];
+                var currentCard = CommunityCards[i];
+                var nextCard = CommunityCards[i + 1];
 
                 //Detect consecutive identical card values.
-                if (currentCard % Table.DeckNumericValueCount == nextCard % Table.DeckNumericValueCount)
+                if (currentCard[1] == nextCard[1])
                 {
-                    biggestCommunityPairValue = currentCard % Table.DeckNumericValueCount;
+                    biggestCommunityPairValue = currentCard[1];
                     break;
                 }
             }
 
-            return HoleCards[0] % Table.DeckNumericValueCount == biggestCommunityPairValue
-                && HoleCards[1] % Table.DeckNumericValueCount == biggestCommunityPairValue;
+            return HoleCards[0][1] == biggestCommunityPairValue
+                && HoleCards[1][1] == biggestCommunityPairValue;
         }
 
         #endregion Four of a Kind
@@ -488,11 +488,11 @@ namespace PokerStats.GameStructures
             var consecutiveValueLength = 0;
             for (short i = 0; i < _sevenCardHand.Length - 1; i++)
             {
-                int currentCard = _sevenCardHand[i];
-                int nextCard = _sevenCardHand[i + 1];
+                var currentCard = _sevenCardHand[i];
+                var nextCard = _sevenCardHand[i + 1];
 
                 //Detect consecutive identical card values.
-                if (currentCard % Table.DeckNumericValueCount == nextCard % Table.DeckNumericValueCount)
+                if (currentCard[1] == nextCard[1])
                 {
                     //Count consecutive cards with identical values.
                     if (consecutiveValueLength == 0)
@@ -507,9 +507,9 @@ namespace PokerStats.GameStructures
                         //We shouldn't need to consider a 4 of a kind, because a previously called method should have short-circuited the process and skipped this method.
                         if (consecutiveValueLength == 3)
                         {
-                            if (currentCard % Table.DeckNumericValueCount > biggestSetCardValue)
+                            if (currentCard[1] > biggestSetCardValue)
                             {
-                                biggestSetCardValue = currentCard % Table.DeckNumericValueCount;
+                                biggestSetCardValue = currentCard[1];
                             }
 
                             //Move to the next card. The next iteration should be outside the newly-found set.
@@ -531,19 +531,19 @@ namespace PokerStats.GameStructures
             int biggestPairCardValue = -1;
             for (short i = 0; i < _sevenCardHand.Length - 1; i++)
             {
-                int currentCard = _sevenCardHand[i];
-                int nextCard = _sevenCardHand[i + 1];
+                var currentCard = _sevenCardHand[i];
+                var nextCard = _sevenCardHand[i + 1];
 
                 //skip the cards that have a value that match the biggest set's value.
-                if (currentCard % Table.DeckNumericValueCount == biggestSetCardValue) continue;
+                if (currentCard[1] == biggestSetCardValue) continue;
 
                 //Detect consecutive identical card values.
-                if (currentCard % Table.DeckNumericValueCount == nextCard % Table.DeckNumericValueCount)
+                if (currentCard[1] == nextCard[1])
                 {
                     //Keep the highest pair value.
-                    if (currentCard % Table.DeckNumericValueCount > biggestPairCardValue)
+                    if (currentCard[1] > biggestPairCardValue)
                     {
-                        biggestPairCardValue = currentCard % Table.DeckNumericValueCount;
+                        biggestPairCardValue = currentCard[1];
                     }
 
                     //Move to the next card. The next iteration should be outside the newly-found pair.
@@ -596,13 +596,13 @@ namespace PokerStats.GameStructures
                 var currentCard = CommunityCards[i];
                 var nextCard = CommunityCards[i + 1];
 
-                if (currentCard % Table.DeckNumericValueCount == nextCard % Table.DeckNumericValueCount)
+                if (currentCard[1] == nextCard[1])
                 {
                     //If there are two pair evaluations in a row, that's a 3 of a kind.
                     //There can be only one set on a board. Skip the next position.
                     if (lastPositionPairValue > -1)
                     {
-                        tripsValue = nextCard % Table.DeckNumericValueCount;
+                        tripsValue = nextCard[1];
 
                         //The existence of trips eliminates a pair.
                         if (pairValueLowest > -1)
@@ -619,28 +619,28 @@ namespace PokerStats.GameStructures
                     else
                     {
                         //Keep track of the highest and lowest pair.
-                        if (nextCard % Table.DeckNumericValueCount > pairValueHighest)
+                        if (nextCard[1] > pairValueHighest)
                         {
                             pairValueLowest = pairValueHighest;
-                            pairValueHighest = nextCard % Table.DeckNumericValueCount;
+                            pairValueHighest = nextCard[1];
                         }
-                        else if (nextCard % Table.DeckNumericValueCount > pairValueLowest)
+                        else if (nextCard[1] > pairValueLowest)
                         {
-                            pairValueLowest = nextCard % Table.DeckNumericValueCount;
+                            pairValueLowest = nextCard[1];
                         }
                     }
 
                     //Keep track of the pair for this position.
-                    lastPositionPairValue = nextCard % Table.DeckNumericValueCount;
+                    lastPositionPairValue = nextCard[1];
                 }
                 else
                 {
                     //Keep track of the highest non-pair card.
                     if (lastPositionPairValue == -1)
                     {
-                        if (currentCard % Table.DeckNumericValueCount > highestNonPairCardValue)
+                        if (currentCard[1] > highestNonPairCardValue)
                         {
-                            highestNonPairCardValue = currentCard % Table.DeckNumericValueCount;
+                            highestNonPairCardValue = currentCard[1];
                         }
                     }
 
@@ -714,8 +714,8 @@ namespace PokerStats.GameStructures
                 }
             }
 
-            return (firstNutHoleCardValue == -1 || HoleCards[0] % Table.DeckNumericValueCount == firstNutHoleCardValue)
-                && (secondNutHoleCardValue == -1 || HoleCards[1] % Table.DeckNumericValueCount == secondNutHoleCardValue);
+            return (firstNutHoleCardValue == -1 || HoleCards[0][1] == firstNutHoleCardValue)
+                && (secondNutHoleCardValue == -1 || HoleCards[1][1] == secondNutHoleCardValue);
         }
 
         #endregion Full House
@@ -728,7 +728,7 @@ namespace PokerStats.GameStructures
             for (short pos = 0; pos < _sevenCardHand.Length; pos++)
             {
                 var card = _sevenCardHand[pos];
-                suitCounter[card / Table.DeckNumericValueCount]++;
+                suitCounter[card[0]]++;
             }
 
             var flushedSuit = -1;
@@ -749,15 +749,15 @@ namespace PokerStats.GameStructures
             for (short pos = 0; pos < _sevenCardHand.Length; pos++)
             {
                 var card = _sevenCardHand[pos];
-                if (card / Table.DeckNumericValueCount == flushedSuit)
+                if (card[0] == flushedSuit)
                 {
                     if (highestFlushValue == -1)
                     {
-                        highestFlushValue = card % Table.DeckNumericValueCount;
+                        highestFlushValue = card[1];
                     }
                     else
                     {
-                        flushKickers[flushKickerCount] = card;
+                        flushKickers[flushKickerCount] = card[1];
                         flushKickerCount++;
 
                         if (flushKickerCount == 4) break;
@@ -766,10 +766,10 @@ namespace PokerStats.GameStructures
             }
 
             var kickerVal =
-                Table.DeckNumericValueCount * Table.DeckNumericValueCount * Table.DeckNumericValueCount * flushKickers[0] % Table.DeckNumericValueCount
-                + Table.DeckNumericValueCount * Table.DeckNumericValueCount * flushKickers[1] % Table.DeckNumericValueCount
-                + Table.DeckNumericValueCount * flushKickers[2] % Table.DeckNumericValueCount
-                + flushKickers[3] % Table.DeckNumericValueCount;
+                Table.DeckNumericValueCount * Table.DeckNumericValueCount * Table.DeckNumericValueCount * flushKickers[0]
+                + Table.DeckNumericValueCount * Table.DeckNumericValueCount * flushKickers[1]
+                + Table.DeckNumericValueCount * flushKickers[2]
+                + flushKickers[3];
 
             //Determine subtype:
             //Top Hole Flush
@@ -799,13 +799,13 @@ namespace PokerStats.GameStructures
             var targetNextCardValue = -1;
             for (short j = 0; j < CommunityCards.Length; j++)
             {
-                if (CommunityCards[j] / Table.DeckNumericValueCount != suitValue) continue;
+                if (CommunityCards[j][0] != suitValue) continue;
 
                 //If this is the first card of the target suit (also the highest value), check to see
                 //if it is a King or smaller. That would mean the nut card is an Ace
                 if (isHighestCard)
                 {
-                    if (CommunityCards[j] % Table.DeckNumericValueCount < Table.DeckNumericValueCount - 1)
+                    if (CommunityCards[j][1] < Table.DeckNumericValueCount - 1)
                     {
                         nutHoleCardValue = Table.DeckNumericValueCount - 1;
                         break;
@@ -821,7 +821,7 @@ namespace PokerStats.GameStructures
                 {
                     //If we find a gap, then the value of the card that should be in the gap is the
                     //nut card for the flush.
-                    if (targetNextCardValue != CommunityCards[j] % Table.DeckNumericValueCount)
+                    if (targetNextCardValue != CommunityCards[j][1])
                     {
                         nutHoleCardValue = targetNextCardValue;
                         break;
@@ -831,7 +831,7 @@ namespace PokerStats.GameStructures
                 }
                 else
                 {
-                    targetNextCardValue = CommunityCards[j] % Table.DeckNumericValueCount - 1;
+                    targetNextCardValue = CommunityCards[j][1] - 1;
                 }
 
                 //If both the target nut hole cards have been identified, then we are done.
@@ -841,8 +841,8 @@ namespace PokerStats.GameStructures
                 }
             }
 
-            return HoleCards[0] / Table.DeckNumericValueCount == suitValue && HoleCards[0] % Table.DeckNumericValueCount == nutHoleCardValue
-                || HoleCards[1] / Table.DeckNumericValueCount == suitValue && HoleCards[1] % Table.DeckNumericValueCount == nutHoleCardValue;
+            return HoleCards[0][0] == suitValue && HoleCards[0][1] == nutHoleCardValue
+                || HoleCards[1][0] == suitValue && HoleCards[1][1] == nutHoleCardValue;
         }
 
         #endregion Flush
@@ -857,7 +857,7 @@ namespace PokerStats.GameStructures
             for (short i = 0; i < _sevenCardHand.Length; i++)
             {
                 var currentCard = _sevenCardHand[i];
-                int nextCard = -1;
+                var nextCard = (int[])null;
 
                 //Populate the next card, taking into consideration that it may be an Ace in the first position.
                 if (i < _sevenCardHand.Length - 1)
@@ -872,11 +872,11 @@ namespace PokerStats.GameStructures
                 //If the current card and next card are in sequence, update the sequence count.
                 //Otherwise, reset the sequence count.
                 //Take into consideration that the next sequential card may be an Ace in the first position.
-                if (nextCard % Table.DeckNumericValueCount == currentCard % Table.DeckNumericValueCount)
+                if (nextCard[1] == currentCard[1])
                 {
                     continue;
                 }
-                else if (nextCard % Table.DeckNumericValueCount == currentCard % Table.DeckNumericValueCount - 1 || currentCard % Table.DeckNumericValueCount == 0 && nextCard % Table.DeckNumericValueCount == Table.DeckNumericValueCount - 1)
+                else if (nextCard[1] == currentCard[1] - 1 || currentCard[1] == 0 && nextCard[1] == Table.DeckNumericValueCount - 1)
                 {
                     if (consecutiveSequenceLength == 0)
                     {
@@ -911,7 +911,7 @@ namespace PokerStats.GameStructures
 
             //The value of this straight equals the face value of the highest card in the sequence.
             ScoreContainer[0] = 5;
-            ScoreContainer[1] = _sevenCardHand[highestSequentialCardPosition] % Table.DeckNumericValueCount;
+            ScoreContainer[1] = _sevenCardHand[highestSequentialCardPosition][1];
             ScoreContainer[2] = 0;
             ScoreContainer[3] = subtypeScore;
             return ScoreContainer;
@@ -926,7 +926,7 @@ namespace PokerStats.GameStructures
             {
                 Span<bool> patternArray = stackalloc bool[] { false, false, false, false, false };
 
-                int targetCardValue = CommunityCards[i] % Table.DeckNumericValueCount;
+                int targetCardValue = CommunityCards[i][1];
 
                 //Set the target card as the first value in the pattern array
                 patternArray[0] = true;
@@ -936,7 +936,7 @@ namespace PokerStats.GameStructures
                 //Build the pattern.
                 for (var j = i + 1; j < CommunityCards.Length; j++)
                 {
-                    var relationIndex = targetCardValue - CommunityCards[j] % Table.DeckNumericValueCount;
+                    var relationIndex = targetCardValue - CommunityCards[j][1];
                     if (relationIndex < 5)
                     {
                         patternArray[relationIndex] = true;
@@ -1037,7 +1037,7 @@ namespace PokerStats.GameStructures
                 //No pattern found. Look for lower-end straight.
                 //For there to be a lower-end nut straight that's not handled
                 //by an existing pattern, there must be an Ace involved.
-                if (CommunityCards[0] % Table.DeckNumericValueCount == Table.DeckNumericValueCount - 1)
+                if (CommunityCards[0][1] == Table.DeckNumericValueCount - 1)
                 {
                     //Record the existence of Twos, Threes, fours, and Fives.
                     Span<bool> wheelContents = stackalloc bool[] { false, false, false, false };
@@ -1045,7 +1045,7 @@ namespace PokerStats.GameStructures
 
                     for (short i = 1; i < CommunityCards.Length; i++)
                     {
-                        var communityCardValue = CommunityCards[i] % Table.DeckNumericValueCount;
+                        var communityCardValue = CommunityCards[i][1];
                         if (communityCardValue < wheelContents.Length)
                         {
                             if (!wheelContents[communityCardValue])
@@ -1082,13 +1082,13 @@ namespace PokerStats.GameStructures
             {
                 if (secondNutHoleCardValue != -1)
                 {
-                    return HoleCards[0] % Table.DeckNumericValueCount == firstNutHoleCardValue
-                        && HoleCards[1] % Table.DeckNumericValueCount == secondNutHoleCardValue;
+                    return HoleCards[0][1] == firstNutHoleCardValue
+                        && HoleCards[1][1] == secondNutHoleCardValue;
                 }
                 else
                 {
-                    return HoleCards[0] % Table.DeckNumericValueCount == firstNutHoleCardValue
-                        || HoleCards[1] % Table.DeckNumericValueCount == firstNutHoleCardValue;
+                    return HoleCards[0][1] == firstNutHoleCardValue
+                        || HoleCards[1][1] == firstNutHoleCardValue;
                 }
             }
             else
@@ -1106,11 +1106,11 @@ namespace PokerStats.GameStructures
             short consecutiveValueLength = 0;
             for (short i = 0; i < _sevenCardHand.Length - 1; i++)
             {
-                int currentCard = _sevenCardHand[i];
-                int nextCard = _sevenCardHand[i + 1];
+                var currentCard = _sevenCardHand[i];
+                var nextCard = _sevenCardHand[i + 1];
 
                 //Detect consecutive identical card values.
-                if (currentCard % Table.DeckNumericValueCount == nextCard % Table.DeckNumericValueCount)
+                if (currentCard[1] == nextCard[1])
                 {
                     //Count consecutive cards with identical values.
                     if (consecutiveValueLength == 0)
@@ -1125,9 +1125,9 @@ namespace PokerStats.GameStructures
                         //We shouldn't need to consider a 4 of a kind, because a previously called method should have short-circuited the process and skipped this method.
                         if (consecutiveValueLength == 3)
                         {
-                            if (currentCard % Table.DeckNumericValueCount > biggestSetCardValue)
+                            if (currentCard[1] > biggestSetCardValue)
                             {
-                                biggestSetCardValue = currentCard % Table.DeckNumericValueCount;
+                                biggestSetCardValue = currentCard[1];
                             }
 
                             //Once a set is found, we can break out. The instance of a "double set", which is a full-house, should have been taken care of by a previous method.
@@ -1148,7 +1148,7 @@ namespace PokerStats.GameStructures
             short kickerCount = 0;
             while (kickerCount < 2)
             {
-                var currentCardValue = _sevenCardHand[pos] % Table.DeckNumericValueCount;
+                var currentCardValue = _sevenCardHand[pos][1];
 
                 if (currentCardValue != biggestSetCardValue)
                 {
@@ -1174,16 +1174,16 @@ namespace PokerStats.GameStructures
             //Check for Board Set subtype.
             if (
                 (
-                    CommunityCards[0] % Table.DeckNumericValueCount == CommunityCards[1] % Table.DeckNumericValueCount
-                    && CommunityCards[1] % Table.DeckNumericValueCount == CommunityCards[2] % Table.DeckNumericValueCount
+                    CommunityCards[0][1] == CommunityCards[1][1]
+                    && CommunityCards[1][1] == CommunityCards[2][1]
                 )
                 || (
-                    CommunityCards[1] % Table.DeckNumericValueCount == CommunityCards[2] % Table.DeckNumericValueCount
-                    && CommunityCards[2] % Table.DeckNumericValueCount == CommunityCards[3] % Table.DeckNumericValueCount
+                    CommunityCards[1][1] == CommunityCards[2][1]
+                    && CommunityCards[2][1] == CommunityCards[3][1]
                 )
                 || (
-                    CommunityCards[2] % Table.DeckNumericValueCount == CommunityCards[3] % Table.DeckNumericValueCount
-                    && CommunityCards[3] % Table.DeckNumericValueCount == CommunityCards[4] % Table.DeckNumericValueCount
+                    CommunityCards[2][1] == CommunityCards[3][1]
+                    && CommunityCards[3][1] == CommunityCards[4][1]
                 )
             )
             {
@@ -1192,7 +1192,7 @@ namespace PokerStats.GameStructures
 
             //Check for Low Set subtype
             if (subtypeScore == 0
-                && biggestSetCardValue < CommunityCards[0] % Table.DeckNumericValueCount
+                && biggestSetCardValue < CommunityCards[0][1]
             )
             {
                 subtypeScore = 2; //Low Set Subtype
@@ -1200,7 +1200,7 @@ namespace PokerStats.GameStructures
 
             //Check for Top Set subtype
             if (subtypeScore == 0
-                && biggestSetCardValue == CommunityCards[0] % Table.DeckNumericValueCount
+                && biggestSetCardValue == CommunityCards[0][1]
             )
             {
                 subtypeScore = 3; //Top Set subtype
@@ -1220,15 +1220,15 @@ namespace PokerStats.GameStructures
             for (int i = 0; i < _sevenCardHand.Length - 1; i++)
             {
                 var currentCard = _sevenCardHand[i];
-                int nextCard = _sevenCardHand[i + 1];
+                var nextCard = _sevenCardHand[i + 1];
 
                 //Detect consecutive identical card values.
-                if (currentCard % Table.DeckNumericValueCount == nextCard % Table.DeckNumericValueCount)
+                if (currentCard[1] == nextCard[1])
                 {
                     //Keep the highest pair value.
-                    if (currentCard % Table.DeckNumericValueCount > biggestPairCardValue)
+                    if (currentCard[1] > biggestPairCardValue)
                     {
-                        biggestPairCardValue = currentCard % Table.DeckNumericValueCount;
+                        biggestPairCardValue = currentCard[1];
                     }
 
                     //Move to the next card. The next iteration should be outside the newly-found pair.
@@ -1244,18 +1244,18 @@ namespace PokerStats.GameStructures
             for (int i = 0; i < _sevenCardHand.Length - 1; i++)
             {
                 var currentCard = _sevenCardHand[i];
-                int nextCard = _sevenCardHand[i + 1];
+                var nextCard = _sevenCardHand[i + 1];
 
                 //skip the cards that have a value that match the biggest set's value.
-                if (currentCard % Table.DeckNumericValueCount == biggestPairCardValue) continue;
+                if (currentCard[1] == biggestPairCardValue) continue;
 
                 //Detect consecutive identical card values.
-                if (currentCard % Table.DeckNumericValueCount == nextCard % Table.DeckNumericValueCount)
+                if (currentCard[1] == nextCard[1])
                 {
                     //Keep the highest pair value.
-                    if (currentCard % Table.DeckNumericValueCount > smallestPairCardValue)
+                    if (currentCard[1] > smallestPairCardValue)
                     {
-                        smallestPairCardValue = currentCard % Table.DeckNumericValueCount;
+                        smallestPairCardValue = currentCard[1];
                     }
 
                     //Once a second pair is found, we can break out of the loop.
@@ -1272,7 +1272,7 @@ namespace PokerStats.GameStructures
             short kickerCount = 0;
             while (kickerCount < 1)
             {
-                var currentCardValue = _sevenCardHand[pos] % Table.DeckNumericValueCount;
+                var currentCardValue = _sevenCardHand[pos][1];
 
                 if (currentCardValue != biggestPairCardValue && currentCardValue != smallestPairCardValue)
                 {
@@ -1299,21 +1299,21 @@ namespace PokerStats.GameStructures
             //Check for Board Two Pair subtype.
             if (
                 (
-                    CommunityCards[0] % Table.DeckNumericValueCount == CommunityCards[1] % Table.DeckNumericValueCount && CommunityCards[2] % Table.DeckNumericValueCount == CommunityCards[3] % Table.DeckNumericValueCount
-                    || CommunityCards[0] % Table.DeckNumericValueCount == CommunityCards[1] % Table.DeckNumericValueCount && CommunityCards[3] % Table.DeckNumericValueCount == CommunityCards[4] % Table.DeckNumericValueCount
-                    || CommunityCards[1] % Table.DeckNumericValueCount == CommunityCards[2] % Table.DeckNumericValueCount && CommunityCards[3] % Table.DeckNumericValueCount == CommunityCards[4] % Table.DeckNumericValueCount
+                    CommunityCards[0][1] == CommunityCards[1][1] && CommunityCards[2][1] == CommunityCards[3][1]
+                    || CommunityCards[0][1] == CommunityCards[1][1] && CommunityCards[3][1] == CommunityCards[4][1]
+                    || CommunityCards[1][1] == CommunityCards[2][1] && CommunityCards[3][1] == CommunityCards[4][1]
                 )
                 && (
                     (
-                        HoleCards[0] % Table.DeckNumericValueCount != HoleCards[1] % Table.DeckNumericValueCount
-                        && HoleCards[0] % Table.DeckNumericValueCount != CommunityCards[0] % Table.DeckNumericValueCount
-                        && HoleCards[1] % Table.DeckNumericValueCount != CommunityCards[0] % Table.DeckNumericValueCount
-                        && HoleCards[0] % Table.DeckNumericValueCount != CommunityCards[2] % Table.DeckNumericValueCount
-                        && HoleCards[1] % Table.DeckNumericValueCount != CommunityCards[2] % Table.DeckNumericValueCount
+                        HoleCards[0][1] != HoleCards[1][1]
+                        && HoleCards[0][1] != CommunityCards[0][1]
+                        && HoleCards[1][1] != CommunityCards[0][1]
+                        && HoleCards[0][1] != CommunityCards[2][1]
+                        && HoleCards[1][1] != CommunityCards[2][1]
                     )
                     || (
-                        HoleCards[0] % Table.DeckNumericValueCount == HoleCards[1] % Table.DeckNumericValueCount
-                        && HoleCards[0] % Table.DeckNumericValueCount < CommunityCards[3] % Table.DeckNumericValueCount
+                        HoleCards[0][1] == HoleCards[1][1]
+                        && HoleCards[0][1] < CommunityCards[3][1]
                     )
                 )
             )
@@ -1325,12 +1325,12 @@ namespace PokerStats.GameStructures
             if (subtypeScore == 0
                 && (
                     (
-                        HoleCards[0] % Table.DeckNumericValueCount != HoleCards[1] % Table.DeckNumericValueCount
-                        && HoleCards[0] % Table.DeckNumericValueCount != CommunityCards[0] % Table.DeckNumericValueCount
+                        HoleCards[0][1] != HoleCards[1][1]
+                        && HoleCards[0][1] != CommunityCards[0][1]
                     )
                     || (
-                        HoleCards[0] % Table.DeckNumericValueCount == HoleCards[1] % Table.DeckNumericValueCount
-                        && HoleCards[0] % Table.DeckNumericValueCount < CommunityCards[2] % Table.DeckNumericValueCount
+                        HoleCards[0][1] == HoleCards[1][1]
+                        && HoleCards[0][1] < CommunityCards[2][1]
                     )
                 )
             )
@@ -1342,23 +1342,23 @@ namespace PokerStats.GameStructures
             if (subtypeScore == 0
                 && (
                     (
-                        HoleCards[0] % Table.DeckNumericValueCount != HoleCards[1] % Table.DeckNumericValueCount
+                        HoleCards[0][1] != HoleCards[1][1]
                         && (
                             (
-                                CommunityCards[0] % Table.DeckNumericValueCount == CommunityCards[1] % Table.DeckNumericValueCount
-                                && HoleCards[0] % Table.DeckNumericValueCount != CommunityCards[2] % Table.DeckNumericValueCount
-                                && HoleCards[1] % Table.DeckNumericValueCount != CommunityCards[2] % Table.DeckNumericValueCount
+                                CommunityCards[0][1] == CommunityCards[1][1]
+                                && HoleCards[0][1] != CommunityCards[2][1]
+                                && HoleCards[1][1] != CommunityCards[2][1]
                             )
                             || (
-                                CommunityCards[0] % Table.DeckNumericValueCount != CommunityCards[1] % Table.DeckNumericValueCount
+                                CommunityCards[0][1] != CommunityCards[1][1]
                                 && (
                                     (
-                                        HoleCards[0] % Table.DeckNumericValueCount == CommunityCards[0] % Table.DeckNumericValueCount
+                                        HoleCards[0][1] == CommunityCards[0][1]
                                         && CommunityCards[1] != CommunityCards[2]
                                         && HoleCards[1] != CommunityCards[1]
                                     )
                                     || (
-                                        HoleCards[1] % Table.DeckNumericValueCount == CommunityCards[0] % Table.DeckNumericValueCount
+                                        HoleCards[1][1] == CommunityCards[0][1]
                                         && CommunityCards[1] != CommunityCards[2]
                                     )
                                 )
@@ -1366,15 +1366,15 @@ namespace PokerStats.GameStructures
                         )
                     )
                     || (
-                        HoleCards[0] % Table.DeckNumericValueCount == HoleCards[1] % Table.DeckNumericValueCount
+                        HoleCards[0][1] == HoleCards[1][1]
                         && (
                             (
-                                CommunityCards[0] % Table.DeckNumericValueCount == CommunityCards[1] % Table.DeckNumericValueCount
-                                && HoleCards[0] % Table.DeckNumericValueCount < CommunityCards[2] % Table.DeckNumericValueCount
+                                CommunityCards[0][1] == CommunityCards[1][1]
+                                && HoleCards[0][1] < CommunityCards[2][1]
                             )
                             || (
-                                CommunityCards[0] % Table.DeckNumericValueCount != CommunityCards[1] % Table.DeckNumericValueCount
-                                && HoleCards[0] % Table.DeckNumericValueCount > CommunityCards[0] % Table.DeckNumericValueCount
+                                CommunityCards[0][1] != CommunityCards[1][1]
+                                && HoleCards[0][1] > CommunityCards[0][1]
                             )
                         )
                     )
@@ -1388,14 +1388,14 @@ namespace PokerStats.GameStructures
             if (subtypeScore == 0
                 && (
                     (
-                        HoleCards[0] % Table.DeckNumericValueCount != HoleCards[1] % Table.DeckNumericValueCount
-                        && HoleCards[0] % Table.DeckNumericValueCount == CommunityCards[0] % Table.DeckNumericValueCount
-                        && HoleCards[1] % Table.DeckNumericValueCount == CommunityCards[0] % Table.DeckNumericValueCount
+                        HoleCards[0][1] != HoleCards[1][1]
+                        && HoleCards[0][1] == CommunityCards[0][1]
+                        && HoleCards[1][1] == CommunityCards[0][1]
                     )
                     || (
-                        HoleCards[0] % Table.DeckNumericValueCount == HoleCards[1] % Table.DeckNumericValueCount
-                        && CommunityCards[0] % Table.DeckNumericValueCount == CommunityCards[1] % Table.DeckNumericValueCount
-                        && HoleCards[0] % Table.DeckNumericValueCount > CommunityCards[2] % Table.DeckNumericValueCount
+                        HoleCards[0][1] == HoleCards[1][1]
+                        && CommunityCards[0][1] == CommunityCards[1][1]
+                        && HoleCards[0][1] > CommunityCards[2][1]
                     )
                 )
             )
@@ -1417,15 +1417,15 @@ namespace PokerStats.GameStructures
             for (int i = 0; i < _sevenCardHand.Length - 1; i++)
             {
                 var currentCard = _sevenCardHand[i];
-                int nextCard = _sevenCardHand[i + 1];
+                var nextCard = _sevenCardHand[i + 1];
 
                 //Detect consecutive identical card values.
-                if (currentCard % Table.DeckNumericValueCount == nextCard % Table.DeckNumericValueCount)
+                if (currentCard[1] == nextCard[1])
                 {
                     //Keep the highest pair value.
-                    if (currentCard % Table.DeckNumericValueCount > pairCardValue)
+                    if (currentCard[1] > pairCardValue)
                     {
-                        pairCardValue = currentCard % Table.DeckNumericValueCount;
+                        pairCardValue = currentCard[1];
                     }
 
                     //Once a second pair is found, we can break out of the loop.
@@ -1440,7 +1440,7 @@ namespace PokerStats.GameStructures
             int kickerCount = 0;
             while (kickerCount < 3)
             {
-                var currentCardValue = _sevenCardHand[pos] % Table.DeckNumericValueCount;
+                var currentCardValue = _sevenCardHand[pos][1];
 
                 if (currentCardValue != pairCardValue)
                 {
@@ -1469,10 +1469,10 @@ namespace PokerStats.GameStructures
 
             //Check for Board Pair subtype.
             if (
-                CommunityCards[0] % Table.DeckNumericValueCount == CommunityCards[1] % Table.DeckNumericValueCount
-                || CommunityCards[1] % Table.DeckNumericValueCount == CommunityCards[2] % Table.DeckNumericValueCount
-                || CommunityCards[2] % Table.DeckNumericValueCount == CommunityCards[3] % Table.DeckNumericValueCount
-                || CommunityCards[3] % Table.DeckNumericValueCount == CommunityCards[4] % Table.DeckNumericValueCount
+                CommunityCards[0][1] == CommunityCards[1][1]
+                || CommunityCards[1][1] == CommunityCards[2][1]
+                || CommunityCards[2][1] == CommunityCards[3][1]
+                || CommunityCards[3][1] == CommunityCards[4][1]
             )
             {
                 subtypeScore = 1; //Underpair subtype.
@@ -1480,8 +1480,8 @@ namespace PokerStats.GameStructures
 
             //Check for Underpair subtype.
             if (subtypeScore == 0
-                && HoleCards[0] % Table.DeckNumericValueCount == HoleCards[1] % Table.DeckNumericValueCount
-                && HoleCards[0] % Table.DeckNumericValueCount < CommunityCards[4] % Table.DeckNumericValueCount)
+                && HoleCards[0][1] == HoleCards[1][1]
+                && HoleCards[0][1] < CommunityCards[4][1])
             {
                 subtypeScore = 2; //Underpair subtype.
             }
@@ -1489,23 +1489,23 @@ namespace PokerStats.GameStructures
             //Check for Low Pair subtype.
             if (subtypeScore == 0
                 && (
-                    HoleCards[0] % Table.DeckNumericValueCount != HoleCards[1] % Table.DeckNumericValueCount
+                    HoleCards[0][1] != HoleCards[1][1]
                     && (
-                        HoleCards[0] % Table.DeckNumericValueCount == CommunityCards[4] % Table.DeckNumericValueCount
-                        || HoleCards[0] % Table.DeckNumericValueCount == CommunityCards[3] % Table.DeckNumericValueCount
-                        || HoleCards[0] % Table.DeckNumericValueCount == CommunityCards[2] % Table.DeckNumericValueCount
-                        || HoleCards[0] % Table.DeckNumericValueCount == CommunityCards[1] % Table.DeckNumericValueCount
-                        || HoleCards[1] % Table.DeckNumericValueCount == CommunityCards[4] % Table.DeckNumericValueCount
-                        || HoleCards[1] % Table.DeckNumericValueCount == CommunityCards[3] % Table.DeckNumericValueCount
-                        || HoleCards[1] % Table.DeckNumericValueCount == CommunityCards[2] % Table.DeckNumericValueCount
-                        || HoleCards[1] % Table.DeckNumericValueCount == CommunityCards[1] % Table.DeckNumericValueCount
+                        HoleCards[0][1] == CommunityCards[4][1]
+                        || HoleCards[0][1] == CommunityCards[3][1]
+                        || HoleCards[0][1] == CommunityCards[2][1]
+                        || HoleCards[0][1] == CommunityCards[1][1]
+                        || HoleCards[1][1] == CommunityCards[4][1]
+                        || HoleCards[1][1] == CommunityCards[3][1]
+                        || HoleCards[1][1] == CommunityCards[2][1]
+                        || HoleCards[1][1] == CommunityCards[1][1]
                     )
                 )
                 || (
-                    HoleCards[0] % Table.DeckNumericValueCount == HoleCards[1] % Table.DeckNumericValueCount
+                    HoleCards[0][1] == HoleCards[1][1]
                     && (
-                        HoleCards[0] % Table.DeckNumericValueCount > CommunityCards[4] % Table.DeckNumericValueCount
-                        && HoleCards[0] % Table.DeckNumericValueCount < CommunityCards[0] % Table.DeckNumericValueCount
+                        HoleCards[0][1] > CommunityCards[4][1]
+                        && HoleCards[0][1] < CommunityCards[0][1]
                     )
                 )
             )
@@ -1515,10 +1515,10 @@ namespace PokerStats.GameStructures
 
             //Check for Top Pair subtype
             if (subtypeScore == 0
-                && HoleCards[0] % Table.DeckNumericValueCount != HoleCards[1] % Table.DeckNumericValueCount
+                && HoleCards[0][1] != HoleCards[1][1]
                 && (
-                    HoleCards[0] % Table.DeckNumericValueCount == CommunityCards[0] % Table.DeckNumericValueCount
-                    || HoleCards[1] % Table.DeckNumericValueCount == CommunityCards[0] % Table.DeckNumericValueCount
+                    HoleCards[0][1] == CommunityCards[0][1]
+                    || HoleCards[1][1] == CommunityCards[0][1]
                 )
             )
             {
@@ -1527,8 +1527,8 @@ namespace PokerStats.GameStructures
 
             //Check for Overpair subtype
             if (subtypeScore == 0
-                && HoleCards[0] % Table.DeckNumericValueCount == HoleCards[1] % Table.DeckNumericValueCount
-                && HoleCards[0] % Table.DeckNumericValueCount > CommunityCards[0] % Table.DeckNumericValueCount
+                && HoleCards[0][1] == HoleCards[1][1]
+                && HoleCards[0][1] > CommunityCards[0][1]
             )
             {
                 subtypeScore = 5; //Overpair subtype.
@@ -1546,13 +1546,13 @@ namespace PokerStats.GameStructures
             var highestValueCard = _sevenCardHand[0];
 
             var kickerVal =
-                Table.DeckNumericValueCount * Table.DeckNumericValueCount * Table.DeckNumericValueCount * _sevenCardHand[1] % Table.DeckNumericValueCount
-                + Table.DeckNumericValueCount * Table.DeckNumericValueCount * _sevenCardHand[2] % Table.DeckNumericValueCount
-                + Table.DeckNumericValueCount * _sevenCardHand[3] % Table.DeckNumericValueCount
-                + _sevenCardHand[4] % Table.DeckNumericValueCount;
+                Table.DeckNumericValueCount * Table.DeckNumericValueCount * Table.DeckNumericValueCount * _sevenCardHand[1][1]
+                + Table.DeckNumericValueCount * Table.DeckNumericValueCount * _sevenCardHand[2][1]
+                + Table.DeckNumericValueCount * _sevenCardHand[3][1]
+                + _sevenCardHand[4][1];
 
             ScoreContainer[0] = 1;
-            ScoreContainer[1] = highestValueCard % Table.DeckNumericValueCount;
+            ScoreContainer[1] = highestValueCard[1];
             ScoreContainer[2] = kickerVal;
             ScoreContainer[3] = 0; //Empty subscore type
             return ScoreContainer;
