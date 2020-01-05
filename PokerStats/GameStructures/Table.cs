@@ -34,9 +34,6 @@ namespace PokerStats.GameStructures
             new int[] { 336, 308, 280, 252, 335, 224, 333, 196, 307, 331, 334, 305, 329, 168, 279, 303, 327, 140, 332, 112, 277, 251, 325, 301, 84, 306, 323, 56, 330, 321, 299, 275, 223, 317, 28, 315, 319, 249, 313, 328, 304, 0, 297, 273, 278, 295, 293, 221, 247, 195, 291, 245, 271, 302, 219, 289, 287, 269, 265, 267, 193, 276, 326, 263, 250, 243, 165, 167, 191, 261, 217, 300, 241, 324, 235, 139, 111, 239, 237, 137, 189, 215, 213, 163, 109, 211, 274, 322, 209, 187, 81, 83, 248, 135, 185, 183, 320, 161, 222, 298, 107, 159, 133, 55, 318, 316, 131, 105, 296, 272, 79, 53, 157, 246, 314, 220, 27, 312, 294, 194, 292, 270, 290, 218, 288, 286, 166, 268, 244, 192, 266, 138, 264, 164, 242, 190, 260, 262, 216, 136, 110, 240, 108, 238, 162, 236, 214, 188, 134, 212, 234, 210, 82, 208, 80, 106, 160, 186, 184, 54, 182, 132, 158, 104, 156, 52, 130, 78, 26 },
     };
 
-        public static int[] BestHoleCardsNumericHero;
-        public static int[] BestHoleCardsNumericVillain;
-
         public static readonly string[] EmotionalCards = new string[]
         {
             "AAo", "KKo", "QQo", "JJo", "TTo", "AKs", "AQs", "AKo", "99o", "AJs", "ATs", "KQs", "AQo", "KJs", "KTs", "A9s", "88o", "AJo", "QJs", "ATo", "KQo", "A8s", "QTs", "77o", "JTs", "K9s", "A7s", "KJo", "66o", "KTo", "A6s", "K8s", "QJo", "J9s", "QTo", "T9s", "JTo", "98s", "87s", "76s"
@@ -44,33 +41,35 @@ namespace PokerStats.GameStructures
 
         public static readonly int[] EmotionalCardsNumeric = new int[] { 160, 140, 120, 100, 80, 159, 157, 158, 60, 155, 153, 139, 156, 137, 135, 151, 40, 154, 119, 152, 138, 149, 117, 20, 99, 133, 147, 136, 0, 134, 145, 131, 118, 97, 116, 79, 98, 59, 39, 19 };
 
-        private readonly Random NumberGenerator = new Random((int)DateTime.Now.Ticks);
+        public int[] BestHoleCardsNumericHero;
+        public int[] BestHoleCardsNumericVillain;
+
+        private Random NumberGenerator = new Random((int)DateTime.Now.Ticks);
         private long[][] HoleCardsWinCounter;
         private long[][] HoleCardsDealtCounter;
         private long[][] HoleCardsTieCounter;
 
-        private readonly Dictionary<int, int[]> HandsMadeCount = new Dictionary<int, int[]>();
-        private readonly Dictionary<int, int[]> HandsWonCount = new Dictionary<int, int[]>();
-        private readonly Dictionary<int, int[]> HandsTiedCount = new Dictionary<int, int[]>();
+        private int[][] HandsMadeCount = new int[337][];
+        private int[][] HandsWonCount = new int[337][];
+        private int[][] HandsTiedCount = new int[337][];
 
-        private readonly Dictionary<long, int> HandRankCount = new Dictionary<long, int>();
-        private readonly Dictionary<long, PokerHand[]> HandsWithRank = new Dictionary<long, PokerHand[]>();
-        private readonly Dictionary<int, double> HoleCardWinRate = new Dictionary<int, double>();
+        private Dictionary<long, int> HandRankCount = new Dictionary<long, int>();
+        private Dictionary<long, PokerHand[]> HandsWithRank = new Dictionary<long, PokerHand[]>();
 
         private Card[] Deck;
         private Card[] CommunityCards = new Card[5];
         private Card[][] PlayerHoleCards;
         private PokerHand[] AllPlayerFullHands;
 
-        private readonly int PlayerCount;
-        private readonly bool ManiacPlay;
-        public readonly bool LogPokerHandResults;
+        private int PlayerCount;
+        private bool ManiacPlay;
+        public bool LogPokerHandResults;
 
-        private readonly int KeepTopPercentHero;
-        private readonly int KeepTopPercentVillain;
+        private int KeepTopPercentHero;
+        private int KeepTopPercentVillain;
 
-        public readonly int DeckNumericValueCount;
-        public readonly int DeckSuitCount;
+        public int DeckNumericValueCount;
+        public int DeckSuitCount;
 
         public Table(int numPlayers, bool maniacPlay, int keepTopPercentHero, int keepTopPercentVillain, bool logPokerHandResults)
         {
@@ -99,6 +98,13 @@ namespace PokerStats.GameStructures
             BestHoleCardsNumericVillain = new int[bestStartingHandVillainCount];
             Array.Copy(bestStartingHands, BestHoleCardsNumericVillain, bestStartingHandVillainCount);
             Array.Sort(BestHoleCardsNumericVillain);
+
+            for(int i = 0; i < HandsMadeCount.Length; i++)
+            {
+                HandsMadeCount[i] = new int[10];
+                HandsWonCount[i] = new int[10];
+                HandsTiedCount[i] = new int[10];
+            }
 
             //Sort the best starting hands by numeric value.
             for (int i = 2; i < BestHoleCardsNumericByPlayerCount.Length; i++)
@@ -562,15 +568,7 @@ namespace PokerStats.GameStructures
 
                 if (LogPokerHandResults)
                 {
-                    if (!HandsMadeCount.ContainsKey(holeCardsNumeric))
-                    {
-                        HandsMadeCount.Add(holeCardsNumeric, new int[10]);
-                        HandsWonCount.Add(holeCardsNumeric, new int[10]);
-                        HandsTiedCount.Add(holeCardsNumeric, new int[10]);
-                    }
-
                     var handRank = hand.HandRank / 100_000_000_000L;
-
                     HandsMadeCount[holeCardsNumeric][handRank]++;
                 }
             }
