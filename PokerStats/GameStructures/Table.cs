@@ -69,14 +69,21 @@ namespace PokerStats.GameStructures
         private readonly int KeepTopPercentHero;
         private readonly int KeepTopPercentVillain;
 
-        public readonly int DeckNumericValueCount;
-        public readonly int DeckSuitCount;
+        public static readonly int DeckNumericValueCount = 13;
+        public static readonly int DeckSuitCount = 4;
+
+        public bool[] sharedPatternArray = new bool[5];
+        public bool[] sharedWheelContents = new bool[4];
+        public short[] sharedShortArray2 = new short[2];
+        public short[] sharedShortArray3 = new short[3];
+        public int[] sharedSuitCounter = new int[DeckSuitCount];
+        public int[] sharedIntArray4 = new int[4];
+        public int[] sharedIntArray3 = new int[3];
+        public Card[] sharedCardArray4 = new Card[4];
+
 
         public Table(int numPlayers, bool maniacPlay, int keepTopPercentHero, int keepTopPercentVillain, bool logPokerHandResults)
         {
-            DeckNumericValueCount = 13;
-            DeckSuitCount = 4;
-
             PlayerCount = numPlayers;
             ManiacPlay = maniacPlay;
             LogPokerHandResults = logPokerHandResults;
@@ -439,7 +446,7 @@ namespace PokerStats.GameStructures
                     var tieRate = dealCount == 0 ? 0 : (double)tieCount / dealCount;
                     var lossRate = dealCount == 0 ? 0 : (double)lossCount / dealCount;
 
-                    var holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(bigCardValue, smallCardValue, false, this);
+                    var holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(bigCardValue, smallCardValue, false);
 
 
                     holeCardsAndWinRates.Add(holeCardsNumeric, new double[] { winRate, lossRate, tieRate });
@@ -459,7 +466,7 @@ namespace PokerStats.GameStructures
                     var tieRate = dealCount == 0 ? 0 : (double)tieCount / dealCount;
                     var lossRate = dealCount == 0 ? 0 : (double)lossCount / dealCount;
 
-                    var holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(bigCardValue, smallcardValue, true, this);
+                    var holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(bigCardValue, smallcardValue, true);
 
                     holeCardsAndWinRates.Add(holeCardsNumeric, new double[] { winRate, lossRate, tieRate });
                 }
@@ -545,7 +552,7 @@ namespace PokerStats.GameStructures
                 smallestHoleCard = hand.HoleCards[1];
 
                 isSuited = biggestHoleCard.Suit == smallestHoleCard.Suit;
-                holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, isSuited, this);
+                holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, isSuited);
 
                 //Determines which side of hole card matrix to log the cards.
                 //One side of the diagonal represents suited holde cards. The 
@@ -642,7 +649,7 @@ namespace PokerStats.GameStructures
             smallestHoleCard = strongestHand.HoleCards[1];
 
             isSuited = biggestHoleCard.Suit == smallestHoleCard.Suit;
-            holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, isSuited, this);
+            holeCardsNumeric = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, isSuited);
 
             if (isTie)
             {

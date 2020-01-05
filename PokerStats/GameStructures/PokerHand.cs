@@ -63,7 +63,7 @@ namespace PokerStats.GameStructures
                 smallestHoleCard = temp;
             }
 
-            HoleCardsNumericRepresentation = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, biggestHoleCard.Suit == smallestHoleCard.Suit, Table);
+            HoleCardsNumericRepresentation = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, biggestHoleCard.Suit == smallestHoleCard.Suit);
 
             //Merge the hole cards and community cards into a sorted 7-card hand.
             var holeCardPos = 0;
@@ -210,21 +210,16 @@ namespace PokerStats.GameStructures
             var firstNutHoleCardValue = -1;
             var secondNutHoleCardValue = -1;
 
-            Span<bool> patternArray = stackalloc bool[5];
-            Span<bool> wheelContents = stackalloc bool[4];
-
             for (short i = 0; i < 3; i++)
             {
-                patternArray[0] = false;
-                patternArray[1] = false;
-                patternArray[2] = false;
-                patternArray[3] = false;
-                patternArray[4] = false;
-
                 var targetCardValue = CommunityCards[i].Value;
 
                 //Set the target card as the first value in the pattern array
-                patternArray[0] = true;
+                Table.sharedPatternArray[0] = true;
+                Table.sharedPatternArray[1] = false;
+                Table.sharedPatternArray[2] = false;
+                Table.sharedPatternArray[3] = false;
+                Table.sharedPatternArray[4] = false;
 
                 //Iterate through the remaining community cards.
                 //Each subsequent index of the array represents the next consecutive value card.
@@ -234,20 +229,20 @@ namespace PokerStats.GameStructures
                     var relationIndex = targetCardValue - CommunityCards[j].Value;
                     if (relationIndex < 5)
                     {
-                        patternArray[relationIndex] = true;
+                        Table.sharedPatternArray[relationIndex] = true;
                     }
                 }
 
                 //Determine which pattern exists and return true if the 
                 //corresponding nut hand matches the hole cards.
                 //Return false if otherwise.                
-                if (patternArray[1] && patternArray[2])
+                if (Table.sharedPatternArray[1] && Table.sharedPatternArray[2])
                 {
                     //Case when target card is Ace
                     if (targetCardValue == Table.DeckNumericValueCount - 1)
                     {
                         //If a Jack is in the pattern, a Ten is the nuts
-                        if (patternArray[3])
+                        if (Table.sharedPatternArray[3])
                         {
                             firstNutHoleCardValue = targetCardValue - 4;
                         }
@@ -261,7 +256,7 @@ namespace PokerStats.GameStructures
                     else if (targetCardValue == Table.DeckNumericValueCount - 2)
                     {
                         //If a Ten is in the pattern, an Ace is the nuts
-                        if (patternArray[3])
+                        if (Table.sharedPatternArray[3])
                         {
                             firstNutHoleCardValue = targetCardValue + 1;
                         }
@@ -277,7 +272,7 @@ namespace PokerStats.GameStructures
                         secondNutHoleCardValue = targetCardValue + 1;
                     }
                 }
-                else if (patternArray[1] && patternArray[3])
+                else if (Table.sharedPatternArray[1] && Table.sharedPatternArray[3])
                 {
                     //Case when target card is Ace
                     if (targetCardValue == Table.DeckNumericValueCount - 1)
@@ -292,12 +287,12 @@ namespace PokerStats.GameStructures
                         secondNutHoleCardValue = targetCardValue - 2;
                     }
                 }
-                else if (patternArray[1] && patternArray[4])
+                else if (Table.sharedPatternArray[1] && Table.sharedPatternArray[4])
                 {
                     firstNutHoleCardValue = targetCardValue - 2;
                     secondNutHoleCardValue = targetCardValue - 3;
                 }
-                else if (patternArray[2] && patternArray[3])
+                else if (Table.sharedPatternArray[2] && Table.sharedPatternArray[3])
                 {
                     //Case when target card is Ace
                     if (targetCardValue == Table.DeckNumericValueCount - 1)
@@ -311,12 +306,12 @@ namespace PokerStats.GameStructures
                         secondNutHoleCardValue = targetCardValue - 1;
                     }
                 }
-                else if (patternArray[2] && patternArray[4])
+                else if (Table.sharedPatternArray[2] && Table.sharedPatternArray[4])
                 {
                     firstNutHoleCardValue = targetCardValue - 1;
                     secondNutHoleCardValue = targetCardValue - 3;
                 }
-                else if (patternArray[3] && patternArray[4])
+                else if (Table.sharedPatternArray[3] && Table.sharedPatternArray[4])
                 {
                     firstNutHoleCardValue = targetCardValue - 1;
                     secondNutHoleCardValue = targetCardValue - 2;
@@ -335,31 +330,31 @@ namespace PokerStats.GameStructures
                 if (CommunityCards[0].Value == Table.DeckNumericValueCount - 1)
                 {
                     //Record the existence of Twos, Threes, fours, and Fives.
-                    wheelContents[0] = false;
-                    wheelContents[1] = false;
-                    wheelContents[2] = false;
-                    wheelContents[3] = false;
+                    Table.sharedWheelContents[0] = false;
+                    Table.sharedWheelContents[1] = false;
+                    Table.sharedWheelContents[2] = false;
+                    Table.sharedWheelContents[3] = false;
                     var wheelCount = 0;
 
                     for (int i = 1; i < CommunityCards.Length; i++)
                     {
                         var communityCardValue = CommunityCards[i].Value;
-                        if (communityCardValue < wheelContents.Length)
+                        if (communityCardValue < Table.sharedWheelContents.Length)
                         {
-                            if (!wheelContents[communityCardValue])
+                            if (!Table.sharedWheelContents[communityCardValue])
                             {
                                 wheelCount++;
-                                wheelContents[communityCardValue] = true;
+                                Table.sharedWheelContents[communityCardValue] = true;
                             }
                         }
                     }
 
                     if (wheelCount == 2)
                     {
-                        for (int i = wheelContents.Length - 1; i >= 0; i--)
+                        for (int i = Table.sharedWheelContents.Length - 1; i >= 0; i--)
                         {
 
-                            if (!wheelContents[i])
+                            if (!Table.sharedWheelContents[i])
                             {
                                 if (firstNutHoleCardValue == -1)
                                 {
@@ -729,7 +724,12 @@ namespace PokerStats.GameStructures
 
         private int[] ScoreFlush()
         {
-            Span<int> suitCounter = stackalloc int[Table.DeckSuitCount];
+            var suitCounter = Table.sharedSuitCounter;
+            for(short i = 0; i < suitCounter.Length; i++)
+            {
+                suitCounter[i] = 0;
+            }
+
             for (short pos = 0; pos < _sevenCardHand.Length; pos++)
             {
                 var card = _sevenCardHand[pos];
@@ -749,7 +749,12 @@ namespace PokerStats.GameStructures
             if (flushedSuit == -1) return ZeroScore;
 
             var highestFlushValue = -1;
-            Span<Card> flushKickers = stackalloc Card[4];
+            var flushKickers = Table.sharedCardArray4;
+            flushKickers[0] = default;
+            flushKickers[1] = default;
+            flushKickers[2] = default;
+            flushKickers[3] = default;
+
             var flushKickerCount = 0;
             for (short pos = 0; pos < _sevenCardHand.Length; pos++)
             {
@@ -924,20 +929,16 @@ namespace PokerStats.GameStructures
             int firstNutHoleCardValue = -1;
             int secondNutHoleCardValue = -1;
 
-            Span<bool> patternArray = stackalloc bool[5];
-            Span<bool> wheelContents = stackalloc bool[4];
             for (short i = 0; i < 3; i++)
             {
-                patternArray[0] = false;
-                patternArray[1] = false;
-                patternArray[2] = false;
-                patternArray[3] = false;
-                patternArray[4] = false;
-
                 int targetCardValue = CommunityCards[i].Value;
 
                 //Set the target card as the first value in the pattern array
-                patternArray[0] = true;
+                Table.sharedPatternArray[0] = true;
+                Table.sharedPatternArray[1] = false;
+                Table.sharedPatternArray[2] = false;
+                Table.sharedPatternArray[3] = false;
+                Table.sharedPatternArray[4] = false;
 
                 //Iterate through the remaining community cards.
                 //Each subsequent index of the array represents the next consecutive value card.
@@ -947,20 +948,20 @@ namespace PokerStats.GameStructures
                     var relationIndex = targetCardValue - CommunityCards[j].Value;
                     if (relationIndex < 5)
                     {
-                        patternArray[relationIndex] = true;
+                        Table.sharedPatternArray[relationIndex] = true;
                     }
                 }
 
                 //Determine which pattern exists and return true if the 
                 //corresponding nut hand matches the hole cards.
                 //Return false if otherwise.                
-                if (patternArray[1] && patternArray[2])
+                if (Table.sharedPatternArray[1] && Table.sharedPatternArray[2])
                 {
                     //Case when target card is Ace
                     if (targetCardValue == Table.DeckNumericValueCount - 1)
                     {
                         //If a Jack is in the pattern, a Ten is the nuts
-                        if (patternArray[3])
+                        if (Table.sharedPatternArray[3])
                         {
                             firstNutHoleCardValue = targetCardValue - 4;
                         }
@@ -974,7 +975,7 @@ namespace PokerStats.GameStructures
                     else if (targetCardValue == Table.DeckNumericValueCount - 2)
                     {
                         //If a Ten is in the pattern, an Ace is the nuts
-                        if (patternArray[3])
+                        if (Table.sharedPatternArray[3])
                         {
                             firstNutHoleCardValue = targetCardValue + 1;
                         }
@@ -990,7 +991,7 @@ namespace PokerStats.GameStructures
                         secondNutHoleCardValue = targetCardValue + 1;
                     }
                 }
-                else if (patternArray[1] && patternArray[3])
+                else if (Table.sharedPatternArray[1] && Table.sharedPatternArray[3])
                 {
                     //Case when target card is Ace
                     if (targetCardValue == Table.DeckNumericValueCount - 1)
@@ -1005,12 +1006,12 @@ namespace PokerStats.GameStructures
                         secondNutHoleCardValue = targetCardValue - 2;
                     }
                 }
-                else if (patternArray[1] && patternArray[4])
+                else if (Table.sharedPatternArray[1] && Table.sharedPatternArray[4])
                 {
                     firstNutHoleCardValue = targetCardValue - 2;
                     secondNutHoleCardValue = targetCardValue - 3;
                 }
-                else if (patternArray[2] && patternArray[3])
+                else if (Table.sharedPatternArray[2] && Table.sharedPatternArray[3])
                 {
                     //Case when target card is Ace
                     if (targetCardValue == Table.DeckNumericValueCount - 1)
@@ -1024,12 +1025,12 @@ namespace PokerStats.GameStructures
                         secondNutHoleCardValue = targetCardValue - 1;
                     }
                 }
-                else if (patternArray[2] && patternArray[4])
+                else if (Table.sharedPatternArray[2] && Table.sharedPatternArray[4])
                 {
                     firstNutHoleCardValue = targetCardValue - 1;
                     secondNutHoleCardValue = targetCardValue - 3;
                 }
-                else if (patternArray[3] && patternArray[4])
+                else if (Table.sharedPatternArray[3] && Table.sharedPatternArray[4])
                 {
                     firstNutHoleCardValue = targetCardValue - 1;
                     secondNutHoleCardValue = targetCardValue - 2;
@@ -1048,31 +1049,31 @@ namespace PokerStats.GameStructures
                 if (CommunityCards[0].Value == Table.DeckNumericValueCount - 1)
                 {
                     //Record the existence of Twos, Threes, fours, and Fives.
-                    wheelContents[0] = false;
-                    wheelContents[1] = false;
-                    wheelContents[2] = false;
-                    wheelContents[3] = false;
+                    Table.sharedWheelContents[0] = false;
+                    Table.sharedWheelContents[1] = false;
+                    Table.sharedWheelContents[2] = false;
+                    Table.sharedWheelContents[3] = false;
                     var wheelCount = 0;
 
                     for (short i = 1; i < CommunityCards.Length; i++)
                     {
                         var communityCardValue = CommunityCards[i].Value;
-                        if (communityCardValue < wheelContents.Length)
+                        if (communityCardValue < Table.sharedWheelContents.Length)
                         {
-                            if (!wheelContents[communityCardValue])
+                            if (!Table.sharedWheelContents[communityCardValue])
                             {
                                 wheelCount++;
-                                wheelContents[communityCardValue] = true;
+                                Table.sharedWheelContents[communityCardValue] = true;
                             }
                         }
                     }
 
                     if (wheelCount == 2)
                     {
-                        for (int i = wheelContents.Length - 1; i >= 0; i--)
+                        for (int i = Table.sharedWheelContents.Length - 1; i >= 0; i--)
                         {
 
-                            if (!wheelContents[i])
+                            if (!Table.sharedWheelContents[i])
                             {
                                 if (firstNutHoleCardValue == -1)
                                 {
@@ -1154,7 +1155,10 @@ namespace PokerStats.GameStructures
 
             if (biggestSetCardValue == -1) return ZeroScore;
 
-            Span<short> kickerValues = stackalloc short[2];
+            var kickerValues = Table.sharedShortArray2;
+            kickerValues[0] = default;
+            kickerValues[1] = default;
+
             short pos = 0;
             short kickerCount = 0;
             while (kickerCount < 2)
@@ -1443,7 +1447,11 @@ namespace PokerStats.GameStructures
 
             if (pairCardValue == -1) return ZeroScore;
 
-            Span<short> kickerValues = stackalloc short[3];
+            var kickerValues = Table.sharedShortArray3;
+            kickerValues[0] = default;
+            kickerValues[1] = default;
+            kickerValues[2] = default;
+
             short pos = 0;
             short kickerCount = 0;
             while (kickerCount < 3)
@@ -1646,17 +1654,17 @@ namespace PokerStats.GameStructures
             return isStartingHand;
         }
 
-        public static int ConvertHoleCardsToNumericValue(int biggestCardValue, int smallestCardValue, bool areSuited, Table table)
+        public static int ConvertHoleCardsToNumericValue(int biggestCardValue, int smallestCardValue, bool areSuited)
         {
-            return (biggestCardValue * table.DeckNumericValueCount + smallestCardValue) * 2 + (areSuited ? 1 : 0);
+            return (biggestCardValue * Table.DeckNumericValueCount + smallestCardValue) * 2 + (areSuited ? 1 : 0);
         }
 
         public static string ConvertHoleCardsNumericValueToString(int holeCardsNumericValue, Table table)
         {
             bool suited = holeCardsNumericValue % 2 == 1;
 
-            int biggestCardValue = (holeCardsNumericValue / 2) / table.DeckNumericValueCount;
-            int smallestCardValue = (holeCardsNumericValue / 2) % table.DeckNumericValueCount;
+            int biggestCardValue = (holeCardsNumericValue / 2) / Table.DeckNumericValueCount;
+            int smallestCardValue = (holeCardsNumericValue / 2) % Table.DeckNumericValueCount;
 
             return $"{CardValues[biggestCardValue]}{CardValues[smallestCardValue]}{(suited ? "s" : "o")}";
         }
@@ -1675,7 +1683,7 @@ namespace PokerStats.GameStructures
 
             if (biggestCardValue == -1 || smallestCardValue == -1) return 0;
 
-            var holeCardsNumericRepresentation = ConvertHoleCardsToNumericValue(biggestCardValue, smallestCardValue, areSuited, table);
+            var holeCardsNumericRepresentation = ConvertHoleCardsToNumericValue(biggestCardValue, smallestCardValue, areSuited);
             return holeCardsNumericRepresentation;
         }
     }
