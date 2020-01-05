@@ -14,7 +14,7 @@ namespace PokerStats
             for (int i = 2; i < tableArray.Length; i++)
             {
                 tableArray[i] = new Table(9, true, 40, 40, true);
-                tableArray[i].PlayHands(1_000_000, false);
+                tableArray[i].PlayHands(3_000_000, false);
             }
 
             //for (int i = 2; i < tableArray.Length; i++)

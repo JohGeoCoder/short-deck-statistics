@@ -132,12 +132,10 @@ namespace PokerStats.GameStructures
             //Check for sequentiality
             var consecutiveSequenceLength = 0;
             var highestSequentialCardPosition = -1;
-            Card currentCard = default(Card);
-            Card nextCard = default(Card);
             for (byte i = 0; i < _sevenCardHand.Length; i++)
             {
-                currentCard = _sevenCardHand[i];
-                nextCard = default(Card);
+                var currentCard = _sevenCardHand[i];
+                var nextCard = default(Card);
 
                 //Populate the next card, taking into consideration that it may be an Ace in the first position.
                 if (i < _sevenCardHand.Length - 1)
@@ -212,9 +210,16 @@ namespace PokerStats.GameStructures
             var firstNutHoleCardValue = -1;
             var secondNutHoleCardValue = -1;
 
+            Span<bool> patternArray = stackalloc bool[5];
+            Span<bool> wheelContents = stackalloc bool[4];
+
             for (short i = 0; i < 3; i++)
             {
-                Span<bool> patternArray = stackalloc bool[] { false, false, false, false, false };
+                patternArray[0] = false;
+                patternArray[1] = false;
+                patternArray[2] = false;
+                patternArray[3] = false;
+                patternArray[4] = false;
 
                 var targetCardValue = CommunityCards[i].Value;
 
@@ -330,7 +335,10 @@ namespace PokerStats.GameStructures
                 if (CommunityCards[0].Value == Table.DeckNumericValueCount - 1)
                 {
                     //Record the existence of Twos, Threes, fours, and Fives.
-                    Span<bool> wheelContents = stackalloc bool[] { false, false, false, false };
+                    wheelContents[0] = false;
+                    wheelContents[1] = false;
+                    wheelContents[2] = false;
+                    wheelContents[3] = false;
                     var wheelCount = 0;
 
                     for (int i = 1; i < CommunityCards.Length; i++)
@@ -424,23 +432,20 @@ namespace PokerStats.GameStructures
             if (consecutiveValueLength < 4) return ZeroScore;
 
             //Calculate the kicker score
-            var kickerValues = new short[1];
+            var kickerVal = 0;
             var pos = 0;
-            var kickerCount = 0;
-            while (kickerCount < 1)
+            while (pos < _sevenCardHand.Length)
             {
                 var currentCardValue = _sevenCardHand[pos].Value;
 
                 if (currentCardValue != fourOfAKindCardValue)
                 {
-                    kickerValues[kickerCount] = currentCardValue;
-                    kickerCount++;
+                    kickerVal = currentCardValue;
+                    break;
                 }
 
                 pos++;
             }
-
-            var kickerVal = kickerValues[0];
 
             //Determine subtype:
             //Top Quads
@@ -532,7 +537,7 @@ namespace PokerStats.GameStructures
             for (short i = 0; i < _sevenCardHand.Length - 1; i++)
             {
                 var currentCard = _sevenCardHand[i];
-                Card nextCard = _sevenCardHand[i + 1];
+                var nextCard = _sevenCardHand[i + 1];
 
                 //skip the cards that have a value that match the biggest set's value.
                 if (currentCard.Value == biggestSetCardValue) continue;
@@ -744,7 +749,7 @@ namespace PokerStats.GameStructures
             if (flushedSuit == -1) return ZeroScore;
 
             var highestFlushValue = -1;
-            var flushKickers = new Card[4];
+            Span<Card> flushKickers = stackalloc Card[4];
             var flushKickerCount = 0;
             for (short pos = 0; pos < _sevenCardHand.Length; pos++)
             {
@@ -852,12 +857,11 @@ namespace PokerStats.GameStructures
         {
             //Check for sequentiality
             var consecutiveSequenceLength = 0;
-            var lowestSequentialCardPosition = -1;
             var highestSequentialCardPosition = -1;
             for (short i = 0; i < _sevenCardHand.Length; i++)
             {
                 var currentCard = _sevenCardHand[i];
-                Card nextCard = default(Card);
+                Card nextCard;
 
                 //Populate the next card, taking into consideration that it may be an Ace in the first position.
                 if (i < _sevenCardHand.Length - 1)
@@ -882,12 +886,10 @@ namespace PokerStats.GameStructures
                     {
                         consecutiveSequenceLength = 2;
                         highestSequentialCardPosition = i;
-                        lowestSequentialCardPosition = i + 1;
                     }
                     else
                     {
                         consecutiveSequenceLength++;
-                        lowestSequentialCardPosition = i;
                     }
 
                     if (consecutiveSequenceLength == 5) break;
@@ -922,9 +924,15 @@ namespace PokerStats.GameStructures
             int firstNutHoleCardValue = -1;
             int secondNutHoleCardValue = -1;
 
+            Span<bool> patternArray = stackalloc bool[5];
+            Span<bool> wheelContents = stackalloc bool[4];
             for (short i = 0; i < 3; i++)
             {
-                Span<bool> patternArray = stackalloc bool[] { false, false, false, false, false };
+                patternArray[0] = false;
+                patternArray[1] = false;
+                patternArray[2] = false;
+                patternArray[3] = false;
+                patternArray[4] = false;
 
                 int targetCardValue = CommunityCards[i].Value;
 
@@ -1040,7 +1048,10 @@ namespace PokerStats.GameStructures
                 if (CommunityCards[0].Value == Table.DeckNumericValueCount - 1)
                 {
                     //Record the existence of Twos, Threes, fours, and Fives.
-                    Span<bool> wheelContents = stackalloc bool[] { false, false, false, false };
+                    wheelContents[0] = false;
+                    wheelContents[1] = false;
+                    wheelContents[2] = false;
+                    wheelContents[3] = false;
                     var wheelCount = 0;
 
                     for (short i = 1; i < CommunityCards.Length; i++)
@@ -1102,8 +1113,8 @@ namespace PokerStats.GameStructures
         private int[] ScoreThreeOfAKind()
         {
             short biggestSetCardValue = -1;
-
             short consecutiveValueLength = 0;
+
             for (short i = 0; i < _sevenCardHand.Length - 1; i++)
             {
                 Card currentCard = _sevenCardHand[i];
@@ -1267,23 +1278,20 @@ namespace PokerStats.GameStructures
             if (smallestPairCardValue == -1) return ZeroScore;
 
             //Calculate the kicker score
-            Span<short> kickerValues = stackalloc short[1];
+            var kickerVal = 0;
             short pos = 0;
-            short kickerCount = 0;
-            while (kickerCount < 1)
+            while (pos < _sevenCardHand.Length)
             {
                 var currentCardValue = _sevenCardHand[pos].Value;
 
                 if (currentCardValue != biggestPairCardValue && currentCardValue != smallestPairCardValue)
                 {
-                    kickerValues[kickerCount] = currentCardValue;
-                    kickerCount++;
+                    kickerVal = currentCardValue;
+                    break;
                 }
 
                 pos++;
             }
-
-            short kickerVal = kickerValues[0];
 
             //Determine subtype:
             //Top Two
