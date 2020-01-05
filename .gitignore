@@ -24,3 +24,8 @@
 /.vs/PokerStats/v15/.suo
 /.vs/PokerStats/DesignTimeBuild/.dtbcache
 /PokerStats/bin/Release/netcoreapp3.1
+/PokerStats/bin/Debug/netcoreapp2.2
+/PokerStats/bin/Release/netcoreapp2.2
+*.psess
+*.vsp
+*.vspx
