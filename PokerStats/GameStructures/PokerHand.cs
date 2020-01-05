@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PokerStats.GameStructures
 {
-    public class PokerHand
+    public struct PokerHand
     {
         public static readonly int[] ZeroScore = new int[] { 0, 0, 0, 0 };
         public static readonly int[] ScoreContainer = new int[4];
@@ -19,18 +19,15 @@ namespace PokerStats.GameStructures
 
         public Card[] CommunityCards; //Sorted in descending order.
 
-        private long _handRank = -1L;
-        public long HandRank
+        private long _handRank;
+        public long HandRank()
         {
-            get
+            if (_handRank == -1L)
             {
-                if (_handRank == -1L)
-                {
-                    _handRank = RankHand();
-                }
-
-                return _handRank;
+                _handRank = RankHand();
             }
+
+            return _handRank;
         }
 
         public bool IsLiveAsHero;
@@ -41,6 +38,15 @@ namespace PokerStats.GameStructures
 
         public PokerHand(Table table)
         {
+            HoleCards = new Card[2];
+            HoleCardsNumericRepresentation = 0;
+            CommunityCards = new Card[5];
+
+            IsLiveAsHero = false;
+            IsLiveAsVillain = false;
+            ManiacPlay = false;
+
+            _handRank = -1L;
             _sevenCardHand = new Card[7];
             Table = table;
         }
@@ -102,7 +108,7 @@ namespace PokerStats.GameStructures
 
         public override string ToString()
         {
-            return $"{HoleCards[0]} {HoleCards[1]} - {CommunityCards[0]} {CommunityCards[1]} {CommunityCards[2]} {CommunityCards[3]} {CommunityCards[4]} - Hand Score: {HandRank}";
+            return $"{HoleCards[0]} {HoleCards[1]} - {CommunityCards[0]} {CommunityCards[1]} {CommunityCards[2]} {CommunityCards[3]} {CommunityCards[4]} - Hand Score: {HandRank()}";
         }
 
         private long RankHand()

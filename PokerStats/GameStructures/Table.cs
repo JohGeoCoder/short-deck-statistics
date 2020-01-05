@@ -569,15 +569,15 @@ namespace PokerStats.GameStructures
                         HandsTiedCount.Add(holeCardsNumeric, new int[10]);
                     }
 
-                    var handRank = hand.HandRank / 100_000_000_000L;
+                    var handRank = hand.HandRank() / 100_000_000_000L;
 
                     HandsMadeCount[holeCardsNumeric][handRank]++;
                 }
             }
 
             //Determine the strongest hand among the live hands as villains.
-            PokerHand strongestHand = null;
-            PokerHand strongestHandForHero = null;
+            PokerHand strongestHand = default;
+            PokerHand strongestHandForHero = default;
             HandRankCount.Clear();
             for (int handIndex = 0; handIndex < AllPlayerFullHands.Length; handIndex++)
             {
@@ -585,7 +585,7 @@ namespace PokerStats.GameStructures
 
                 if (!ManiacPlay && !hand.IsLiveAsVillain) continue;
 
-                var handRank = hand.HandRank;
+                var handRank = hand.HandRank();
                 if (!HandRankCount.ContainsKey(handRank))
                 {
                     HandRankCount.Add(handRank, 0);
@@ -604,38 +604,38 @@ namespace PokerStats.GameStructures
 
                 if (!ManiacPlay && hand.IsLiveAsHero)
                 {
-                    if (strongestHandForHero == null || handRank > strongestHandForHero.HandRank)
+                    if (default(PokerHand).Equals(strongestHandForHero) || handRank > strongestHandForHero.HandRank())
                     {
                         strongestHandForHero = hand;
                     }
                 }
 
-                if (strongestHand == null || handRank > strongestHand.HandRank)
+                if (default(PokerHand).Equals(strongestHand) || handRank > strongestHand.HandRank())
                 {
                     strongestHand = hand;
                 }
             }
 
             //If none of the hands meet the Villain Starting Hands criteria, do not log this hand.
-            if (strongestHand == null)
+            if (default(PokerHand).Equals(strongestHand))
             {
                 return;
             }
 
             //If there is no hand that the hero would play, then do not log a win or tie.
-            if (!ManiacPlay && strongestHandForHero == null)
+            if (!ManiacPlay && default(PokerHand).Equals(strongestHandForHero))
             {
                 return;
             }
 
             //If the hero loses, do not log the hand as a win or tie.
-            if (!ManiacPlay && strongestHand.HandRank != strongestHandForHero.HandRank)
+            if (!ManiacPlay && strongestHand.HandRank() != strongestHandForHero.HandRank())
             {
                 return;
             }
 
             //Check for tie
-            var isTie = HandRankCount[strongestHand.HandRank] > 1;
+            var isTie = HandRankCount[strongestHand.HandRank()] > 1;
 
             //Biggest card first
             biggestHoleCard = strongestHand.HoleCards[0];
@@ -672,16 +672,16 @@ namespace PokerStats.GameStructures
                 if (isTie)
                 {
                     //Mark all tied hands as a win
-                    var tieingPokerHands = HandsWithRank[strongestHand.HandRank];
-                    for (int i = 0; i < HandRankCount[strongestHand.HandRank]; i++)
+                    var tieingPokerHands = HandsWithRank[strongestHand.HandRank()];
+                    for (int i = 0; i < HandRankCount[strongestHand.HandRank()]; i++)
                     {
                         var pokerHand = tieingPokerHands[i];
-                        HandsTiedCount[pokerHand.HoleCardsNumericRepresentation][pokerHand.HandRank / 100_000_000_000L]++;
+                        HandsTiedCount[pokerHand.HoleCardsNumericRepresentation][pokerHand.HandRank() / 100_000_000_000L]++;
                     }
                 }
                 else
                 {
-                    HandsWonCount[holeCardsNumeric][strongestHand.HandRank / 100_000_000_000L]++;
+                    HandsWonCount[holeCardsNumeric][strongestHand.HandRank() / 100_000_000_000L]++;
                 }
             }
         }
