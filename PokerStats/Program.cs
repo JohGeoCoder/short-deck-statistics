@@ -1,5 +1,6 @@
 ﻿using PokerStats.GameStructures;
 using System;
+using System.Threading;
 
 namespace PokerStats
 {
@@ -10,15 +11,40 @@ namespace PokerStats
             //Console.WindowHeight = 50;
             //Console.WindowWidth = 200;
 
-            var handTracker = new HandTracker();
+            var handTracker = new HandTracker(true);
 
-            var tableCount = 1;
-            var tableArray = new Table[tableCount];
-            for (int i = 0; i < tableArray.Length; i++)
+            var tableCount = 20;
+            var processesRemaining = tableCount;
+            using ManualResetEvent resetEvent = new ManualResetEvent(false);
+            for (int i = 0; i < tableCount; i++)
             {
-                tableArray[i] = new Table(9, true, 40, 40, true, handTracker);
-                tableArray[i].PlayHands(3_000_000, false);
+                ThreadPool.QueueUserWorkItem(new WaitCallback(x =>
+                {
+                    var tracker = (HandTracker)x;
+
+                    var table = new Table(9, true, 40, 40, tracker);
+                    table.PlayHands(1_000_000, false);
+
+                    // Safely decrement the counter
+                    if (Interlocked.Decrement(ref processesRemaining) == 0)
+                    {
+                        resetEvent.Set();
+                    }
+
+                }), handTracker);
             }
+
+            resetEvent.WaitOne();
+
+
+            //var tableArray = new Table[tableCount];
+            //for (int i = 0; i < tableArray.Length; i++)
+            //{
+            //    tableArray[i] = new Table(9, true, 40, 40, true, handTracker);
+            //    tableArray[i].PlayHands(3_000_000, false);
+            //}
+
+            Console.WriteLine("FINISHED");
 
             var input = "";
 
@@ -26,14 +52,12 @@ namespace PokerStats
             {
                 input = Console.ReadLine();
 
-                var table = tableArray[0];
-
                 Console.Clear();
                 handTracker.PrintHoleCardWinRatesRankedByBest(input);
                 handTracker.PrintHoleCardsNumericRankedByBestForArray();
                 handTracker.PrintHoleCardsRankedByBestForArray();
 
-                if (table.LogPokerHandResults)
+                if (handTracker.LogPokerHandResults)
                 {
                     handTracker.PrintWinRatesForPokerHandsMade(input);
                 }

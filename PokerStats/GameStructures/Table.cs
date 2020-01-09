@@ -19,7 +19,6 @@ namespace PokerStats.GameStructures
 
         private int PlayerCount;
         private bool ManiacPlay;
-        public bool LogPokerHandResults;
 
         private int KeepTopPercentHero;
         private int KeepTopPercentVillain;
@@ -29,13 +28,12 @@ namespace PokerStats.GameStructures
         private Dictionary<long, int> HandRankCount = new Dictionary<long, int>();
         private Dictionary<long, PokerHand[]> HandsWithRank = new Dictionary<long, PokerHand[]>();
 
-        public Table(int numPlayers, bool maniacPlay, int keepTopPercentHero, int keepTopPercentVillain, bool logPokerHandResults, HandTracker handTracker)
+        public Table(int numPlayers, bool maniacPlay, int keepTopPercentHero, int keepTopPercentVillain, HandTracker handTracker)
         {
             HandTracker = handTracker;
 
             PlayerCount = numPlayers;
             ManiacPlay = maniacPlay;
-            LogPokerHandResults = logPokerHandResults;
 
             KeepTopPercentHero = keepTopPercentHero;
             KeepTopPercentVillain = keepTopPercentVillain;
@@ -208,7 +206,7 @@ namespace PokerStats.GameStructures
                     HandTracker.HoleCardsDealtCounter[smallestHoleCard.Value][biggestHoleCard.Value]++;
                 }
 
-                if (LogPokerHandResults)
+                if (HandTracker.LogPokerHandResults)
                 {
                     var handRank = hand.HandRank / 100_000_000_000L;
                     HandTracker.HandsMadeCount[holeCardsNumeric][handRank]++;
@@ -231,7 +229,7 @@ namespace PokerStats.GameStructures
                     HandRankCount.Add(handRank, 0);
                 }
 
-                if (LogPokerHandResults)
+                if (HandTracker.LogPokerHandResults)
                 {
                     if (!HandsWithRank.ContainsKey(handRank))
                     {
@@ -307,7 +305,7 @@ namespace PokerStats.GameStructures
                 }
             }
 
-            if (LogPokerHandResults)
+            if (HandTracker.LogPokerHandResults)
             {
                 if (isTie)
                 {

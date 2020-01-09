@@ -54,8 +54,12 @@ namespace PokerStats
         public int[][] HandsWonCount = new int[337][];
         public int[][] HandsTiedCount = new int[337][];
 
-        public HandTracker()
+        public bool LogPokerHandResults;
+
+        public HandTracker(bool logPokerHandResults)
         {
+            LogPokerHandResults = logPokerHandResults;
+
             HoleCardsWinCounter = new long[DeckNumericValueCount][];
             for (int i = 0; i < HoleCardsWinCounter.Length; i++)
             {
