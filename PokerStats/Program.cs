@@ -11,24 +11,14 @@ namespace PokerStats
             //Console.WindowWidth = 200;
 
             var handTracker = new HandTracker();
-            var tableArray = new Table[3];
-            for (int i = 2; i < tableArray.Length; i++)
+
+            var tableCount = 1;
+            var tableArray = new Table[tableCount];
+            for (int i = 0; i < tableArray.Length; i++)
             {
                 tableArray[i] = new Table(9, true, 40, 40, true, handTracker);
-                tableArray[i].PlayHands(1_000_000, false);
+                tableArray[i].PlayHands(3_000_000, false);
             }
-
-            //for (int i = 2; i < tableArray.Length; i++)
-            //{
-            //    tableArray[i].PrintHoleCardWinRatesRankedByBest();
-
-            //    if (tableArray[i].LogPokerHandResults)
-            //    {
-            //        tableArray[i].PrintWinRatesForPokerHandsMade();
-            //    }
-
-            //    //tableArray[i].PrintHoleCardsNumericRankedByBestForArray();
-            //}
 
             var input = "";
 
@@ -36,7 +26,7 @@ namespace PokerStats
             {
                 input = Console.ReadLine();
 
-                var table = tableArray[2];
+                var table = tableArray[0];
 
                 Console.Clear();
                 handTracker.PrintHoleCardWinRatesRankedByBest(input);
