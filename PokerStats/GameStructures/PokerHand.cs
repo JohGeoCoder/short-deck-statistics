@@ -10,7 +10,7 @@ namespace PokerStats.GameStructures
         public static readonly int[] ScoreContainer = new int[4];
 
         public static readonly string[] HandRanks = new string[] { "Error", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush" };
-        public static readonly string[] CardValues = new string[] { "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A" };
+        
 
         private Card[] _sevenCardHand;
 
@@ -63,7 +63,7 @@ namespace PokerStats.GameStructures
                 smallestHoleCard = temp;
             }
 
-            HoleCardsNumericRepresentation = PokerHand.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, biggestHoleCard.Suit == smallestHoleCard.Suit, Table);
+            HoleCardsNumericRepresentation = CardConversionHelper.ConvertHoleCardsToNumericValue(biggestHoleCard.Value, smallestHoleCard.Value, biggestHoleCard.Suit == smallestHoleCard.Suit);
 
             //Merge the hole cards and community cards into a sorted 7-card hand.
             var holeCardPos = 0;
@@ -152,9 +152,9 @@ namespace PokerStats.GameStructures
                     var secondCard = _sevenCardHand[1];
                     var thirdCard = _sevenCardHand[2];
 
-                    if (firstCard.Value == Table.DeckNumericValueCount - 1 && firstCard.Suit == currentCard.Suit) nextCard = firstCard;
-                    else if (secondCard.Value == Table.DeckNumericValueCount - 1 && secondCard.Suit == currentCard.Suit) nextCard = secondCard;
-                    else if (thirdCard.Value == Table.DeckNumericValueCount - 1 && thirdCard.Suit == currentCard.Suit) nextCard = thirdCard;
+                    if (firstCard.Value == HandTracker.DeckNumericValueCount - 1 && firstCard.Suit == currentCard.Suit) nextCard = firstCard;
+                    else if (secondCard.Value == HandTracker.DeckNumericValueCount - 1 && secondCard.Suit == currentCard.Suit) nextCard = secondCard;
+                    else if (thirdCard.Value == HandTracker.DeckNumericValueCount - 1 && thirdCard.Suit == currentCard.Suit) nextCard = thirdCard;
                     else
                     {
                         break;
@@ -168,7 +168,7 @@ namespace PokerStats.GameStructures
                 //If the current card and next card are in sequence, update the sequence count.
                 //Otherwise, reset the sequence count.
                 //Take into consideration that the next sequential card may be an Ace in the first position.
-                if (nextCard.Suit == currentCard.Suit && (nextCard.Value == currentCard.Value - 1 || currentCard.Value == 0 && nextCard.Value == Table.DeckNumericValueCount - 1))
+                if (nextCard.Suit == currentCard.Suit && (nextCard.Value == currentCard.Value - 1 || currentCard.Value == 0 && nextCard.Value == HandTracker.DeckNumericValueCount - 1))
                 {
                     if (consecutiveSequenceLength == 0)
                     {
@@ -244,7 +244,7 @@ namespace PokerStats.GameStructures
                 if (patternArray[1] && patternArray[2])
                 {
                     //Case when target card is Ace
-                    if (targetCardValue == Table.DeckNumericValueCount - 1)
+                    if (targetCardValue == HandTracker.DeckNumericValueCount - 1)
                     {
                         //If a Jack is in the pattern, a Ten is the nuts
                         if (patternArray[3])
@@ -258,7 +258,7 @@ namespace PokerStats.GameStructures
                         }
                     }
                     //Case when target card is King
-                    else if (targetCardValue == Table.DeckNumericValueCount - 2)
+                    else if (targetCardValue == HandTracker.DeckNumericValueCount - 2)
                     {
                         //If a Ten is in the pattern, an Ace is the nuts
                         if (patternArray[3])
@@ -280,7 +280,7 @@ namespace PokerStats.GameStructures
                 else if (patternArray[1] && patternArray[3])
                 {
                     //Case when target card is Ace
-                    if (targetCardValue == Table.DeckNumericValueCount - 1)
+                    if (targetCardValue == HandTracker.DeckNumericValueCount - 1)
                     {
                         //Queen Ten is the nuts
                         firstNutHoleCardValue = targetCardValue - 2;
@@ -300,7 +300,7 @@ namespace PokerStats.GameStructures
                 else if (patternArray[2] && patternArray[3])
                 {
                     //Case when target card is Ace
-                    if (targetCardValue == Table.DeckNumericValueCount - 1)
+                    if (targetCardValue == HandTracker.DeckNumericValueCount - 1)
                     {
                         firstNutHoleCardValue = targetCardValue - 1;
                         secondNutHoleCardValue = targetCardValue - 4;
@@ -332,7 +332,7 @@ namespace PokerStats.GameStructures
                 //No pattern found. Look for lower-end straight.
                 //For there to be a lower-end nut straight that's not handled
                 //by an existing pattern, there must be an Ace involved.
-                if (CommunityCards[0].Value == Table.DeckNumericValueCount - 1)
+                if (CommunityCards[0].Value == HandTracker.DeckNumericValueCount - 1)
                 {
                     //Record the existence of Twos, Threes, fours, and Fives.
                     wheelContents[0] = false;
@@ -578,7 +578,7 @@ namespace PokerStats.GameStructures
             if (IsNutFullHouse()) subtypeScore = 1;
 
             ScoreContainer[0] = 7;
-            ScoreContainer[1] = biggestSetCardValue * Table.DeckNumericValueCount + biggestPairCardValue;
+            ScoreContainer[1] = biggestSetCardValue * HandTracker.DeckNumericValueCount + biggestPairCardValue;
             ScoreContainer[2] = 0;
             ScoreContainer[3] = subtypeScore;
             return ScoreContainer;
@@ -658,24 +658,24 @@ namespace PokerStats.GameStructures
             if (tripsValue > -1)
             {
                 //Are the trips Aces?
-                if (tripsValue == Table.DeckNumericValueCount - 1)
+                if (tripsValue == HandTracker.DeckNumericValueCount - 1)
                 {
                     //Is there a pair of kings on the board?
-                    if (pairValueHighest == Table.DeckNumericValueCount - 2)
+                    if (pairValueHighest == HandTracker.DeckNumericValueCount - 2)
                     {
                         //Then the board is the nut full house
                     }
                     //Else is there a king on the board?
-                    else if (highestNonPairCardValue == Table.DeckNumericValueCount - 2)
+                    else if (highestNonPairCardValue == HandTracker.DeckNumericValueCount - 2)
                     {
                         //Then a king in hand is the nut full house
-                        firstNutHoleCardValue = Table.DeckNumericValueCount - 2;
+                        firstNutHoleCardValue = HandTracker.DeckNumericValueCount - 2;
                     }
                     else
                     {
                         //Then pocket Kings is the nut full house
-                        firstNutHoleCardValue = Table.DeckNumericValueCount - 2;
-                        secondNutHoleCardValue = Table.DeckNumericValueCount - 2;
+                        firstNutHoleCardValue = HandTracker.DeckNumericValueCount - 2;
+                        secondNutHoleCardValue = HandTracker.DeckNumericValueCount - 2;
                     }
                 }
                 //Else the trips are kings or below.
@@ -691,8 +691,8 @@ namespace PokerStats.GameStructures
                     else
                     {
                         //The nut full house is a pair of pocket Aces
-                        firstNutHoleCardValue = Table.DeckNumericValueCount - 1;
-                        secondNutHoleCardValue = Table.DeckNumericValueCount - 1;
+                        firstNutHoleCardValue = HandTracker.DeckNumericValueCount - 1;
+                        secondNutHoleCardValue = HandTracker.DeckNumericValueCount - 1;
                     }
                 }
             }
@@ -729,7 +729,7 @@ namespace PokerStats.GameStructures
 
         private int[] ScoreFlush()
         {
-            Span<int> suitCounter = stackalloc int[Table.DeckSuitCount];
+            Span<int> suitCounter = stackalloc int[HandTracker.DeckSuitCount];
             for (short pos = 0; pos < _sevenCardHand.Length; pos++)
             {
                 var card = _sevenCardHand[pos];
@@ -739,7 +739,7 @@ namespace PokerStats.GameStructures
             var flushedSuit = -1;
             for (short suit = 0; suit < suitCounter.Length; suit++)
             {
-                if (suitCounter[suit] >= Table.DeckSuitCount + 1)
+                if (suitCounter[suit] >= HandTracker.DeckSuitCount + 1)
                 {
                     flushedSuit = suit;
                     break;
@@ -771,9 +771,9 @@ namespace PokerStats.GameStructures
             }
 
             var kickerVal =
-                Table.DeckNumericValueCount * Table.DeckNumericValueCount * Table.DeckNumericValueCount * flushKickers[0].Value
-                + Table.DeckNumericValueCount * Table.DeckNumericValueCount * flushKickers[1].Value
-                + Table.DeckNumericValueCount * flushKickers[2].Value
+                HandTracker.DeckNumericValueCount * HandTracker.DeckNumericValueCount * HandTracker.DeckNumericValueCount * flushKickers[0].Value
+                + HandTracker.DeckNumericValueCount * HandTracker.DeckNumericValueCount * flushKickers[1].Value
+                + HandTracker.DeckNumericValueCount * flushKickers[2].Value
                 + flushKickers[3].Value;
 
             //Determine subtype:
@@ -810,9 +810,9 @@ namespace PokerStats.GameStructures
                 //if it is a King or smaller. That would mean the nut card is an Ace
                 if (isHighestCard)
                 {
-                    if (CommunityCards[j].Value < Table.DeckNumericValueCount - 1)
+                    if (CommunityCards[j].Value < HandTracker.DeckNumericValueCount - 1)
                     {
-                        nutHoleCardValue = Table.DeckNumericValueCount - 1;
+                        nutHoleCardValue = HandTracker.DeckNumericValueCount - 1;
                         break;
                     }
 
@@ -880,7 +880,7 @@ namespace PokerStats.GameStructures
                 {
                     continue;
                 }
-                else if (nextCard.Value == currentCard.Value - 1 || currentCard.Value == 0 && nextCard.Value == Table.DeckNumericValueCount - 1)
+                else if (nextCard.Value == currentCard.Value - 1 || currentCard.Value == 0 && nextCard.Value == HandTracker.DeckNumericValueCount - 1)
                 {
                     if (consecutiveSequenceLength == 0)
                     {
@@ -957,7 +957,7 @@ namespace PokerStats.GameStructures
                 if (patternArray[1] && patternArray[2])
                 {
                     //Case when target card is Ace
-                    if (targetCardValue == Table.DeckNumericValueCount - 1)
+                    if (targetCardValue == HandTracker.DeckNumericValueCount - 1)
                     {
                         //If a Jack is in the pattern, a Ten is the nuts
                         if (patternArray[3])
@@ -971,7 +971,7 @@ namespace PokerStats.GameStructures
                         }
                     }
                     //Case when target card is King
-                    else if (targetCardValue == Table.DeckNumericValueCount - 2)
+                    else if (targetCardValue == HandTracker.DeckNumericValueCount - 2)
                     {
                         //If a Ten is in the pattern, an Ace is the nuts
                         if (patternArray[3])
@@ -993,7 +993,7 @@ namespace PokerStats.GameStructures
                 else if (patternArray[1] && patternArray[3])
                 {
                     //Case when target card is Ace
-                    if (targetCardValue == Table.DeckNumericValueCount - 1)
+                    if (targetCardValue == HandTracker.DeckNumericValueCount - 1)
                     {
                         //Queen Ten is the nuts
                         firstNutHoleCardValue = targetCardValue - 2;
@@ -1013,7 +1013,7 @@ namespace PokerStats.GameStructures
                 else if (patternArray[2] && patternArray[3])
                 {
                     //Case when target card is Ace
-                    if (targetCardValue == Table.DeckNumericValueCount - 1)
+                    if (targetCardValue == HandTracker.DeckNumericValueCount - 1)
                     {
                         firstNutHoleCardValue = targetCardValue - 1;
                         secondNutHoleCardValue = targetCardValue - 4;
@@ -1045,7 +1045,7 @@ namespace PokerStats.GameStructures
                 //No pattern found. Look for lower-end straight.
                 //For there to be a lower-end nut straight that's not handled
                 //by an existing pattern, there must be an Ace involved.
-                if (CommunityCards[0].Value == Table.DeckNumericValueCount - 1)
+                if (CommunityCards[0].Value == HandTracker.DeckNumericValueCount - 1)
                 {
                     //Record the existence of Twos, Threes, fours, and Fives.
                     wheelContents[0] = false;
@@ -1171,7 +1171,7 @@ namespace PokerStats.GameStructures
             }
 
             var kickerVal =
-                Table.DeckNumericValueCount * kickerValues[0]
+                HandTracker.DeckNumericValueCount * kickerValues[0]
                 + kickerValues[1];
 
             //Determine subtype:
@@ -1412,7 +1412,7 @@ namespace PokerStats.GameStructures
             }
 
             ScoreContainer[0] = 3;
-            ScoreContainer[1] = biggestPairCardValue * Table.DeckNumericValueCount + smallestPairCardValue;
+            ScoreContainer[1] = biggestPairCardValue * HandTracker.DeckNumericValueCount + smallestPairCardValue;
             ScoreContainer[2] = kickerVal;
             ScoreContainer[3] = subtypeScore;
             return ScoreContainer;
@@ -1460,8 +1460,8 @@ namespace PokerStats.GameStructures
             }
 
             var kickerVal =
-                Table.DeckNumericValueCount * Table.DeckNumericValueCount * kickerValues[0]
-                + Table.DeckNumericValueCount * kickerValues[1]
+                HandTracker.DeckNumericValueCount * HandTracker.DeckNumericValueCount * kickerValues[0]
+                + HandTracker.DeckNumericValueCount * kickerValues[1]
                 + kickerValues[2];
 
             //Determine subtype:
@@ -1554,9 +1554,9 @@ namespace PokerStats.GameStructures
             var highestValueCard = _sevenCardHand[0];
 
             var kickerVal =
-                Table.DeckNumericValueCount * Table.DeckNumericValueCount * Table.DeckNumericValueCount * _sevenCardHand[1].Value
-                + Table.DeckNumericValueCount * Table.DeckNumericValueCount * _sevenCardHand[2].Value
-                + Table.DeckNumericValueCount * _sevenCardHand[3].Value
+                HandTracker.DeckNumericValueCount * HandTracker.DeckNumericValueCount * HandTracker.DeckNumericValueCount * _sevenCardHand[1].Value
+                + HandTracker.DeckNumericValueCount * HandTracker.DeckNumericValueCount * _sevenCardHand[2].Value
+                + HandTracker.DeckNumericValueCount * _sevenCardHand[3].Value
                 + _sevenCardHand[4].Value;
 
             ScoreContainer[0] = 1;
@@ -1601,11 +1601,11 @@ namespace PokerStats.GameStructures
             if (isVillainEmotional)
             {
                 int lowerBound = 0;
-                int upperBound = Table.EmotionalCardsNumeric.Length;
+                int upperBound = HandTracker.EmotionalCardsNumeric.Length;
                 int pos = (lowerBound + upperBound) / 2;
-                while (lowerBound <= upperBound && HoleCardsNumericRepresentation != Table.EmotionalCardsNumeric[pos])
+                while (lowerBound <= upperBound && HoleCardsNumericRepresentation != HandTracker.EmotionalCardsNumeric[pos])
                 {
-                    if (HoleCardsNumericRepresentation < Table.EmotionalCardsNumeric[pos])
+                    if (HoleCardsNumericRepresentation < HandTracker.EmotionalCardsNumeric[pos])
                     {
                         upperBound = pos - 1;
                     }
@@ -1617,7 +1617,7 @@ namespace PokerStats.GameStructures
                     pos = (lowerBound + upperBound) / 2;
                 }
 
-                isStartingHand = Table.EmotionalCardsNumeric[pos] == HoleCardsNumericRepresentation;
+                isStartingHand = HandTracker.EmotionalCardsNumeric[pos] == HoleCardsNumericRepresentation;
             }
             else
             {
@@ -1646,37 +1646,6 @@ namespace PokerStats.GameStructures
             return isStartingHand;
         }
 
-        public static int ConvertHoleCardsToNumericValue(int biggestCardValue, int smallestCardValue, bool areSuited, Table table)
-        {
-            return (biggestCardValue * table.DeckNumericValueCount + smallestCardValue) * 2 + (areSuited ? 1 : 0);
-        }
-
-        public static string ConvertHoleCardsNumericValueToString(int holeCardsNumericValue, Table table)
-        {
-            bool suited = holeCardsNumericValue % 2 == 1;
-
-            int biggestCardValue = (holeCardsNumericValue / 2) / table.DeckNumericValueCount;
-            int smallestCardValue = (holeCardsNumericValue / 2) % table.DeckNumericValueCount;
-
-            return $"{CardValues[biggestCardValue]}{CardValues[smallestCardValue]}{(suited ? "s" : "o")}";
-        }
-
-        public static int ConvertCardStringToNumericValue(string cardString, Table table)
-        {
-            if (string.IsNullOrEmpty(cardString)) return 0;
-
-            var holeCardProperties = cardString.ToCharArray();
-
-            if (holeCardProperties.Length != 3) return 0;
-
-            var biggestCardValue = Array.IndexOf(CardValues, holeCardProperties[0].ToString());
-            var smallestCardValue = Array.IndexOf(CardValues, holeCardProperties[1].ToString());
-            var areSuited = holeCardProperties[2] == 's';
-
-            if (biggestCardValue == -1 || smallestCardValue == -1) return 0;
-
-            var holeCardsNumericRepresentation = ConvertHoleCardsToNumericValue(biggestCardValue, smallestCardValue, areSuited, table);
-            return holeCardsNumericRepresentation;
-        }
+        
     }
 }

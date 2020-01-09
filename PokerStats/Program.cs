@@ -10,11 +10,12 @@ namespace PokerStats
             //Console.WindowHeight = 50;
             //Console.WindowWidth = 200;
 
+            var handTracker = new HandTracker();
             var tableArray = new Table[3];
             for (int i = 2; i < tableArray.Length; i++)
             {
-                tableArray[i] = new Table(9, true, 40, 40, true);
-                tableArray[i].PlayHands(3_000_000, false);
+                tableArray[i] = new Table(9, true, 40, 40, true, handTracker);
+                tableArray[i].PlayHands(1_000_000, false);
             }
 
             //for (int i = 2; i < tableArray.Length; i++)
@@ -38,13 +39,13 @@ namespace PokerStats
                 var table = tableArray[2];
 
                 Console.Clear();
-                table.PrintHoleCardWinRatesRankedByBest(input);
-                table.PrintHoleCardsNumericRankedByBestForArray();
-                table.PrintHoleCardsRankedByBestForArray();
+                handTracker.PrintHoleCardWinRatesRankedByBest(input);
+                handTracker.PrintHoleCardsNumericRankedByBestForArray();
+                handTracker.PrintHoleCardsRankedByBestForArray();
 
                 if (table.LogPokerHandResults)
                 {
-                    table.PrintWinRatesForPokerHandsMade(input);
+                    handTracker.PrintWinRatesForPokerHandsMade(input);
                 }
             }
         }
