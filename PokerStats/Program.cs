@@ -11,9 +11,10 @@ namespace PokerStats
             //Console.WindowHeight = 50;
             //Console.WindowWidth = 200;
 
+            var startTime = DateTime.Now;
             var handTracker = new HandTracker(true);
 
-            var tableCount = 20;
+            var tableCount = 30;
             var processesRemaining = tableCount;
             using ManualResetEvent resetEvent = new ManualResetEvent(false);
             for (int i = 0; i < tableCount; i++)
@@ -22,7 +23,7 @@ namespace PokerStats
                 {
                     var tracker = (HandTracker)x;
 
-                    var table = new Table(9, true, 40, 40, tracker);
+                    var table = new Table(2, true, 40, 40, tracker);
                     table.PlayHands(1_000_000, false);
 
                     // Safely decrement the counter
@@ -35,7 +36,8 @@ namespace PokerStats
             }
 
             resetEvent.WaitOne();
-
+            var endTime = DateTime.Now;
+            var duration = (endTime - startTime).TotalSeconds;
 
             //var tableArray = new Table[tableCount];
             //for (int i = 0; i < tableArray.Length; i++)
@@ -44,24 +46,25 @@ namespace PokerStats
             //    tableArray[i].PlayHands(3_000_000, false);
             //}
 
-            Console.WriteLine("FINISHED");
+            Console.WriteLine($"Finished in {duration} seconds");
 
             var input = "";
 
-            while (input.ToLowerInvariant() != "quit")
-            {
-                input = Console.ReadLine();
+            //while (input.ToLowerInvariant() != "quit")
+            //{
+            //input = Console.ReadLine();
 
+            Console.ReadKey();
                 Console.Clear();
                 handTracker.PrintHoleCardWinRatesRankedByBest(input);
-                handTracker.PrintHoleCardsNumericRankedByBestForArray();
-                handTracker.PrintHoleCardsRankedByBestForArray();
+                //handTracker.PrintHoleCardsNumericRankedByBestForArray();
+                //handTracker.PrintHoleCardsRankedByBestForArray();
 
-                if (handTracker.LogPokerHandResults)
-                {
-                    handTracker.PrintWinRatesForPokerHandsMade(input);
-                }
-            }
+                //if (handTracker.LogPokerHandResults)
+                //{
+                //    handTracker.PrintWinRatesForPokerHandsMade(input);
+                //}
+            //}
         }
     }
 }
