@@ -29,3 +29,6 @@
 *.psess
 *.vsp
 *.vspx
+/.vs/ShortDeckStatistics/v16/Server/sqlite3/db.lock
+/.vs/ShortDeckStatistics/v16/Server/sqlite3/storage.ide
+/.vs/ShortDeckStatistics/v16/.suo
