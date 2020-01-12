@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace PokerStats
 {
-    public class HandPlayer
+    public class TablePlayer
     {
         public static void Begin(HandTracker handTracker, int tableCount, int handsToPlayPerTable)
         {

@@ -12,7 +12,7 @@ namespace PokerStats
             //Console.WindowWidth = 200;
 
             var handTracker = new HandTracker(true);
-            HandPlayer.Begin(handTracker, 30, 1_000_000);
+            TablePlayer.Begin(handTracker, 30, 1_000_000);
 
             var input = "";
 
