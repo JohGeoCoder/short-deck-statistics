@@ -16,20 +16,15 @@ namespace PokerStats
 
             var input = "";
 
-            //while (input.ToLowerInvariant() != "quit")
-            //{
-            //input = Console.ReadLine();
-
             Console.ReadKey();
-                Console.Clear();
-                handTracker.PrintHoleCardWinRatesRankedByBest(input);
-                //handTracker.PrintHoleCardsNumericRankedByBestForArray();
-                //handTracker.PrintHoleCardsRankedByBestForArray();
+            Console.Clear();
+            handTracker.PrintHoleCardWinRatesRankedByBest(input);
+            //handTracker.PrintHoleCardsNumericRankedByBestForArray();
+            //handTracker.PrintHoleCardsRankedByBestForArray();
 
-                //if (handTracker.LogPokerHandResults)
-                //{
-                //    handTracker.PrintWinRatesForPokerHandsMade(input);
-                //}
+            //if (handTracker.LogPokerHandResults)
+            //{
+            //    handTracker.PrintWinRatesForPokerHandsMade(input);
             //}
         }
     }

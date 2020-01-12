@@ -36,13 +36,6 @@ namespace PokerStats
             var endTime = DateTime.Now;
             var duration = (endTime - startTime).TotalSeconds;
 
-            //var tableArray = new Table[tableCount];
-            //for (int i = 0; i < tableArray.Length; i++)
-            //{
-            //    tableArray[i] = new Table(9, true, 40, 40, true, handTracker);
-            //    tableArray[i].PlayHands(3_000_000, false);
-            //}
-
             Console.WriteLine($"Finished in {duration} seconds");
         }
     }
