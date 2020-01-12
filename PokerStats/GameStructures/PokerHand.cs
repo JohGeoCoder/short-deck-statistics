@@ -7,7 +7,7 @@ namespace PokerStats.GameStructures
     public class PokerHand
     {
         public static readonly int[] ZeroScore = new int[] { 0, 0, 0, 0 };
-        public static readonly int[] ScoreContainer = new int[4];
+        public readonly int[] ScoreContainer = new int[4];
 
         public static readonly string[] HandRanks = new string[] { "Error", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush" };
         
