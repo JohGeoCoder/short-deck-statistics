@@ -32,3 +32,6 @@
 /.vs/ShortDeckStatistics/v16/Server/sqlite3/db.lock
 /.vs/ShortDeckStatistics/v16/Server/sqlite3/storage.ide
 /.vs/ShortDeckStatistics/v16/.suo
+/PokerReinforcementLearning/bin/Release/net5.0
+/PokerReinforcementLearning/obj/Debug/net5.0
+/PokerReinforcementLearning/obj/Release/net5.0
