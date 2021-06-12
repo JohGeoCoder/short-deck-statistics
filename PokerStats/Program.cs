@@ -16,9 +16,9 @@ namespace PokerStats
 
             var input = "";
 
-            Console.ReadKey();
+            //Console.ReadKey();
             Console.Clear();
-            handTracker.PrintHoleCardWinRatesRankedByBest(input);
+            //handTracker.PrintHoleCardWinRatesRankedByBest(input);
             //handTracker.PrintHoleCardsNumericRankedByBestForArray();
             //handTracker.PrintHoleCardsRankedByBestForArray();
 
@@ -26,6 +26,17 @@ namespace PokerStats
             //{
             //    handTracker.PrintWinRatesForPokerHandsMade(input);
             //}
+
+            while(input != "exit")
+            {
+                Console.Clear();
+                Console.WriteLine("Enter a hand");
+                input = Console.ReadLine();
+                if (input == "exit") continue;
+
+                handTracker.PrintHoleCardWinRatesRankedByBest(input);
+                Console.ReadKey();
+            }
         }
     }
 }

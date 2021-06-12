@@ -94,6 +94,7 @@ namespace PokerStats
             var winRateArray = new double[holeCardsAndWinRates.Count];
             holeCardsAndWinRates.Keys.CopyTo(cardNumericArray, 0);
 
+            holeCardsStringInput = $"{holeCardsStringInput[..2].ToUpper()}{holeCardsStringInput[2].ToString().ToLower()}";
             var holeCardsInput = CardConversionHelper.ConvertCardStringToNumericValue(holeCardsStringInput);
 
             var pos = -1;

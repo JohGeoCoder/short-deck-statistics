@@ -20,7 +20,7 @@ namespace PokerStats
                 {
                     var tracker = (HandTracker)x;
 
-                    var table = new Table(2, true, 40, 40, tracker);
+                    var table = new Table(3, true, 40, 40, tracker);
                     table.PlayHands(handsToPlayPerTable, false);
 
                     // Safely decrement the counter
