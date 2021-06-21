@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerStats", "PokerStats\PokerStats.csproj", "{73F8496C-96F9-4ED9-9BED-66CB54A083E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokerReinforcementLearning", "PokerReinforcementLearning\PokerReinforcementLearning.csproj", "{79537306-55A2-4E0B-B3CD-24CB5D11CD12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerReinforcementLearning", "PokerReinforcementLearning\PokerReinforcementLearning.csproj", "{79537306-55A2-4E0B-B3CD-24CB5D11CD12}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetwork", "NeuralNetwork\NeuralNetwork.csproj", "{DC00E7CF-30A9-464C-89EC-F4D2EF93D69D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{79537306-55A2-4E0B-B3CD-24CB5D11CD12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79537306-55A2-4E0B-B3CD-24CB5D11CD12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79537306-55A2-4E0B-B3CD-24CB5D11CD12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC00E7CF-30A9-464C-89EC-F4D2EF93D69D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC00E7CF-30A9-464C-89EC-F4D2EF93D69D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC00E7CF-30A9-464C-89EC-F4D2EF93D69D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC00E7CF-30A9-464C-89EC-F4D2EF93D69D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
