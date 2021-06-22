@@ -9,30 +9,34 @@ namespace NeuralNetworkRunner
     {
         public static void Main(string[] args)
         {
-            var neuralNet = new NeuralNetwork(5, 4, 100, 200, 100);
+            var neuralNet = new NeuralNetwork(5, 4,
+                new LayerDefinition(5, ActivationFunction.Sigmoid),
+                new LayerDefinition(5, ActivationFunction.TanH),
+                new LayerDefinition(5, ActivationFunction.TanH)
+            );
 
-            var trainData = new decimal[] { 0.1m, 0.3m, 0.5m, 0.7m, 0.9m };
+            var trainData = new double[] { 0.1, 0.3, 0.5, 0.7, 0.9 };
 
             PrintArray(neuralNet.Test(trainData));
 
             neuralNet.TrainInput(
                 trainData, 
-                new decimal[] { 0.5m, 0.5m, 0.5m, 0.5m });
+                new double[] { -10.0, -5.0, 25.0, -25.0 });
 
             PrintArray(neuralNet.Test(trainData));
 
-            for(int i = 0; i < 1000; i++)
+            for(int i = 0; i < 100; i++)
             {
                 neuralNet.TrainInput(
                     trainData,
-                    new decimal[] { 0.5m, 0.5m, 0.5m, 0.5m }
+                    new double[] { -10.0, -5.0, 25.0, -25.0 }
                 );
 
-                if(i % 10 == 0)
-                {
+                //if(i % 10 == 0)
+                //{
                     PrintArray(neuralNet.Test(trainData));
-                    Console.ReadLine();
-                }
+                    //Console.ReadLine();
+                //}
             }
 
             PrintArray(neuralNet.Test(trainData));
@@ -40,7 +44,7 @@ namespace NeuralNetworkRunner
             Console.ReadKey();
         }
 
-        public static void PrintArray(decimal[] arr)
+        public static void PrintArray(double[] arr)
         {
             Console.WriteLine(string.Join(" ", arr.Select(d => d.ToString("#.##"))));
         }

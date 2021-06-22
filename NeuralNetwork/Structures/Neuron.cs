@@ -8,9 +8,9 @@ namespace NeuralNetworkRunner.Structures
 {
     public class Neuron
     {
-        public decimal? TargetValue { get; set; }
-        public decimal ForwardPassValue { get; set; }
-        public decimal BackwardPassValue { get; set; }
+        public double? TargetValue { get; set; }
+        public double ForwardPassValue { get; set; }
+        public double BackwardPassValue { get; set; }
         private Neuron[] _activations;
         public Neuron[] Activations 
         { 
@@ -18,22 +18,104 @@ namespace NeuralNetworkRunner.Structures
             set {
                 _activations = value;
                 ActivationWeights = Enumerable.Range(0, value.Length)
-                    .Select(i => (decimal)(NeuralNetwork.RNG.NextDouble() * 2 - 1))
+                    .Select(i => (NeuralNetwork.RNG.NextDouble() * 2 - 1))
                     .ToArray();
             }
         }
-        public decimal[] ActivationWeights { get; private set; }
+        public double[] ActivationWeights { get; private set; }
+
+        public ActivationFunction ActivationFunction { get; set; }
+
+        public Neuron(ActivationFunction activationFunction = ActivationFunction.Identity)
+        {
+            ActivationFunction = activationFunction;
+        }
+
+        public double ActivationFunctionValue(double netValue)
+        {
+            if (ActivationFunction == ActivationFunction.Identity)
+            {
+                return netValue;
+            } 
+            else if (ActivationFunction == ActivationFunction.Sigmoid)
+            {
+                return (
+                    1 / (
+                        1 + Math.Exp(-netValue)
+                    )
+                );
+            }
+            else if (ActivationFunction == ActivationFunction.TanH)
+            {
+                return (
+                    2 / (
+                        1 + Math.Exp(-2 * netValue)
+                    ) - 1
+                );
+            }
+            else
+            {
+                throw new Exception("Unsupported activation function");
+            }
+        }
+
+        public double ActivationDerivativeValue()
+        {
+            if (ActivationFunction == ActivationFunction.Identity)
+            {
+                return 1;
+            }
+            else if (ActivationFunction == ActivationFunction.Sigmoid)
+            {
+                return ForwardPassValue * (1 - ForwardPassValue);
+            }
+            else if (ActivationFunction == ActivationFunction.TanH)
+            {
+                return 1 - ForwardPassValue * ForwardPassValue;
+            }
+            else
+            {
+                throw new Exception("Unsupported activation function");
+            }
+        }
     }
 
     public class Layer
     {
+        public static ActivationFunction ActivationFunction { get; set; }
+
         public Neuron[] Neurons { get; set; }
         public Neuron Bias { get; set; }
 
-        public Layer(int layerSize)
+        public Layer(int size)
         {
-            Neurons = Enumerable.Range(0, layerSize).Select(i => new Neuron()).ToArray();
+            Neurons = Enumerable.Range(0, size).Select(i => new Neuron()).ToArray();
             Bias = new Neuron();
+        }
+
+        public Layer(LayerDefinition definition)
+        {
+            Neurons = Enumerable.Range(0, definition.Size).Select(i => new Neuron(definition.ActivationFunction)).ToArray();
+            Bias = new Neuron();
+        }
+    }
+
+    public enum ActivationFunction
+    {
+        Sigmoid,
+        Identity,
+        TanH
+    }
+
+    public struct LayerDefinition
+    {
+        public int Size;
+        public ActivationFunction ActivationFunction;
+
+        public LayerDefinition(int size, ActivationFunction activationFunction)
+        {
+            Size = size;
+            ActivationFunction = activationFunction;
         }
     }
 
@@ -43,16 +125,16 @@ namespace NeuralNetworkRunner.Structures
 
         public List<Layer> Layers { get; set; } = new();
 
-        public NeuralNetwork(int inputSize, int outputSize, params int[] hiddenLayerDefinitions)
+        public NeuralNetwork(int inputSize, int outputSize, params LayerDefinition[] hiddenLayerDefinitions)
         {
             //Create the input layer
             Layers.Add(new Layer(inputSize));
 
             //Generate the hidden layers
             var currentLayer = Layers[0];
-            foreach(var hiddenLayerSize in hiddenLayerDefinitions)
+            foreach(var definition in hiddenLayerDefinitions)
             {
-                var hiddenLayer = new Layer(hiddenLayerSize);
+                var hiddenLayer = new Layer(definition);
                 Layers.Add(hiddenLayer);
 
                 //Create weights from each Neuron in the current layer to the new layer neurons.
@@ -81,7 +163,7 @@ namespace NeuralNetworkRunner.Structures
             currentLayer.Bias.Activations = outputLayer.Neurons;
         }
 
-        public decimal[] Test(decimal[] input)
+        public double[] Test(double[] input)
         {
             SetInput(input);
 
@@ -92,7 +174,7 @@ namespace NeuralNetworkRunner.Structures
             return outputLayer.Neurons.Select(n => n.ForwardPassValue).ToArray();
         }
 
-        public void TrainInput(decimal[] input, decimal[] target)
+        public void TrainInput(double[] input, double[] target)
         {
             SetInput(input);
 
@@ -101,7 +183,7 @@ namespace NeuralNetworkRunner.Structures
             BackwardPass(target);
         }
 
-        private void SetInput(decimal[] input)
+        private void SetInput(double[] input)
         {
             var inputLayer = Layers[0];
 
@@ -128,16 +210,10 @@ namespace NeuralNetworkRunner.Structures
                     var currentNeuron = currentLayer.Neurons[i];
 
                     //Sigmoid
-                    var neuronValue = (decimal)(
-                        1.0 
-                        / (
-                            1.0 + Math.Exp(
-                                (double)-previousLayer.Neurons.Sum(n =>
-                                    n.ActivationWeights[i] * n.ForwardPassValue
-                                ) + (double)previousLayer.Bias.ActivationWeights[i]
-                            )
-                        )
-                    );
+                    var neuronValue = currentNeuron.ActivationFunctionValue(
+                        previousLayer.Neurons.Sum(n =>
+                            n.ActivationWeights[i] * n.ForwardPassValue
+                        ) + previousLayer.Bias.ActivationWeights[i]);
 
                     currentNeuron.ForwardPassValue = neuronValue;
                 }
@@ -146,7 +222,7 @@ namespace NeuralNetworkRunner.Structures
             }
         }
 
-        private void BackwardPass(decimal[] target)
+        private void BackwardPass(double[] target)
         {
             //Set the target values in the output layer
             var outputLayer = Layers[^1];
@@ -155,9 +231,7 @@ namespace NeuralNetworkRunner.Structures
                 var outputNeuron = outputLayer.Neurons[i];
                 outputNeuron.TargetValue = target[i];
                 outputNeuron.BackwardPassValue = 
-                    outputNeuron.ForwardPassValue 
-                    * (1 - outputNeuron.ForwardPassValue)
-                    * (outputNeuron.ForwardPassValue - target[i]);
+                    outputNeuron.ActivationDerivativeValue() * (outputNeuron.ForwardPassValue - target[i]);
             }
 
             //Begin with the last Hidden layer (not the output layer)
@@ -185,17 +259,9 @@ namespace NeuralNetworkRunner.Structures
                     for(int j = 0; j < neuron.ActivationWeights.Length; j++)
                     {
                         var weightNode = neuron.Activations[j];
-                        var weightDelta = -0.01m * (
+                        var weightDelta = -0.01 * (
                             neuron.ForwardPassValue 
-                            * weightNode.ForwardPassValue
-                            * (1 - weightNode.ForwardPassValue)
-                            * (
-                                weightNode.TargetValue.HasValue
-                                    ? (weightNode.ForwardPassValue - weightNode.TargetValue.Value)
-                                    : Enumerable.Range(0, weightNode.Activations.Length).Sum(k =>
-                                        weightNode.ActivationWeights[k] * weightNode.Activations[k].BackwardPassValue
-                                    )
-                            )
+                            * BackwardPassValueFunction(weightNode)
                         );
 
                         neuron.ActivationWeights[j] = neuron.ActivationWeights[j] + weightDelta;
@@ -206,23 +272,27 @@ namespace NeuralNetworkRunner.Structures
                 for(int j = 0; j < currentLayer.Bias.ActivationWeights.Length; j++)
                 {
                     var weightNode = currentLayer.Bias.Activations[j];
-                    var weightDelta = -0.01m * (
-                        weightNode.ForwardPassValue
-                        * (1 - weightNode.ForwardPassValue)
-                        * (
-                            weightNode.TargetValue.HasValue
-                                ? (weightNode.ForwardPassValue - weightNode.TargetValue.Value)
-                                : Enumerable.Range(0, weightNode.Activations.Length).Sum(k =>
-                                    weightNode.ActivationWeights[k] * weightNode.Activations[k].BackwardPassValue
-                                )
-                        )
-                    );
+                    var weightDelta = -0.01 * BackwardPassValueFunction(weightNode);
 
                     currentLayer.Bias.ActivationWeights[j] = currentLayer.Bias.ActivationWeights[j] + weightDelta;
                 }
 
                 currentLayerPos--;
             }
+        }
+
+        private double BackwardPassValueFunction(Neuron neuron)
+        {
+            var value = neuron.ActivationDerivativeValue()
+                * (
+                    neuron.TargetValue.HasValue
+                        ? (neuron.ForwardPassValue - neuron.TargetValue.Value)
+                        : Enumerable.Range(0, neuron.Activations.Length).Sum(k =>
+                            neuron.ActivationWeights[k] * neuron.Activations[k].BackwardPassValue
+                        )
+                );
+
+            return value;
         }
     }
 }
