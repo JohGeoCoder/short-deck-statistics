@@ -33,49 +33,51 @@ namespace NeuralNetworkRunner.Structures
 
         public double ActivationFunctionValue(double netValue)
         {
-            if (ActivationFunction == ActivationFunction.Identity)
-            {
-                return netValue;
-            } 
-            else if (ActivationFunction == ActivationFunction.Sigmoid)
-            {
-                return (
-                    1 / (
-                        1 + Math.Exp(-netValue)
-                    )
-                );
-            }
-            else if (ActivationFunction == ActivationFunction.TanH)
-            {
-                return (
-                    2 / (
-                        1 + Math.Exp(-2 * netValue)
-                    ) - 1
-                );
-            }
-            else
-            {
-                throw new Exception("Unsupported activation function");
+            switch (ActivationFunction) {
+                case ActivationFunction.Identity:
+                    return netValue;
+                case ActivationFunction.Relu:
+                    return netValue < 0 ? 0 : netValue;
+                case ActivationFunction.Binary:
+                    return netValue >= 0 ? 1 : 0;
+                case ActivationFunction.ArcTan:
+                    return Math.Atan(netValue);
+                case ActivationFunction.Sigmoid:
+                    return (
+                        1 / (
+                            1 + Math.Exp(-netValue)
+                        )
+                    );
+
+                case ActivationFunction.TanH:
+                    return (
+                        2 / (
+                            1 + Math.Exp(-2 * netValue)
+                        ) - 1
+                    );
+                default:
+                    throw new Exception("Unsupported activation function");
             }
         }
 
         public double ActivationDerivativeValue()
         {
-            if (ActivationFunction == ActivationFunction.Identity)
+            switch (ActivationFunction)
             {
-                return 1;
-            }
-            else if (ActivationFunction == ActivationFunction.Sigmoid)
-            {
-                return ForwardPassValue * (1 - ForwardPassValue);
-            }
-            else if (ActivationFunction == ActivationFunction.TanH)
-            {
-                return 1 - ForwardPassValue * ForwardPassValue;
-            }
-            else
-            {
-                throw new Exception("Unsupported activation function");
+                case ActivationFunction.Identity:
+                    return 1;
+                case ActivationFunction.Relu:
+                    return ForwardPassValue < 0 ? 0 : 1;
+                case ActivationFunction.Binary:
+                    return 0;
+                case ActivationFunction.ArcTan:
+                    return 1 / (ForwardPassValue * ForwardPassValue + 1);
+                case ActivationFunction.Sigmoid:
+                    return ForwardPassValue * (1 - ForwardPassValue);
+                case ActivationFunction.TanH:
+                    return 1 - ForwardPassValue * ForwardPassValue;
+                default:
+                    throw new Exception("Unsupported activation function");
             }
         }
     }
@@ -104,7 +106,10 @@ namespace NeuralNetworkRunner.Structures
     {
         Sigmoid,
         Identity,
-        TanH
+        TanH,
+        Binary,
+        Relu,
+        ArcTan
     }
 
     public struct LayerDefinition
