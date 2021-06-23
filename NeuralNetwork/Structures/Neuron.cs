@@ -159,7 +159,7 @@ namespace NeuralNetworkRunner.Structures
             }
 
             //Generate the output layer
-            var outputLayer = new Layer(outputSize);
+            var outputLayer = new Layer(new LayerDefinition(outputSize, ActivationFunction.Sigmoid));
             Layers.Add(outputLayer);
 
             //Create weights from each Neuron in the current layer to the new layer neurons.
@@ -277,12 +277,39 @@ namespace NeuralNetworkRunner.Structures
                         var neuron = currentLayer.Neurons[pos];
 
                         //Set the Backward Pass value of this neuron
-                        neuron.BackwardPassValue =
-                            neuron.ForwardPassValue
-                            * (1 - neuron.ForwardPassValue)
-                            * Enumerable.Range(0, neuron.Activations.Length).Sum(k =>
-                                neuron.ActivationWeights[k] * neuron.Activations[k].BackwardPassValue
-                            );
+                        neuron.BackwardPassValue = BackwardPassValueFunction(neuron);
+                            //neuron.ForwardPassValue
+                            //* (1 - neuron.ForwardPassValue)
+                            //* Enumerable.Range(0, neuron.Activations.Length).Sum(k =>
+                            //    neuron.ActivationWeights[k] * neuron.Activations[k].BackwardPassValue
+                            //);
+
+                        //var activationsRemaining = neuron.ActivationWeights.Length;
+                        //using ManualResetEvent activationsResetEvent = new ManualResetEvent(false);
+                        //for (int n = 0; n < neuron.ActivationWeights.Length; n++)
+                        //{
+                        //    ThreadPool.QueueUserWorkItem(new WaitCallback(x =>
+                        //    {
+                        //        var activationPos = (int)x;
+
+                        //        var weightNode = neuron.Activations[activationPos];
+                        //        var weightDelta = -LearningRate * (
+                        //            neuron.ForwardPassValue
+                        //            * BackwardPassValueFunction(weightNode)
+                        //        );
+
+                        //        neuron.ActivationWeights[activationPos] = neuron.ActivationWeights[activationPos] + weightDelta;
+
+                        //        // Safely decrement the counter
+                        //        if (Interlocked.Decrement(ref activationsRemaining) == 0)
+                        //        {
+                        //            activationsResetEvent.Set();
+                        //        }
+
+                        //    }), n);
+                        //}
+
+                        //activationsResetEvent.WaitOne();
 
                         //Update each weight of this neuron
                         for (int j = 0; j < neuron.ActivationWeights.Length; j++)
@@ -319,7 +346,7 @@ namespace NeuralNetworkRunner.Structures
             }
         }
 
-        private double BackwardPassValueFunction(Neuron neuron)
+        private static double BackwardPassValueFunction(Neuron neuron)
         {
             var value = neuron.ActivationDerivativeValue()
                 * (

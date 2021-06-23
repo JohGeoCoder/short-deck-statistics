@@ -12,7 +12,9 @@ namespace NeuralNetworkRunner
 
         public static void Main(string[] args)
         {
-            var neuralNet = new NeuralNetwork(0.001, 28 * 28, 10,
+            var neuralNet = new NeuralNetwork(0.01, 28 * 28, 10,
+                new LayerDefinition(1000, ActivationFunction.TanH),
+                new LayerDefinition(1000, ActivationFunction.TanH),
                 new LayerDefinition(1000, ActivationFunction.TanH)
             );
 
@@ -60,9 +62,12 @@ namespace NeuralNetworkRunner
                     for(int i = 0; i < testData.Count; i++)
                     {
                         var result = neuralNet.Test(testData[i].Item1);
+                        var resultArray = result.Select(n => n.ForwardPassValue).ToArray();
                         var target = testData[i].Item2;
 
                         var maxResultVal = result.Select(n => n.ForwardPassValue).Max();
+
+                        var x = 1;
                         var resultPos = Enumerable.Range(0, 10).First(i => result[i].ForwardPassValue == maxResultVal);
                         var targetPos = Enumerable.Range(0, 10).First(i => target[i] == 1);
 
