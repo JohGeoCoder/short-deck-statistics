@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NeuralNetworkRunner.Structures
@@ -212,19 +213,32 @@ namespace NeuralNetworkRunner.Structures
                 var previousLayer = Layers[currentLayerPos - 1];
                 var currentLayer = Layers[currentLayerPos];
 
-                //Calculate the Forward Pass values in the current layer.
-                for (int i = 0; i < currentLayer.Neurons.Length; i++)
+                var processesRemaining = currentLayer.Neurons.Length;
+                using ManualResetEvent mre = new(false);
+                for(int i = 0; i < currentLayer.Neurons.Length; i++)
                 {
-                    var currentNeuron = currentLayer.Neurons[i];
+                    ThreadPool.QueueUserWorkItem(new WaitCallback(x =>
+                    {
+                        var pos = (int)x;
+                        var currentNeuron = currentLayer.Neurons[pos];
 
-                    //Sigmoid
-                    var neuronValue = currentNeuron.ActivationFunctionValue(
-                        previousLayer.Neurons.Sum(n =>
-                            n.ActivationWeights[i] * n.ForwardPassValue
-                        ) + previousLayer.Bias.ActivationWeights[i]);
+                        var neuronValue = currentNeuron.ActivationFunctionValue(
+                            previousLayer.Neurons.Sum(n =>
+                                n.ActivationWeights[pos] * n.ForwardPassValue
+                            ) + previousLayer.Bias.ActivationWeights[pos]
+                        );
 
-                    currentNeuron.ForwardPassValue = neuronValue;
+                        currentNeuron.ForwardPassValue = neuronValue;
+
+                        // Safely decrement the counter
+                        if (Interlocked.Decrement(ref processesRemaining) == 0)
+                        {
+                            mre.Set();
+                        }
+                    }), i);
                 }
+
+                mre.WaitOne();
 
                 currentLayerPos++;
             }
@@ -249,32 +263,48 @@ namespace NeuralNetworkRunner.Structures
             while(currentLayerPos >= 0)
             {
                 var currentLayer = Layers[currentLayerPos];
-                
+
+
                 //Iterate over each neuron in the layer, updating each of its activation weights
+                var processesRemaining = currentLayer.Neurons.Length;
+                using ManualResetEvent mre = new(false);
                 for (int i = 0; i < currentLayer.Neurons.Length; i++)
                 {
-                    var neuron = currentLayer.Neurons[i];
-
-                    //Set the Backward Pass value of this neuron
-                    neuron.BackwardPassValue =
-                        neuron.ForwardPassValue
-                        * (1 - neuron.ForwardPassValue)
-                        * Enumerable.Range(0, neuron.Activations.Length).Sum(k =>
-                            neuron.ActivationWeights[k] * neuron.Activations[k].BackwardPassValue
-                        );
-
-                    //Update each weight of this neuron
-                    for(int j = 0; j < neuron.ActivationWeights.Length; j++)
+                    ThreadPool.QueueUserWorkItem(new WaitCallback(x =>
                     {
-                        var weightNode = neuron.Activations[j];
-                        var weightDelta = -LearningRate * (
-                            neuron.ForwardPassValue 
-                            * BackwardPassValueFunction(weightNode)
-                        );
+                        var pos = (int)x;
 
-                        neuron.ActivationWeights[j] = neuron.ActivationWeights[j] + weightDelta;
-                    }
+                        var neuron = currentLayer.Neurons[pos];
+
+                        //Set the Backward Pass value of this neuron
+                        neuron.BackwardPassValue =
+                            neuron.ForwardPassValue
+                            * (1 - neuron.ForwardPassValue)
+                            * Enumerable.Range(0, neuron.Activations.Length).Sum(k =>
+                                neuron.ActivationWeights[k] * neuron.Activations[k].BackwardPassValue
+                            );
+
+                        //Update each weight of this neuron
+                        for (int j = 0; j < neuron.ActivationWeights.Length; j++)
+                        {
+                            var weightNode = neuron.Activations[j];
+                            var weightDelta = -LearningRate * (
+                                neuron.ForwardPassValue
+                                * BackwardPassValueFunction(weightNode)
+                            );
+
+                            neuron.ActivationWeights[j] = neuron.ActivationWeights[j] + weightDelta;
+                        }
+
+                        // Safely decrement the counter
+                        if (Interlocked.Decrement(ref processesRemaining) == 0)
+                        {
+                            mre.Set();
+                        }
+                    }), i);
                 }
+
+                mre.WaitOne();
 
                 //Update the bias weights
                 for(int j = 0; j < currentLayer.Bias.ActivationWeights.Length; j++)
