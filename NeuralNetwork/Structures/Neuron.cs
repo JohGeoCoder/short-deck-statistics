@@ -129,9 +129,12 @@ namespace NeuralNetworkRunner.Structures
         public static readonly Random RNG = new();
 
         public List<Layer> Layers { get; set; } = new();
+        public double LearningRate { get; set; }
 
-        public NeuralNetwork(int inputSize, int outputSize, params LayerDefinition[] hiddenLayerDefinitions)
+        public NeuralNetwork(double learningRate, int inputSize, int outputSize, params LayerDefinition[] hiddenLayerDefinitions)
         {
+            LearningRate = learningRate;
+
             //Create the input layer
             Layers.Add(new Layer(inputSize));
 
@@ -168,7 +171,7 @@ namespace NeuralNetworkRunner.Structures
             currentLayer.Bias.Activations = outputLayer.Neurons;
         }
 
-        public double[] Test(double[] input)
+        public Neuron[] Test(double[] input)
         {
             SetInput(input);
 
@@ -176,7 +179,7 @@ namespace NeuralNetworkRunner.Structures
 
             var outputLayer = Layers[^1];
 
-            return outputLayer.Neurons.Select(n => n.ForwardPassValue).ToArray();
+            return outputLayer.Neurons;
         }
 
         public void TrainInput(double[] input, double[] target)
@@ -264,7 +267,7 @@ namespace NeuralNetworkRunner.Structures
                     for(int j = 0; j < neuron.ActivationWeights.Length; j++)
                     {
                         var weightNode = neuron.Activations[j];
-                        var weightDelta = -0.01 * (
+                        var weightDelta = -LearningRate * (
                             neuron.ForwardPassValue 
                             * BackwardPassValueFunction(weightNode)
                         );
@@ -277,7 +280,7 @@ namespace NeuralNetworkRunner.Structures
                 for(int j = 0; j < currentLayer.Bias.ActivationWeights.Length; j++)
                 {
                     var weightNode = currentLayer.Bias.Activations[j];
-                    var weightDelta = -0.01 * BackwardPassValueFunction(weightNode);
+                    var weightDelta = -LearningRate * BackwardPassValueFunction(weightNode);
 
                     currentLayer.Bias.ActivationWeights[j] = currentLayer.Bias.ActivationWeights[j] + weightDelta;
                 }

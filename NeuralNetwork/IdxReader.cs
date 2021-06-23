@@ -66,6 +66,37 @@ namespace NeuralNetworkRunner
                 Console.ReadLine();
             }
         }
+
+        public static IEnumerable<Tuple<byte[], byte>> GetInputs()
+        {
+            FileStream ifsLabels = new($"{Environment.CurrentDirectory}/../../../Data/t10k-labels.idx1-ubyte", FileMode.Open); // test labels
+            FileStream ifsImages = new($"{Environment.CurrentDirectory}/../../../Data/t10k-images.idx3-ubyte", FileMode.Open); // test images
+
+            BinaryReader brLabels = new(ifsLabels);
+            BinaryReader brImages = new(ifsImages);
+
+            int magic1 = brImages.ReadInt32(); // discard
+            int numImages = brImages.ReadInt32();
+            int numRows = brImages.ReadInt32();
+            int numCols = brImages.ReadInt32();
+
+            int magic2 = brLabels.ReadInt32();
+            int numLabels = brLabels.ReadInt32();
+
+            for (int j = 0; j < 10000; j++)
+            {
+                var pixels = new byte[28 * 28];
+
+                for (int i = 0; i < 28 * 28; i++)
+                {
+                    pixels[i] = brImages.ReadByte();
+                }
+
+                byte lbl = brLabels.ReadByte();
+
+                yield return Tuple.Create(pixels, lbl);
+            }
+        }
     }
 
     public class DigitImage
