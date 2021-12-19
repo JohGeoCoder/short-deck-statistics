@@ -125,16 +125,33 @@ namespace NeuralNetworkRunner.Structures
         }
     }
 
+    public struct LearningRateDefinition
+    {
+        public int DecreaseRate;
+        public double DecreaseMultiplier;
+        public double InitialLearningRate;
+
+        public LearningRateDefinition(double learningRate, int decreaseRate, double decreaseMultiplier)
+        {
+            InitialLearningRate = learningRate;
+            DecreaseRate = decreaseRate;
+            DecreaseMultiplier = decreaseMultiplier;
+        }
+    }
+
     public class NeuralNetwork
     {
         public static readonly Random RNG = new();
 
         public List<Layer> Layers { get; set; } = new();
-        public double LearningRate { get; set; }
+        public LearningRateDefinition LearningRateDefinition { get; set; }
+        public double LearningRate;
+        private int TrainCount = 1;
 
-        public NeuralNetwork(double learningRate, int inputSize, int outputSize, params LayerDefinition[] hiddenLayerDefinitions)
+        public NeuralNetwork(LearningRateDefinition learningRate, int inputSize, LayerDefinition outputDefinition, params LayerDefinition[] hiddenLayerDefinitions)
         {
-            LearningRate = learningRate;
+            LearningRateDefinition = learningRate;
+            LearningRate = learningRate.InitialLearningRate;
 
             //Create the input layer
             Layers.Add(new Layer(inputSize));
@@ -159,7 +176,7 @@ namespace NeuralNetworkRunner.Structures
             }
 
             //Generate the output layer
-            var outputLayer = new Layer(new LayerDefinition(outputSize, ActivationFunction.Sigmoid));
+            var outputLayer = new Layer(outputDefinition);
             Layers.Add(outputLayer);
 
             //Create weights from each Neuron in the current layer to the new layer neurons.
@@ -185,11 +202,18 @@ namespace NeuralNetworkRunner.Structures
 
         public void TrainInput(double[] input, double[] target)
         {
+            if(TrainCount % LearningRateDefinition.DecreaseRate == 0)
+            {
+                LearningRate *= LearningRateDefinition.DecreaseMultiplier;
+            }
+
             SetInput(input);
 
             ForwardPass();
 
             BackwardPass(target);
+
+            TrainCount++;
         }
 
         private void SetInput(double[] input)
